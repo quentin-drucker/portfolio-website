@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<!--
+==============================================================================
+MAIN PORTFOLIO DOCUMENT — index.html
+==============================================================================
+
+I use this file as the browser's primary document and structural entry point.
+
+The browser reads this HTML first, builds the Document Object Model (DOM), and
+then loads the linked files in the <head>:
+
+- styles.css        Base layout, theme, typography, and original visual system.
+- enhancements.css  Styles for the later interaction/features pass.
+- config.js         Small content/data object used by enhancements.js.
+- script.js         Original theme, navigation, card, and particle behavior.
+- enhancements.js   Additional dialogs, filtering, settings, shortcuts, and demos.
+
+The three JavaScript files use the "defer" attribute. This means they download
+while the HTML is being parsed, but execute only after the DOM has been built.
+They execute in document order: config.js, then script.js, then enhancements.js.
+
+The HTML remains meaningful without animation. Major page areas use semantic
+elements such as <header>, <nav>, <main>, <section>, <aside>, <dialog>, and
+<footer>. Decorative canvases and SVG artwork use aria-hidden where appropriate
+so screen readers focus on the actual content.
+-->
+<html lang="en" data-theme="dark">
+<head>
+  <!--
+    Document metadata:
+    - UTF-8 allows normal punctuation and symbols.
+    - viewport makes CSS responsive sizing work on phones and tablets.
+    - description and Open Graph tags supply search/social preview text.
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Quentin — computer science student focused on AI, visual computing, computer vision, procedural generation, and full-stack software." />
+  <meta name="theme-color" content="#070b0e" />
+  <meta property="og:title" content="Quentin | Computer Science Portfolio" />
+  <meta property="og:description" content="AI, visual computing, procedural generation, and full-stack software." />
+  <meta property="og:type" content="website" />
+  <title>Quentin | Computer Science Portfolio</title>
+  <!--
+    Resource loading:
+    The favicon and manifest describe the site to the browser. Google Fonts is
+    an optional external dependency; the CSS includes system-font fallbacks.
+  -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!--
+    CSS load order matters. enhancements.css loads after styles.css so that its
+    more specific feature-layer rules can extend the base design without
+    rewriting the original stylesheet.
+  -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="enhancements.css" />
+  <!--
+    JavaScript load order:
+    1. config.js creates window.PORTFOLIO_ENHANCEMENTS.
+    2. script.js initializes the original site.
+    3. enhancements.js reads both the DOM and the config object, then adds the
+       second-pass functionality.
+  -->
+  <script src="config.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="enhancements.js" defer></script>
+</head>
+
+<!--
+  BODY OVERVIEW
+
+  The first elements are global visual/interaction layers. They are positioned
+  independently from the normal document flow, so they decorate the page
+  without changing the reading order.
+-->
+<body>
+  <!--
+    Intro loader:
+    enhancements.js rotates the status message and hides this overlay. It uses
+    role="status" and aria-live so the current state can be announced without
+    interrupting the visitor.
+  -->
+  <div class="intro-loader" id="intro-loader" role="status" aria-live="polite">
+    <div class="intro-loader-panel glass">
+      <span class="intro-loader-mark">Q</span>
+      <div>
+        <strong id="loader-message">Initializing visual system…</strong>
+        <span class="intro-loader-bar"><i></i></span>
+      </div>
+      <button id="skip-loader" class="text-control" type="button">Skip</button>
+    </div>
+  </div>
+
+  <!--
+    Global visual layers:
+    - scroll-progress is a two-pixel reading-progress line.
+    - cursor-aura follows the pointer as a soft glow.
+    - ambient-canvas is drawn by script.js for the organic mote field.
+    - background-grid and page-glow are CSS-only atmosphere.
+  -->
+  <div id="scroll-progress" aria-hidden="true"><span></span></div>
+  <div id="cursor-aura" aria-hidden="true"></div>
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+  <div class="background-grid" aria-hidden="true"></div>
+  <div class="page-glow glow-one" aria-hidden="true"></div>
+  <div class="page-glow glow-two" aria-hidden="true"></div>
+
+  <!--
+    Accessibility shortcut:
+    This link is visually hidden until focused and lets keyboard users bypass
+    the persistent navigation.
+  -->
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <!--
+    Persistent site header:
+    The normal navigation uses anchor links to page sections. The mobile menu,
+    theme control, command-palette trigger, and settings trigger are wired by
+    the JavaScript files.
+  -->
+  <header class="site-header">
+    <nav class="nav-shell glass" aria-label="Primary navigation">
+      <a class="brand" href="#home" aria-label="Quentin home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span>Quentin</span>
+      </a>
+
+      <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open navigation">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#about">About</a>
+        <a href="#expertise">Expertise</a>
+        <a href="#projects">Projects</a>
+        <a href="#resume">Résumé</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-tool command-trigger" type="button" aria-label="Open command palette"><span>⌘K</span></button>
+        <button class="nav-tool settings-trigger" type="button" aria-label="Open effects settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.5 1a8 8 0 0 0-1.7-1L14.4 3h-4.8l-.4 3.1a8 8 0 0 0-1.7 1l-2.5-1-2 3.4L5.1 11a7 7 0 0 0 0 2L3 14.5l2 3.4 2.5-1a8 8 0 0 0 1.7 1l.4 3.1h4.8l.4-3.1a8 8 0 0 0 1.7-1l2.5 1 2-3.4-2.1-1.5a7 7 0 0 0 .1-1Z"></path></svg>
+        </button>
+        <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
+          </svg>
+        </button>
+        <a class="button button-small button-primary desktop-cta" href="#contact">Let’s connect</a>
+      </div>
+    </nav>
+  </header>
+
+  <!--
+    Desktop section rail:
+    This is a secondary navigation aid. enhancements.js observes the visible
+    section and applies the active state. CSS hides the rail on narrower screens.
+  -->
+  <aside class="section-rail" aria-label="Page sections">
+    <a href="#home"><span>01</span><strong>Home</strong></a>
+    <a href="#about"><span>02</span><strong>About</strong></a>
+    <a href="#expertise"><span>03</span><strong>Expertise</strong></a>
+    <a href="#projects"><span>04</span><strong>Projects</strong></a>
+    <a href="#resume"><span>05</span><strong>Résumé</strong></a>
+    <a href="#contact"><span>06</span><strong>Contact</strong></a>
+  </aside>
+
+  <!--
+    Main document content:
+    Each top-level section has a stable id. Navigation, keyboard shortcuts,
+    active-section observers, and smooth scrolling all depend on these ids.
+  -->
+  <main id="main-content">
+    <!--
+      HERO / HOME
+
+      The left side contains the actual introduction and primary actions. The
+      right side is CSS/HTML artwork representing a visual-computing pipeline.
+      script.js adds pointer lighting; enhancements.js adds the moving detection
+      box and rotating interest label.
+    -->
+    <section class="hero section" id="home">
+      <div class="hero-content">
+        <div class="eyebrow reveal">
+          <span class="status-dot"></span>
+          Open to software engineering opportunities
+        </div>
+
+        <h1 class="hero-title reveal">
+          I build software at the intersection of
+          <span class="gradient-text">intelligence, visuals, and interaction.</span>
+        </h1>
+
+        <p class="hero-copy reveal">
+          I’m Quentin — a CS major, Art minor, and Ammerman Center for Arts and Technology Scholar at Connecticut College. My passion lives at the intersection of technology and visual art, spanning computer graphics, computer vision, and the systems that generate, analyze, and understand visual experience.
+        </p>
+        <div class="interest-rotator reveal" aria-live="polite">
+          <span>Currently exploring</span>
+          <strong id="rotating-interest">Visual Computing</strong>
+        </div>
+
+        <div class="hero-actions reveal">
+          <a class="button button-primary" href="#projects">
+            Explore projects
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+          </a>
+          <a class="button button-secondary" href="resume.html">View résumé</a>
+        </div>
+
+        <div class="hero-meta reveal" aria-label="Primary interests">
+          <span>AI</span>
+          <span>Computer Vision</span>
+          <span>Visual Computing</span>
+          <span>Full-Stack</span>
+          <span>3D + VFX</span>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal" aria-label="Abstract visualization of Quentin's technical focus">
+        <div class="visual-shell glass">
+          <div class="code-window">
+            <div class="window-bar">
+              <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+              <span>visual_pipeline.py</span>
+              <span class="window-status">● live</span>
+            </div>
+            <div class="code-content" aria-hidden="true">
+              <div><span class="code-purple">class</span> <span class="code-blue">VisualSystem</span>:</div>
+              <div class="indent"><span class="code-purple">def</span> <span class="code-cyan">understand</span>(self, scene):</div>
+              <div class="indent-2">features = self.encoder(scene)</div>
+              <div class="indent-2">structure = self.reason(features)</div>
+              <div class="indent-2"><span class="code-purple">return</span> self.render(structure)</div>
+              <div class="code-spacer"></div>
+              <div><span class="code-muted"># perception → representation → experience</span></div>
+            </div>
+          </div>
+
+          <div class="vision-panel">
+            <div class="vision-header">
+              <span>Scene representation</span>
+              <span>98.4%</span>
+            </div>
+            <div class="vision-stage">
+              <div class="scan-line"></div>
+              <div class="vision-orbit orbit-a"></div>
+              <div class="vision-orbit orbit-b"></div>
+              <div class="vision-core"></div>
+              <div class="vision-cursor" id="vision-cursor" aria-hidden="true"><span id="vision-coordinate">0, 0</span></div>
+              <span class="vision-label label-a">depth</span>
+              <span class="vision-label label-b">features</span>
+              <span class="vision-label label-c">geometry</span>
+            </div>
+            <div class="metric-row">
+              <div><strong>24 ms</strong><span>latency</span></div>
+              <div><strong>128D</strong><span>embedding</span></div>
+              <div><strong>60 fps</strong><span>render</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a class="scroll-cue" href="#about" aria-label="Scroll to About section">
+        <span>Scroll to explore</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </a>
+    </section>
+
+    <!--
+      ABOUT
+
+      This section establishes the professional focus. The cards are normal
+      articles so their information remains readable when effects are disabled.
+    -->
+    <section class="section section-narrow" id="about">
+      <div class="section-heading reveal">
+        <span class="section-kicker">01 / About</span>
+        <h2>Curious about how machines can <span class="gradient-text">see, reason, and create.</span></h2>
+      </div>
+
+      <div class="about-grid">
+        <article class="about-story glass reveal">
+          <p class="lead">
+            I’m a Computer Science major with a minor in Art at Connecticut College and an Ammerman Center for Arts and Technology Scholar.
+          </p>
+          <p>
+            I’m particularly interested in visual computing, with interests spanning both computer graphics and computer vision. My passion for this area began at the intersection of technology and visual art and has expanded into a broader interest in how computing can be applied both to the generation of visual content and to the analysis and interpretation of visual information.
+          </p>
+          <p>
+            I’m always eager to learn and to collaborate on projects that blend innovation with functionality, bringing together technical depth, creativity, and thoughtful design. That spirit extends across the stack — from algorithms and research pipelines to interfaces, 3D environments, and real-time systems.
+          </p>
+        </article>
+
+        <div class="about-facts">
+          <article class="fact-card glass reveal">
+            <span class="fact-label">Current focus</span>
+            <strong>Visual intelligence</strong>
+            <p>Computer vision, image understanding, graphics, and multimodal systems.</p>
+          </article>
+          <article class="fact-card glass reveal">
+            <span class="fact-label">Engineering style</span>
+            <strong>Systems-minded</strong>
+            <p>Clear abstractions, thoughtful iteration, and maintainable implementation.</p>
+          </article>
+          <article class="fact-card glass reveal">
+            <span class="fact-label">Creative edge</span>
+            <strong>Technical + visual</strong>
+            <p>Building experiences where algorithms, aesthetics, and interaction reinforce each other.</p>
+          </article>
+        </div>
+      </div>
+
+      <!--
+        PROCEDURAL SEED DEMO
+
+        enhancements.js reads the input value, converts it to a deterministic
+        pseudo-random seed, and draws repeatable contour lines on seed-canvas.
+        The same text input produces the same visual pattern.
+      -->
+      <section class="seed-lab glass reveal" aria-labelledby="seed-title">
+        <div>
+          <span class="section-kicker">Interactive / Procedural</span>
+          <h3 id="seed-title">Generate a visual seed</h3>
+          <p>Enter any text to produce a repeatable contour field. The same seed always creates the same pattern.</p>
+          <form id="seed-form" class="seed-controls">
+            <label><span>Seed</span><input id="seed-input" type="text" value="104729" maxlength="24" /></label>
+            <button class="button button-secondary magnetic" type="submit">Generate</button>
+          </form>
+        </div>
+        <canvas id="seed-canvas" width="540" height="280" aria-label="Procedurally generated contour pattern"></canvas>
+      </section>
+    </section>
+
+    <!--
+      EXPERTISE
+
+      These cards communicate broad skill areas. script.js supplies shimmer,
+      pointer-position lighting, and restrained tilt. Their content remains
+      hard-coded in this current template version.
+    -->
+    <section class="section" id="expertise">
+      <div class="section-heading reveal">
+        <span class="section-kicker">02 / Expertise</span>
+        <h2>Core areas I’m developing.</h2>
+        <p>A multidisciplinary foundation for building intelligent, visual, and production-ready software.</p>
+      </div>
+
+      <div class="expertise-grid">
+        <article class="expertise-card glass reveal featured">
+          <div class="expertise-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </div>
+          <span class="card-index">01</span>
+          <h3>Visual Computing</h3>
+          <p>Computer vision, image processing, graphics, spatial representation, and visual AI systems.</p>
+          <div class="tag-list"><span>OpenCV</span><span>Python</span><span>3D</span><span>Imaging</span></div>
+        </article>
+
+        <article class="expertise-card glass reveal">
+          <div class="expertise-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path><circle cx="12" cy="12" r="4"></circle></svg>
+          </div>
+          <span class="card-index">02</span>
+          <h3>Artificial Intelligence</h3>
+          <p>Machine learning concepts, intelligent workflows, model-assisted products, and applied experimentation.</p>
+          <div class="tag-list"><span>ML</span><span>Python</span><span>Agents</span><span>Data</span></div>
+        </article>
+
+        <article class="expertise-card glass reveal">
+          <div class="expertise-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"></path><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18v3"></path></svg>
+          </div>
+          <span class="card-index">03</span>
+          <h3>Procedural Systems</h3>
+          <p>Rule-based generation, deterministic worlds, simulation, and tools for controlled creative variation.</p>
+          <div class="tag-list"><span>C++</span><span>Algorithms</span><span>UE</span><span>PCG</span></div>
+        </article>
+
+        <article class="expertise-card glass reveal">
+          <div class="expertise-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8 9 4 12l4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg>
+          </div>
+          <span class="card-index">04</span>
+          <h3>Full-Stack Engineering</h3>
+          <p>Responsive interfaces, APIs, databases, cloud deployment, and end-to-end product development.</p>
+          <div class="tag-list"><span>JavaScript</span><span>SQL</span><span>APIs</span><span>Cloud</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!--
+      PROJECTS
+
+      Filter buttons hide/show cards using their data-project-category values.
+      Each detail button is associated with the project at the same array index
+      in config.js. The modal provides an expandable placeholder case study.
+    -->
+    <section class="section" id="projects">
+      <div class="section-heading section-heading-row reveal">
+        <div>
+          <span class="section-kicker">03 / Projects</span>
+          <h2>Selected work and experiments.</h2>
+          <p>These cards are intentionally easy to replace with your real project details.</p>
+        </div>
+        <a class="text-link" href="https://github.com/quentin-drucker" target="_blank" rel="noreferrer">
+          GitHub profile
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>
+        </a>
+      </div>
+
+      <div class="project-filters reveal" id="project-filters" aria-label="Filter projects">
+        <button type="button" class="filter-button" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="filter-button" data-filter="visual">Visual Computing</button>
+        <button type="button" class="filter-button" data-filter="procedural">Procedural</button>
+        <button type="button" class="filter-button" data-filter="fullstack">Full-Stack</button>
+        <button type="button" class="filter-button" data-filter="3d">3D / VFX</button>
+      </div>
+
+      <div class="projects-grid">
+        <article class="project-card glass reveal project-wide" data-project-category="visual">
+          <div class="project-visual visual-cv" aria-hidden="true">
+            <div class="camera-frame">
+              <div class="bbox bbox-one"><span>subject 0.97</span></div>
+              <div class="bbox bbox-two"><span>object 0.91</span></div>
+              <div class="camera-crosshair"></div>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="project-topline">
+              <span class="project-type">Featured / Research · Computer Vision · AI</span>
+              <div class="project-links">
+                <a href="#" aria-label="View source code">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9 4 12l4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg>
+                </a>
+                <a href="#" aria-label="Open live project">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>
+                </a>
+              <button class="project-detail-trigger" type="button" aria-label="Open project details"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg></button>
+              </div>
+            </div>
+            <h3>Autonomous Driving Safety Research</h3>
+            <p>
+              Designing parameterized rare-hazard scenarios in CARLA simulator and training reinforcement learning agents to evaluate autonomous driving safety. Solo research project under faculty advisor, ongoing since Jan 2026.
+            </p>
+            <div class="tag-list"><span>Python</span><span>CARLA</span><span>Reinforcement Learning</span></div>
+          </div>
+        </article>
+
+        <article class="project-card glass reveal" data-project-category="procedural">
+          <div class="project-visual visual-world" aria-hidden="true">
+            <div class="terrain terrain-back"></div>
+            <div class="terrain terrain-mid"></div>
+            <div class="terrain terrain-front"></div>
+            <div class="world-sun"></div>
+          </div>
+          <div class="project-body">
+            <div class="project-topline">
+              <span class="project-type">Procedural Generation</span>
+              <div class="project-links">
+                <a href="#" aria-label="View source code">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9 4 12l4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg>
+                </a>
+              <button class="project-detail-trigger" type="button" aria-label="Open project details"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg></button>
+              </div>
+            </div>
+            <h3>Procedural World Generation Framework</h3>
+            <p>Parameterized world generation system in Unreal Engine 5 that dynamically creates explorable environments in real time, with a playable character controller. Phase one of a senior independent project as an Ammerman Center scholar.</p>
+            <div class="tag-list"><span>Unreal Engine</span><span>PCG</span><span>Blueprints</span></div>
+          </div>
+        </article>
+
+        <article class="project-card glass reveal" data-project-category="fullstack">
+          <div class="project-visual visual-data" aria-hidden="true">
+            <div class="data-node node-one"></div>
+            <div class="data-node node-two"></div>
+            <div class="data-node node-three"></div>
+            <div class="data-node node-four"></div>
+            <svg viewBox="0 0 400 220">
+              <path d="M70 150 C120 30 180 190 230 75 S330 55 355 125"></path>
+              <path d="M65 90 C135 190 185 20 260 130 S325 155 360 60"></path>
+            </svg>
+          </div>
+          <div class="project-body">
+            <div class="project-topline">
+              <span class="project-type">AI · Full-Stack · Cloud</span>
+              <div class="project-links">
+                <a href="#" aria-label="View source code">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9 4 12l4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg>
+                </a>
+              <button class="project-detail-trigger" type="button" aria-label="Open project details"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg></button>
+              </div>
+            </div>
+            <h3>AI Vision Scavenger Hunt</h3>
+            <p>Full-stack multiplayer scavenger hunt deployed on Microsoft Azure. Players photograph real-world objects; Azure AI Vision analyzes submissions to validate completions. Built with React, Node.js/Express, and Docker on an Azure VM.</p>
+            <div class="tag-list"><span>React</span><span>Node.js</span><span>Azure</span><span>Docker</span></div>
+          </div>
+        </article>
+
+        <article class="project-card glass reveal" data-project-category="3d">
+          <div class="project-visual visual-engine" aria-hidden="true">
+            <div class="engine-grid">
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="engine-player"></div>
+            <div class="engine-light"></div>
+          </div>
+          <div class="project-body">
+            <div class="project-topline">
+              <span class="project-type">3D · VR · Real-Time</span>
+              <div class="project-links">
+                <a href="#" aria-label="View source code">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9 4 12l4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg>
+                </a>
+              <button class="project-detail-trigger" type="button" aria-label="Open project details"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg></button>
+              </div>
+            </div>
+            <h3>VR Environment — Meta Quest 3</h3>
+            <p>Interactive 3D environments in Unity with full VR integration for the Meta Quest 3 headset. Features physics-based object interactions, custom C# scripts, and optimized lighting for immersive real-time experiences. Co-lead on a 2-person team.</p>
+            <div class="tag-list"><span>C#</span><span>Unity</span><span>VR</span><span>Meta Quest 3</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!--
+      RÉSUMÉ SUMMARY
+
+      This homepage section gives a quick overview and links to resume.html,
+      which is intentionally styled as a printable standalone document.
+    -->
+    <section class="section section-narrow" id="resume">
+      <div class="resume-shell glass reveal">
+        <div class="resume-intro">
+          <span class="section-kicker">04 / Résumé</span>
+          <h2>Technical range with a visual-computing focus.</h2>
+          <p>
+            Connecticut College, Class of 2027. Computer science major with a 4.00 GPA and an art minor. Dean's High Honors every semester, Founders Scholarship, and Junior &amp; Sophomore Computer Science Award winner.
+          </p>
+          <a class="button button-primary" href="resume.html">
+            Open full résumé
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>
+          </a>
+          <a class="button button-secondary" href="2026_0603_Resume_QD.pdf" download>
+            Download PDF
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          </a>
+        </div>
+
+        <div class="resume-details">
+          <div class="resume-row">
+            <span>Education</span>
+            <div>
+              <strong>B.A. Computer Science, Art Minor</strong>
+              <p>Connecticut College · Class of 2027 · GPA 4.00</p>
+            </div>
+          </div>
+          <div class="resume-row">
+            <span>Experience</span>
+            <div>
+              <strong>Student Researcher · Teaching Assistant</strong>
+              <p>Connecticut College Computer Science Dept. · Jan 2026 – Present</p>
+            </div>
+          </div>
+          <div class="resume-row">
+            <span>Languages</span>
+            <div>
+              <strong>Python · C/C++ · C# · JavaScript · SQL · Java · HTML/CSS</strong>
+              <p>Also: Lua · MATLAB</p>
+            </div>
+          </div>
+          <div class="resume-row">
+            <span>Tools</span>
+            <div>
+              <strong>Unreal Engine · Unity · Maya · Azure · Docker · Node.js · OpenCV · Git</strong>
+              <p>Adobe Creative Cloud · Linux (Ubuntu)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      CONTACT
+
+      The form is static-hosting compatible. script.js converts the submitted
+      fields into a mailto: URL, so there is no backend database or form server.
+      The placeholder email address must be replaced before deployment.
+    -->
+    <section class="section" id="contact">
+      <div class="contact-shell">
+        <div class="contact-copy reveal">
+          <span class="section-kicker">05 / Contact</span>
+          <h2>Let’s build something <span class="gradient-text">worth seeing.</span></h2>
+          <p>
+            I’m interested in internships, research collaborations, and software projects involving
+            visual computing, AI, procedural systems, or thoughtful product engineering.
+          </p>
+
+          <div class="contact-links">
+            <a class="contact-link glass" href="mailto:qdruck@gmail.com">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"></path><path d="m4 6 8 7 8-7"></path></svg>
+              </span>
+              <span><small>Email</small><strong>qdruck@gmail.com</strong></span>
+            </a>
+            <a class="contact-link glass" href="https://www.linkedin.com/in/quentin-drucker" target="_blank" rel="noreferrer">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6Z"></path><path d="M2 9h4v12H2z"></path><circle cx="4" cy="4" r="2"></circle></svg>
+              </span>
+              <span><small>LinkedIn</small><strong>/in/quentin-drucker</strong></span>
+            </a>
+            <a class="contact-link glass" href="https://github.com/quentin-drucker" target="_blank" rel="noreferrer">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.3-.4 6.8-1.6 6.8-7A5.4 5.4 0 0 0 19.4 4 5 5 0 0 0 19.3.5S18.2.1 15 1.8a13.4 13.4 0 0 0-7 0C4.8.1 3.7.5 3.7.5A5 5 0 0 0 3.6 4a5.4 5.4 0 0 0-1.4 3.7c0 5.4 3.5 6.6 6.8 7A4.8 4.8 0 0 0 8 18v4"></path><path d="M8 19c-3 .9-3-1.5-4-2"></path></svg>
+              </span>
+              <span><small>GitHub</small><strong>@quentin-drucker</strong></span>
+            </a>
+          </div>
+        </div>
+
+        <form class="contact-form glass reveal" id="contact-form">
+          <div class="form-heading">
+            <span>Send a message</span>
+            <span class="form-status">Student researcher · open to opportunities</span>
+          </div>
+
+          <label>
+            <span>Name</span>
+            <input type="text" name="name" autocomplete="name" placeholder="Your name" required />
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+
+          <label>
+            <span>Message</span>
+            <textarea name="message" rows="6" placeholder="Tell me a little about the opportunity or project." required></textarea>
+          </label>
+
+          <button class="button button-primary button-full" type="submit">
+            Send message
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+          </button>
+          <p class="form-note">This static form opens your default email application. Update the email in <code>script.js</code>.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!--
+    Back-to-top control:
+    enhancements.js updates the circular SVG stroke to show scroll progress and
+    reveals the button only after the visitor has moved down the page.
+  -->
+  <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle class="back-track" cx="24" cy="24" r="20"></circle>
+      <circle class="back-progress" cx="24" cy="24" r="20"></circle>
+      <path d="m17 27 7-7 7 7"></path>
+    </svg>
+  </button>
+
+  <!--
+    Native dialogs:
+    <dialog> supplies focus management and a modal backdrop in modern browsers.
+    Their contents are populated or controlled by enhancements.js.
+  -->
+  <dialog class="project-dialog" id="project-dialog" aria-labelledby="project-dialog-title">
+    <div class="dialog-shell project-dialog-shell">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Close project details">×</button>
+      <div id="project-dialog-content"></div>
+    </div>
+  </dialog>
+
+  <!--
+    Command palette:
+    Opened by Ctrl/Cmd+K, "/" on desktop, or the header button. The results are
+    rendered dynamically from the command list in enhancements.js.
+  -->
+  <dialog class="command-dialog" id="command-dialog" aria-labelledby="command-title">
+    <div class="dialog-shell command-shell">
+      <div class="command-search">
+        <span aria-hidden="true">⌕</span>
+        <label class="sr-only" for="command-input">Search commands</label>
+        <input id="command-input" type="search" placeholder="Go to a section or run a command…" />
+        <kbd>Esc</kbd>
+      </div>
+      <h2 id="command-title" class="sr-only">Command palette</h2>
+      <div id="command-results" class="command-results" role="listbox"></div>
+    </div>
+  </dialog>
+
+  <!--
+    Effects settings:
+    The panel intentionally exposes only two meaningful visitor choices:
+    whether decorative motion is enabled and how dense the mote field should be.
+    Both settings are saved locally in the visitor's browser.
+  -->
+  <dialog class="settings-dialog" id="settings-dialog" aria-labelledby="settings-title">
+    <div class="dialog-shell settings-shell">
+      <header>
+        <div>
+          <span class="section-kicker">Preferences</span>
+          <h2 id="settings-title">Display effects</h2>
+        </div>
+        <button
+          class="dialog-close"
+          type="button"
+          data-close-dialog
+          aria-label="Close settings"
+        >×</button>
+      </header>
+
+      <div class="settings-group">
+        <label class="setting-switch" for="effects-toggle">
+          <span class="setting-copy">
+            <strong>Motion effects</strong>
+            <small>
+              Controls moving motes, shimmer, card tilt, cursor glow, and other
+              decorative animation.
+            </small>
+          </span>
+
+          <span class="switch-control">
+            <input
+              id="effects-toggle"
+              type="checkbox"
+              role="switch"
+              aria-describedby="effects-status"
+              checked
+            />
+            <span class="switch-track" aria-hidden="true">
+              <span class="switch-thumb"></span>
+            </span>
+          </span>
+        </label>
+
+        <p class="setting-status" id="effects-status" aria-live="polite">
+          Motion effects are enabled.
+        </p>
+      </div>
+
+      <div class="settings-group density-group" id="density-group">
+        <label class="range-setting" for="particle-density">
+          <span class="setting-copy">
+            <strong>Particle density</strong>
+            <small>Adjust the number of background motes.</small>
+          </span>
+
+          <span class="range-control">
+            <input
+              id="particle-density"
+              type="range"
+              min="0"
+              max="100"
+              step="10"
+              value="70"
+            />
+            <output id="particle-density-value" for="particle-density">70%</output>
+          </span>
+        </label>
+      </div>
+
+      <div class="settings-actions">
+        <button
+          class="button button-secondary settings-reset"
+          id="settings-reset"
+          type="button"
+        >
+          Restore defaults
+        </button>
+      </div>
+
+      <p class="settings-note">
+        The theme is controlled by the sun/moon button in the header. Your
+        operating system's reduced-motion preference is always respected.
+      </p>
+    </div>
+  </dialog>
+
+  <!--
+    Footer:
+    Provides a final navigation point, copyright year, and a reminder that the
+    site is a static HTML/CSS/JavaScript project.
+  -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="brand" href="#home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span>Quentin</span>
+      </a>
+      <p>Designed and built with HTML, CSS, and JavaScript.</p>
+      <div class="footer-links">
+        <a href="#home">Back to top</a>
+        <span>© <span id="current-year"></span> Quentin</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

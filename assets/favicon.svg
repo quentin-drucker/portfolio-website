@@ -1,0 +1,15 @@
+<!--
+  Browser/favicon artwork. This is an SVG rather than a bitmap, so it remains
+  sharp at different icon sizes. The gradient reflects the portfolio palette.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#20c5e8"/>
+      <stop offset="1" stop-color="#448dff"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="#060a0d"/>
+  <rect x="6" y="6" width="52" height="52" rx="14" fill="url(#g)" opacity=".22"/>
+  <path d="M19 18h15c8 0 13 5 13 13 0 6-3 10-8 12l8 7H37l-6-6h-2v6H19V18Zm10 8v10h5c3 0 5-2 5-5s-2-5-5-5h-5Z" fill="#eef4ff"/>
+</svg>

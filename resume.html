@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Quentin Drucker — Résumé" />
+  <title>Quentin Drucker | Résumé</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: "Inter", system-ui, sans-serif;
+      background: #0a0f14;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar {
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(10, 15, 20, 0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .button {
+      min-height: 40px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #e2e8f0;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .button:hover {
+      background: rgba(255, 255, 255, 0.11);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .button.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, #00c8e0, #3a5fff);
+      color: #fff;
+    }
+
+    .button.primary:hover {
+      opacity: 0.88;
+    }
+
+    .pdf-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      display: block;
+      min-height: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a class="button" href="index.html">← Back to portfolio</a>
+    <a class="button primary" href="2026_0603_Resume_QD.pdf" download>Download PDF</a>
+  </div>
+  <iframe
+    class="pdf-frame"
+    src="2026_0603_Resume_QD.pdf"
+    title="Quentin Drucker — Résumé"
+  ></iframe>
+</body>
+</html>

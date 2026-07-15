@@ -1,0 +1,4 @@
+# Search-crawler policy for the deployed static site.
+# Allowing '/' means public crawlers may index every reachable page.
+User-agent: *
+Allow: /
