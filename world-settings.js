@@ -6,7 +6,7 @@ WORLD CONTROLS — world-settings.js
 Extra parameters in the settings dialog for playing with the page:
 world seed, mountain height, contour detail, stars, nebula, time of day,
 cursor light, particle speed, biome transition speed, fog reveal, faded screen
-edges and shooting stars.
+edges, shooting stars and interface size.
 
 - Values live in window.PORTFOLIO_WORLD (read by landscape.js, terrain via
   the shared seed, and script.js for particle speed).
@@ -37,7 +37,8 @@ saved seed is in place before either draws.
     transitionMs: 2500,   // biome transition length
     fogReveal: true,
     edgeFade: true,
-    meteors: true         // shooting stars over the sea
+    meteors: true,        // shooting stars over the sea
+    uiScale: 75           // % interface size on larger screens (50–100)
   };
   /* Defaults that changed after visitors may have saved them. A saved value
      equal to an old default is treated as "never chosen" and dropped. */
@@ -67,6 +68,7 @@ saved seed is in place before either draws.
     get starScale() { return values.stars / 100; },
     get nebulaScale() { return values.nebula / 100; },
     get meteors() { return values.meteors; },
+    get uiScale() { return values.uiScale / 100; },
     get followScroll() { return values.followScroll; },
     get timeOfDay() { return values.timeOfDay / 100; },
     get cursorLight() { return values.cursorLight; },
@@ -81,6 +83,7 @@ saved seed is in place before either draws.
     rootEl.classList.toggle("no-edge-fade", !values.edgeFade);
     rootEl.style.setProperty("--lit-r", `${values.cursorLight}px`);
     rootEl.classList.toggle("no-cursor-light", values.cursorLight === 0);
+    rootEl.style.setProperty("--ui-scale", String(values.uiScale / 100));
   }
 
   const TIME_NAMES = [[0.1, "dawn"], [0.35, "morning"], [0.65, "night"], [0.9, "evening"], [1.01, "sunset"]];
@@ -92,7 +95,8 @@ saved seed is in place before either draws.
     timeOfDay: (v) => TIME_NAMES.find(([limit]) => v / 100 < limit)[1],
     cursorLight: (v) => (v === 0 ? "off" : `${v}px`),
     moteSpeed: (v) => `${v}%`,
-    transitionMs: (v) => `${(v / 1000).toFixed(1)}s`
+    transitionMs: (v) => `${(v / 1000).toFixed(1)}s`,
+    uiScale: (v) => `${v}%`
   };
 
   const controls = [...document.querySelectorAll("[data-world]")];
@@ -115,6 +119,15 @@ saved seed is in place before either draws.
 
   function announce(key) {
     window.dispatchEvent(new CustomEvent("portfolio:world-changed", { detail: { key } }));
+  }
+
+  /* A new interface size moves every section, so after the slider settles,
+     fire a resize: the landscape re-measures its biome zones and canvases,
+     the terrain and particles resize. */
+  let relayoutTimer;
+  function relayout() {
+    clearTimeout(relayoutTimer);
+    relayoutTimer = setTimeout(() => window.dispatchEvent(new Event("resize")), 150);
   }
 
   /* Seed: shared with the Playground. If the Playground is on this page, set
@@ -153,6 +166,7 @@ saved seed is in place before either draws.
       syncControls();
       applyDocument();
       announce(key);
+      if (key === "uiScale") relayout();
     });
   });
 
@@ -169,6 +183,7 @@ saved seed is in place before either draws.
     syncControls();
     applyDocument();
     announce("all");
+    relayout();
     if (seedChanged) applySeed(DEFAULTS.seed);
   });
 

@@ -186,6 +186,15 @@
       </header>
       <p class="settings-intro">Everything on this page is generated in your browser. Change the parameters and watch it respond. Your choices are saved on this device only.</p>
 
+      <!-- DISPLAY: interface size on larger screens (hidden on phones). -->
+      <section class="settings-group ui-scale-setting" aria-labelledby="settings-display">
+        <h3 class="settings-group-title" id="settings-display">Display</h3>
+        <label class="range-setting" for="world-scale">
+          <span class="setting-copy"><strong>Interface size</strong><small>Size of the text and content. The middle is the default; the background always stays full size.</small></span>
+          <span class="range-control"><input id="world-scale" data-world="uiScale" type="range" min="50" max="100" step="5" /><output data-world-out="uiScale" for="world-scale"></output></span>
+        </label>
+      </section>
+
       <!-- WORLD: the land behind the page. Shared seed with the Playground. -->
       <section class="settings-group" aria-labelledby="settings-world">
         <h3 class="settings-group-title" id="settings-world">World</h3>

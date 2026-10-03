@@ -446,23 +446,30 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
 
 /* ---------------------------------------------------------------- 4
    Interface scale and breathing room.
-   On desktop the interface renders at 85%, like browser zoom, but only the
-   content is scaled: the fixed background (landscape, particles, cursor
-   glow) stays full size, so more of it shows around the content. Fixed
-   full-screen wrappers (.site-header, .intro-loader) are not zoomed; their
-   inner panels are, which avoids percentage widths shrinking toward the left.
+   On desktop the interface renders smaller than its original size (75% by
+   default, adjustable 50–100% with "Interface size" in the world controls,
+   which sets --ui-scale). It works like browser zoom, but only the content
+   is scaled: the fixed background (landscape, particles, cursor glow) stays
+   full size, so more of it shows around the content. Fixed full-screen
+   wrappers (.site-header, .intro-loader) are not zoomed; their inner panels
+   are, which avoids percentage widths shrinking toward the left.
    vh-based heights inside zoomed content are divided by --ui-zoom so a
-   "full screen" hero still fills the screen. Phones keep 100%. */
+   "full screen" hero still fills the screen. Dialogs use a fixed scale so
+   the settings panel doesn't resize under the pointer while its slider is
+   dragged. Phones keep 100%. */
 :root { --ui-zoom: 1; }
 @media (min-width: 900px) {
-  :root { --ui-zoom: 0.85; }
+  :root { --ui-zoom: var(--ui-scale, 0.75); }
   main,
   .site-footer,
   .nav-shell,
   .section-rail,
   .back-to-top,
-  .intro-loader-panel,
-  .dialog-shell { zoom: var(--ui-zoom); }
+  .intro-loader-panel { zoom: var(--ui-zoom); }
+  .dialog-shell { zoom: 0.85; }
+}
+@media (max-width: 899px) {
+  .ui-scale-setting { display: none !important; }
 }
 .hero { min-height: calc(100vh / var(--ui-zoom)); }
 
