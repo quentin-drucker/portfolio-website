@@ -709,6 +709,18 @@ document.addEventListener("keydown", (event) => {
 
   if (typing) return;
 
+  if (event.key === "Escape") {
+    closeEnhDialog(enh.projectDialog);
+    closeEnhDialog(enh.commandDialog);
+    closeEnhDialog(enh.settingsDialog);
+    return;
+  }
+
+  /* Single-key shortcuts only fire on a plain key press, so browser
+     shortcuts like Ctrl/Cmd+R (reload) and Ctrl/Cmd+1–7 (switch tab) keep
+     working. */
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+
   const targets = {
     "1": "#home",
     "2": "#expertise",
@@ -725,11 +737,5 @@ document.addEventListener("keydown", (event) => {
 
   if (event.key.toLowerCase() === "r") {
     window.location.href = RESUME_URL;
-  }
-
-  if (event.key === "Escape") {
-    closeEnhDialog(enh.projectDialog);
-    closeEnhDialog(enh.commandDialog);
-    closeEnhDialog(enh.settingsDialog);
   }
 });

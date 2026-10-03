@@ -42,7 +42,9 @@ enhancements.js → world-settings.js → terrain.js → landscape.js → site.j
 Homepage section order and shortcut keys: `1 #home`, `2 #expertise`
 ("What I work on"), `3 #projects`, `4 #playground`, `5 #about`, `6 #resume`,
 `7 #contact`. `R` opens the résumé; `/` or Ctrl/Cmd+K opens the command
-palette. On `sip.html` these open the homepage sections.
+palette. Number keys and `R` fire only without Ctrl/Cmd/Alt, so browser
+shortcuts (Ctrl+R reload, Ctrl+1–7 tabs) still work. On `sip.html` these
+open the homepage sections.
 
 Biomes: sections declare `data-biome`: `ridgeline` (Home, What I work on:
 stars, moon, mountains), `survey` (Projects, Playground: the contour map) and
