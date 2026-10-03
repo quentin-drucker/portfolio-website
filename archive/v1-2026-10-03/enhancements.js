@@ -25,12 +25,7 @@ Its responsibilities are:
 
 This file intentionally has no module bundler and exports nothing. It runs in the
 browser's global document context after the deferred base script has executed.
-
-Section order (shortcut keys 1–7): Home, What I work on, Projects,
-Playground, About, Résumé, Contact. On pages without those sections (e.g.
-sip.html), section commands and keys open them on the home page instead.
 */
-const RESUME_URL = "resume.html";
 
 /*
   Read enhancement data with a safe fallback. A missing config file would leave
@@ -320,7 +315,6 @@ document.querySelectorAll(".button, .brand, .text-link").forEach((element) => {
   Project filtering:
   Each button's data-filter value is compared with each card's
   data-project-category. aria-pressed communicates which filter is active.
-  v2: a card may list several space-separated categories.
 */
 enh.filters?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-filter]");
@@ -332,8 +326,7 @@ enh.filters?.addEventListener("click", (event) => {
   });
 
   document.querySelectorAll(".project-card").forEach((card) => {
-    const categories = (card.dataset.projectCategory || "").split(/\s+/);
-    card.classList.toggle("is-filtered", filter !== "all" && !categories.includes(filter));
+    card.classList.toggle("is-filtered", filter !== "all" && card.dataset.projectCategory !== filter);
   });
 });
 
@@ -378,7 +371,7 @@ function openProjectDetail(index) {
     </div>
     ${comparison}
     <div class="project-detail-actions">
-      <a class="button button-primary" href="${project.caseStudy}">${project.caseStudyLabel || "Open case-study template"}</a>
+      <a class="button button-primary" href="${project.caseStudy}">Open case-study template</a>
     </div>
   `;
 
@@ -396,15 +389,13 @@ function openProjectDetail(index) {
   appended from config.js so the palette can open their detail dialogs.
 */
 const commands = [
-  ["Home", "Go to landing section", "1", () => goToSection("#home")],
-  ["What I work on", "Areas of focus", "2", () => goToSection("#expertise")],
-  ["Projects", "Browse projects", "3", () => goToSection("#projects")],
-  ["Playground", "Generate a terrain", "4", () => goToSection("#playground")],
-  ["About", "Go to About", "5", () => goToSection("#about")],
-  ["Résumé summary", "Go to the résumé section", "6", () => goToSection("#resume")],
-  ["Open résumé", "Open the full résumé page", "R", () => { window.location.href = RESUME_URL; }],
-  ["Contact", "Go to contact section", "7", () => goToSection("#contact")],
-  ["World controls", "Seed, mountains, stars, time of day, motion", "S", () => {
+  ["Home", "Go to landing section", "01", () => goToSection("#home")],
+  ["About", "Go to About", "02", () => goToSection("#about")],
+  ["Expertise", "View technical focus", "03", () => goToSection("#expertise")],
+  ["Projects", "Browse projects", "04", () => goToSection("#projects")],
+  ["Résumé", "Open résumé page", "R", () => { window.location.href = "../../resume.html"; }],
+  ["Contact", "Go to contact section", "06", () => goToSection("#contact")],
+  ["Effects settings", "Motion and particle density", "S", () => {
     closeEnhDialog(enh.commandDialog);
     applyEnhPrefs();
     openEnhDialog(enh.settingsDialog);
@@ -423,13 +414,7 @@ let selectedCommand = 0;
 
 function goToSection(selector) {
   closeEnhDialog(enh.commandDialog);
-  const target = document.querySelector(selector);
-  if (!target) {
-    /* This page doesn't have that section (e.g. sip.html): open it on home. */
-    window.location.href = `index.html${selector}`;
-    return;
-  }
-  target.scrollIntoView({ behavior: !enhPrefs.effectsEnabled ? "auto" : "smooth" });
+  document.querySelector(selector)?.scrollIntoView({ behavior: !enhPrefs.effectsEnabled ? "auto" : "smooth" });
 }
 
 /*
@@ -711,12 +696,11 @@ document.addEventListener("keydown", (event) => {
 
   const targets = {
     "1": "#home",
-    "2": "#expertise",
-    "3": "#projects",
-    "4": "#playground",
-    "5": "#about",
-    "6": "#resume",
-    "7": "#contact"
+    "2": "#about",
+    "3": "#expertise",
+    "4": "#projects",
+    "5": "#resume",
+    "6": "#contact"
   };
 
   if (targets[event.key]) {
@@ -724,7 +708,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   if (event.key.toLowerCase() === "r") {
-    window.location.href = RESUME_URL;
+    window.location.href = "../../resume.html";
   }
 
   if (event.key === "Escape") {

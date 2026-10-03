@@ -1,10 +1,10 @@
 {
-  "name": "Quentin Portfolio",
+  "name": "Quentin Drucker — Portfolio",
   "short_name": "Quentin",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#06090c",
-  "theme_color": "#070b0e",
+  "background_color": "#0b1318",
+  "theme_color": "#0b1318",
   "icons": [
     {
       "src": "assets/favicon.svg",

@@ -31,11 +31,6 @@ enhancements.js loads after this file and adds independent features. The two
 files share the page but should remain conceptually separate:
 - script.js is the original foundation.
 - enhancements.js is the optional feature layer.
-
-Mote and burst colors are read from CSS custom properties (--mote-a, --mote-b,
---burst, --mote-glow, --mote-alpha) via readMotePalette(), so the theme
-stylesheet controls the particle field. Particle speed comes from the world
-controls (world-settings.js → window.PORTFOLIO_WORLD.moteSpeed).
 */
 
 /* Cached document references.
@@ -578,34 +573,22 @@ function resizeCanvas() {
   Draws a particle core and, for larger motes, a radial-gradient glow.
   The light/dark theme check reduces intensity in the light theme.
 */
-/*
-  Particle palette from CSS tokens. Values are "r, g, b" triplets so they can be
-  combined with per-mote alpha. Read once per theme/style change, not per frame.
-*/
-let motePalette = null;
-
-function readMotePalette() {
-  const style = getComputedStyle(root);
-  const dark = root.dataset.theme === "dark";
-  const token = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
-  motePalette = {
-    a: token("--mote-a", dark ? "114, 231, 255" : "5, 132, 162"),
-    b: token("--mote-b", dark ? "91, 157, 255" : "40, 86, 176"),
-    burst: token("--burst", "119, 235, 255"),
-    glow: token("--mote-glow", "1") !== "0",
-    alphaScale: parseFloat(token("--mote-alpha", "1")) || 1
-  };
-}
-
 function drawSoftMote(mote, alpha) {
-  if (!motePalette) readMotePalette();
   const dark = root.dataset.theme === "dark";
-  const rgb = mote.hueShift > 0.32 ? motePalette.a : motePalette.b;
+  const cyanWeight = mote.hueShift > 0.32;
 
-  const baseAlpha = alpha * motePalette.alphaScale;
-  const adjustedAlpha = dark ? baseAlpha : Math.min(baseAlpha * 1.22, 0.42);
+  /*
+    Bright cyan works as emitted light on the dark theme. On a light surface,
+    darker saturated cyan/blue particles retain contrast while keeping the same
+    visual identity.
+  */
+  const rgb = dark
+    ? (cyanWeight ? "114, 231, 255" : "91, 157, 255")
+    : (cyanWeight ? "5, 132, 162" : "40, 86, 176");
 
-  if (motePalette.glow && mote.radius > 1.45) {
+  const adjustedAlpha = dark ? alpha : Math.min(alpha * 1.22, 0.42);
+
+  if (mote.radius > 1.45) {
     const glowScale = mote.layer === "near" ? 7.2 : 5.5;
     const glow = context.createRadialGradient(
       mote.x, mote.y, 0,
@@ -787,8 +770,7 @@ function updateBursts(dt) {
 function drawBursts() {
   bursts.forEach((particle) => {
     const lifeRatio = particle.life / particle.maxLife;
-    if (!motePalette) readMotePalette();
-    context.fillStyle = `rgba(${motePalette.burst}, ${lifeRatio * 0.52})`;
+    context.fillStyle = `rgba(119, 235, 255, ${lifeRatio * 0.52})`;
     context.beginPath();
     context.arc(particle.x, particle.y, particle.radius * lifeRatio, 0, Math.PI * 2);
     context.fill();
@@ -811,7 +793,7 @@ function drawMotes(time) {
   context.clearRect(0, 0, width, height);
 
   motes.forEach((mote) => {
-    updateMote(mote, time, elapsed * (window.PORTFOLIO_WORLD?.moteSpeed ?? 1));
+    updateMote(mote, time, elapsed);
     const twinkle = 0.66 + Math.sin(time * mote.twinkle + mote.phase) * 0.34;
     drawSoftMote(mote, mote.alpha * twinkle);
   });
@@ -939,7 +921,6 @@ window.addEventListener("portfolio:preferences-changed", () => {
 });
 
 window.addEventListener("portfolio:theme-changed", () => {
-  readMotePalette();
   restartMotionState();
 });
 

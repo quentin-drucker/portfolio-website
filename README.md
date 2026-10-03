@@ -1,23 +1,66 @@
-# Quentin Portfolio Template
+# Quentin Drucker — Portfolio
 
-A static, interactive personal portfolio template centered on visual computing,
-computer vision, artificial intelligence, procedural generation, full-stack
-engineering, and 3D/VFX work.
+A static, interactive portfolio centered on procedural systems, computer
+graphics, computer vision, and full-stack work.
 
 The project uses plain HTML, CSS, and JavaScript. There is no framework, build
 step, package manager, database, or required backend.
 
 This README is written as technical notes to myself. It explains what each file
-does, how the browser assembles the site, where content lives, and which current
-limitations matter when I begin replacing the placeholders.
+does, how the browser assembles the site, and where content lives.
 
 ---
 
-## Current build status
+## Redesign (Ridgeline, October 2026)
 
-This is the finalized template foundation before personal content is added.
+The homepage was redesigned on the `design-system` branch and promoted to the
+root. Everything below this section still describes the original foundation,
+which the redesign builds on rather than replaces.
 
-The current build includes:
+- **Previous version:** `archive/v1-2026-10-03/` (browsable copy) and git tag
+  `baseline-2026-10-03` (exact files). Screenshots: `docs/baseline-2026-10-03/`.
+- **Explorations:** `explorations/` holds every style direction tried,
+  including the Ridgeline prototype (`explorations/v2/`). They're snapshots
+  with their own copies of the scripts; changing the live site doesn't affect them.
+
+What the redesign added:
+
+| File | Purpose |
+|---|---|
+| `site.css` | Effect tokens (glows, shimmer, progress, particles become themeable) and new page structure: overview cards, featured project, Playground, world controls |
+| `ridgeline.css` | The theme: slate/cyan palette with amber and gold tiers, Shippori Mincho + Zen Kaku Gothic type, fading panels, fog reveals, and the landscape layers |
+| `landscape.js` | Background scene: contour-map sky and mountain ridges from one seeded heightfield, a star chart, scroll biomes, the moon/sun and its horizon glow |
+| `terrain.js` | Playground: a seeded wireframe heightfield you can orbit |
+| `world-settings.js` | World controls in the settings dialog (seed, mountains, contours, stars, time of day, cursor light, particle speed, transition speed, atmosphere) |
+| `site.js` | Overview-card filter jumps and the senior-project stand-in image |
+| `sip.html`, `sip.css` | Senior project page (draft) with its own page biome |
+
+Load order on every page: `styles.css → enhancements.css → site.css →
+ridgeline.css` (→ page CSS), then scripts `config.js → script.js →
+enhancements.js → world-settings.js → terrain.js → landscape.js → site.js`.
+
+Homepage section order and shortcut keys: `1 #home`, `2 #expertise`
+("What I work on"), `3 #projects`, `4 #playground`, `5 #about`, `6 #resume`,
+`7 #contact`. `R` opens the résumé; `/` or Ctrl/Cmd+K opens the command
+palette. On `sip.html` these open the homepage sections.
+
+Biomes: sections declare `data-biome` (`ridgeline`, `chart`, `dusk`); a page
+can fix its own with `<html data-page-biome="…">` (`sip.html` uses `kiln`).
+Background changes are timed transitions, not scroll-scrubbed.
+
+Projects are matched to `config.js` by a stable `id`
+(`case-study.html?project=<id>`), so reordering cards no longer breaks
+case-study links. The project dialog buttons are still matched by card order.
+
+Browser storage keys: `quentin-portfolio-theme`,
+`portfolio-enhancement-preferences`, `quentin-world-settings`, and
+`portfolio-loader-seen` (session).
+
+---
+
+## Original build status
+
+The original foundation included:
 
 - Dark mode as the first-visit default
 - Remembered dark/light theme selection
@@ -608,15 +651,8 @@ Limitations:
 - Cannot provide server-side spam filtering
 - Cannot store submissions
 
-The placeholder address currently lives in:
-
-```text
-script.js
-index.html
-resume.html
-```
-
-All occurrences should be updated before deployment.
+The address (`qdruck@gmail.com`) is set in `script.js` (`CONTACT_EMAIL`) and
+appears in the contact links in `index.html`.
 
 ---
 
@@ -1072,7 +1108,12 @@ as the canonical anchor destination.
 
 ---
 
-# Procedural seed canvas
+# Procedural seed canvas (original; replaced)
+
+The redesign replaced this 2D demo with the Playground terrain (`terrain.js`).
+`#seed-form` and `#seed-input` are kept and now drive the terrain and the
+world seed; `drawSeed()` in `enhancements.js` finds no `#seed-canvas` and does
+nothing. The original description follows.
 
 The seed demo uses:
 
@@ -1115,11 +1156,12 @@ The canvas redraws when:
 Ctrl/Cmd + K   Open command palette
 /              Open command palette
 1              Home
-2              About
-3              Expertise
-4              Projects
-5              Résumé section
-6              Contact
+2              What I work on
+3              Projects
+4              Playground
+5              About
+6              Résumé section
+7              Contact
 R              Open résumé page
 Esc            Close an open portfolio dialog
 ```
@@ -1184,14 +1226,9 @@ A project is selected through a query string:
 case-study.html?project=visual-intelligence
 ```
 
-Current query mappings:
-
-```text
-visual-intelligence  → projectDetails[0]
-image-to-world       → projectDetails[1]
-intelligent-web-app  → projectDetails[2]
-visualization-vfx    → projectDetails[3]
-```
+The `project` value is matched against each project's `id` in `config.js`
+(`visual-intelligence`, `image-to-world`, `intelligent-web-app`,
+`visualization-vfx`). The senior project's dialog links to `sip.html` instead.
 
 The page reads from `config.js` and fills:
 
@@ -1427,6 +1464,9 @@ generate the cards, filters, dialogs, and case-study links from the same data.
 ---
 
 # Current project-order dependency
+
+Partly fixed in the redesign: case-study links now use each project's stable
+`id`. The project-dialog buttons on the homepage are still matched by order.
 
 Project details are connected by array order.
 

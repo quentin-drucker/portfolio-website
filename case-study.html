@@ -101,13 +101,9 @@ finalized, I can either:
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       const id = new URLSearchParams(location.search).get("project");
-      const map = {
-        "visual-intelligence": 0,
-        "image-to-world": 1,
-        "intelligent-web-app": 2,
-        "visualization-vfx": 3
-      };
-      const project = window.PORTFOLIO_ENHANCEMENTS?.projectDetails?.[map[id] ?? 0];
+      /* Look the project up by its stable id (config.js), not by position. */
+      const projects = window.PORTFOLIO_ENHANCEMENTS?.projectDetails || [];
+      const project = projects.find((item) => item.id === id) || projects.find((item) => item.id === "visual-intelligence") || projects[0];
       if (!project) return;
       document.title = `${project.title} | Quentin`;
       document.querySelector("#case-type").textContent = project.type;
