@@ -1,0 +1,225 @@
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap");
+/*
+===============================================================================
+MIST — Weathered, after dark
+===============================================================================
+Idea: the wabi-sabi thinking behind the senior project, at night. Warm stone
+instead of black, washi-paper text, a gold kintsugi accent used only for
+actions, moss for secondary marks. Surfaces have no hard edges: their fill
+fades out, and the page itself fades at the top and bottom of the screen.
+
+Signature: ink-wash ridgelines behind the hero, generated fresh each visit
+(base/signatures.js → mist). Sections clear in like fog instead of sliding up.
+
+Palette   stone #191815 · panel #24221E · washi #ECE7DC · gold #C9A764 ·
+          moss #8F9C70 · ash #B3AC9C
+Type      Shippori Mincho (display) · Zen Kaku Gothic New (body, labels)
+Shape     4–10px radii, no blur, no outlines except a hairline on top
+*/
+html[data-style="mist"] {
+  --bg: #191815;
+  --surface: rgba(36, 34, 30, 0.72);
+  --surface-strong: rgba(31, 30, 26, 0.96);
+  --surface-soft: rgba(236, 231, 220, 0.04);
+  --text: #ece7dc;
+  --text-soft: #b3ac9c;
+  --text-faint: #8f8879;
+  --line: rgba(236, 231, 220, 0.1);
+  --line-bright: rgba(201, 167, 100, 0.42);
+  --cyan: #c9a764;
+  --blue: #c9a764;
+  --blue-strong: #b08d4c;
+  --violet: #8f9c70;
+  --green: #8f9c70;
+  --accent: #c9a764;
+  --accent-two: #8f9c70;
+  --shadow: none;
+  --shadow-soft: none;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --fx: 214, 190, 140;
+  --fx-2: 143, 156, 112;
+  --fx-glow: 0.35;
+  --aura-size: 640px;
+  --glow-one: #4b4231;
+  --glow-two: #2c3729;
+  --glow-opacity: 0.2;
+  --grid-line: transparent;
+
+  --btn-bg: #c9a764;
+  --btn-text: #1d1a12;
+  --btn-shadow: none;
+
+  --mote-a: 222, 212, 188;
+  --mote-b: 170, 180, 146;
+  --burst: 214, 190, 140;
+  --mote-glow: 0;
+  --mote-alpha: 0.85;
+
+  --terrain-line: 236, 231, 220;
+  --terrain-accent: #c9a764;
+  --terrain-bg: rgba(16, 15, 13, 0.6);
+  --terrain-axis-x: #c46a4f;
+  --terrain-axis-y: #8f9c70;
+  --terrain-axis-z: #7f97a8;
+  --sip-sky: 58, 55, 48;
+  --sip-sky-2: 24, 23, 20;
+  --sip-ink: 10, 10, 9;
+
+  --ridge-far: 112, 107, 95;
+  --ridge-near: 9, 9, 8;
+  --ridge-bg: 25, 24, 21;
+
+  --font-display: "Shippori Mincho", "Yu Mincho", Georgia, serif;
+  --font-body: "Zen Kaku Gothic New", "Segoe UI", system-ui, sans-serif;
+  --font-ui: "Zen Kaku Gothic New", system-ui, sans-serif;
+  --terrain-font: "Zen Kaku Gothic New", sans-serif;
+  --art-filter: sepia(0.75) saturate(0.55) hue-rotate(-12deg) brightness(0.95);
+}
+html[data-style="mist"][data-theme="light"] {
+  --bg: #e6e3db;
+  --surface: rgba(240, 237, 230, 0.75);
+  --surface-strong: rgba(236, 233, 226, 0.97);
+  --surface-soft: rgba(35, 34, 30, 0.04);
+  --text: #23221e;
+  --text-soft: #57534a;
+  --text-faint: #6f6a5f;
+  --line: rgba(35, 34, 30, 0.12);
+  --line-bright: rgba(140, 110, 50, 0.45);
+  --cyan: #8a6a2c;
+  --blue: #8a6a2c;
+  --accent: #8a6a2c;
+  --accent-two: #56604a;
+  --btn-bg: #2a2925;
+  --btn-text: #f0ece2;
+  --fx: 120, 96, 50;
+  --fx-2: 86, 96, 74;
+  --aura-blend: multiply;
+  --glow-opacity: 0.08;
+  --mote-a: 60, 56, 48;
+  --mote-b: 86, 96, 74;
+  --burst: 120, 96, 50;
+  --terrain-line: 35, 34, 30;
+  --terrain-accent: #8a6a2c;
+  --terrain-bg: rgba(220, 216, 206, 0.6);
+  --sip-sky: 226, 223, 214;
+  --sip-sky-2: 196, 192, 182;
+  --sip-ink: 35, 34, 31;
+  --ridge-far: 212, 208, 198;
+  --ridge-near: 150, 146, 136;
+  --ridge-bg: 230, 227, 219;
+}
+
+/* Signature: ink ridges behind the hero */
+html[data-style="mist"] #signature-canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: max(100vh, 720px);
+  /* Ridges thin out behind the intro text on the left. */
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.55) 35%, #000 60%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.55) 35%, #000 60%);
+}
+@media (max-width: 760px) {
+  html[data-style="mist"] #signature-canvas {
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), #000 70%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), #000 70%);
+  }
+}
+
+/* Atmospheric edges: the page fades into mist at the top and bottom of the
+   screen. Thin enough not to cover reading text. */
+html[data-style="mist"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, var(--bg) 0, transparent 72px),
+    linear-gradient(to top, var(--bg) 0, transparent 56px);
+}
+
+/* Type */
+html[data-style="mist"] .hero-title {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  font-size: clamp(2.6rem, 4.6vw, 4.5rem);
+}
+html[data-style="mist"] :is(.section-heading h2, .resume-intro h2, .contact-copy h2) {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+}
+html[data-style="mist"] :is(.expertise-card h3, .project-card h3) { font-weight: 600; letter-spacing: -0.01em; }
+html[data-style="mist"] .section-kicker { color: var(--accent-two); font-weight: 500; }
+html[data-style="mist"] .section-kicker kbd { border-color: var(--line); color: var(--text-soft); }
+html[data-style="mist"] :is(.project-type, .fact-label, .resume-row > span) {
+  font-family: var(--font-body);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  color: var(--accent-two);
+}
+html[data-style="mist"] :is(.tag-list span, .hero-meta span) {
+  font-family: var(--font-body);
+  border-color: transparent;
+  background: rgba(143, 156, 112, 0.12);
+  color: var(--text-soft);
+  border-radius: 3px;
+}
+
+/* Surfaces: no blur, no box; the fill fades away from the top-left. */
+html[data-style="mist"] .glass {
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: radial-gradient(130% 120% at 0% 0%, rgba(48, 45, 39, 0.88), rgba(34, 32, 28, 0.5) 55%, rgba(25, 24, 21, 0) 100%);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-style="mist"][data-theme="light"] .glass {
+  background: radial-gradient(130% 120% at 0% 0%, rgba(250, 248, 242, 0.9), rgba(240, 237, 230, 0.5) 55%, rgba(230, 227, 219, 0) 100%);
+}
+html[data-style="mist"] .nav-shell,
+html[data-style="mist"] .site-header.scrolled .nav-shell {
+  background: rgba(25, 24, 21, 0.82);
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+}
+html[data-style="mist"][data-theme="light"] .nav-shell { background: rgba(230, 227, 219, 0.85); }
+html[data-style="mist"] .immersive-card:hover {
+  border-color: transparent;
+  border-top-color: var(--line-bright);
+  box-shadow: none;
+}
+html[data-style="mist"] .brand-mark {
+  border-color: var(--line-bright);
+  background: transparent;
+  color: var(--accent);
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+html[data-style="mist"] .button { border-radius: 4px; }
+html[data-style="mist"] .button-secondary { background: transparent; border-color: var(--line-bright); }
+html[data-style="mist"] .filter-button { border-radius: 4px; }
+html[data-style="mist"] .project-visual { background-color: rgba(10, 10, 9, 0.35); }
+
+/* Fog-clearing reveal (replaces slide-up). Reduced motion and motion-off
+   rules in the live CSS still force these visible. */
+html[data-style="mist"] .reveal {
+  transform: none;
+  filter: blur(6px);
+  transition: opacity 1100ms ease, filter 1300ms ease;
+}
+html[data-style="mist"] .reveal.visible { filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-style="mist"] .reveal { filter: none; }
+}
+html[data-style="mist"][data-motion="off"] .reveal { filter: none; }

@@ -1,0 +1,161 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+/*
+===============================================================================
+SURVEY — a night topographic map
+===============================================================================
+Idea: the page sits on a contour map of generated land. Your existing cyan
+identity stays, but disciplined: no gradient phrases, no bloom, one warm
+"index contour" amber used for every fifth line and for selected states.
+
+Signature: a fixed contour map under the whole page. Around the cursor a
+brighter copy of the same map is revealed, like a flashlight on paper. The
+Playground seed redraws the map (base/signatures.js → survey).
+
+Palette   slate #0B1318 · panel #0F1C22 · mist #E4EEF0 · cyan #79DDEB ·
+          index amber #D9A35B · lichen #9FB3B9
+Type      Instrument Sans (display + body) · IBM Plex Mono (coordinates only)
+Shape     10–14px radii, translucent panels so the map shows through
+*/
+html[data-style="survey"] {
+  --bg: #0b1318;
+  --surface: rgba(13, 25, 31, 0.78);
+  --surface-strong: rgba(12, 22, 28, 0.95);
+  --surface-soft: rgba(121, 221, 235, 0.05);
+  --text: #e4eef0;
+  --text-soft: #a4b8be;
+  --text-faint: #7a9097;
+  --line: rgba(160, 210, 220, 0.13);
+  --line-bright: rgba(121, 221, 235, 0.36);
+  --cyan: #79ddeb;
+  --blue: #79ddeb;
+  --blue-strong: #4fc3d5;
+  --violet: #d9a35b;
+  --green: #79ddeb;
+  --accent: #79ddeb;
+  --accent-two: #d9a35b;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.25);
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --fx: 121, 221, 235;
+  --fx-2: 217, 163, 91;
+  --fx-glow: 0.5;
+  --glow-opacity: 0.07;
+  --grid-line: transparent;
+
+  --btn-bg: #79ddeb;
+  --btn-text: #062a31;
+  --btn-shadow: none;
+
+  --mote-a: 121, 221, 235;
+  --mote-b: 217, 163, 91;
+  --burst: 217, 163, 91;
+  --mote-glow: 1;
+  --mote-alpha: 0.6;
+
+  --contour: 111, 200, 215;
+  --contour-index: 217, 163, 91;
+  --contour-dim: 0.55;
+  --contour-lit: 2.2;
+
+  --terrain-line: 205, 232, 238;
+  --terrain-accent: #d9a35b;
+  --terrain-bg: rgba(6, 12, 15, 0.7);
+  --sip-sky: 22, 40, 48;
+  --sip-sky-2: 8, 15, 19;
+  --sip-ink: 121, 221, 235;
+
+  --font-display: "Instrument Sans", system-ui, sans-serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-ui: "IBM Plex Mono", monospace;
+  --terrain-font: "IBM Plex Mono", monospace;
+}
+html[data-style="survey"][data-theme="light"] {
+  --bg: #edf0ea;
+  --surface: rgba(246, 248, 243, 0.8);
+  --surface-strong: rgba(244, 246, 241, 0.96);
+  --surface-soft: rgba(20, 70, 80, 0.05);
+  --text: #13232a;
+  --text-soft: #42575e;
+  --text-faint: #5b6f75;
+  --line: rgba(20, 60, 70, 0.14);
+  --line-bright: rgba(10, 110, 125, 0.4);
+  --cyan: #0b6e7c;
+  --blue: #0b6e7c;
+  --accent: #0b6e7c;
+  --accent-two: #9a6420;
+  --btn-bg: #0b6e7c;
+  --btn-text: #ffffff;
+  --fx: 11, 110, 124;
+  --fx-2: 154, 100, 32;
+  --aura-blend: multiply;
+  --mote-a: 11, 110, 124;
+  --mote-b: 154, 100, 32;
+  --contour: 40, 100, 110;
+  --contour-index: 160, 100, 30;
+  --contour-dim: 0.7;
+  --contour-lit: 1.6;
+  --terrain-line: 20, 50, 58;
+  --terrain-accent: #9a6420;
+  --terrain-bg: rgba(225, 230, 222, 0.7);
+  --sip-sky: 214, 224, 218;
+  --sip-sky-2: 236, 240, 234;
+  --sip-ink: 11, 110, 124;
+}
+
+/* Signature: fixed contour map + cursor-lit copy */
+html[data-style="survey"] #signature-canvas,
+html[data-style="survey"] #signature-lit {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -5;
+  width: 100%;
+  height: 100%;
+}
+html[data-style="survey"] #signature-lit {
+  opacity: 0;
+  transition: opacity 400ms ease;
+  -webkit-mask-image: radial-gradient(240px circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+  mask-image: radial-gradient(240px circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+}
+html[data-style="survey"] body.survey-lit #signature-lit { opacity: 1; }
+@media (hover: none), (pointer: coarse) {
+  html[data-style="survey"] #signature-lit { display: none; }
+}
+html[data-style="survey"] #cursor-aura { opacity: 0.5; }
+
+/* Type */
+html[data-style="survey"] .hero-title { letter-spacing: -0.045em; font-weight: 650; }
+html[data-style="survey"] :is(.section-heading h2, .resume-intro h2, .contact-copy h2) { letter-spacing: -0.035em; font-weight: 650; }
+html[data-style="survey"] .section-kicker { color: var(--accent); font-weight: 600; }
+html[data-style="survey"] .section-kicker kbd { font-family: var(--font-ui); border-color: rgba(217, 163, 91, 0.5); color: var(--accent-two); }
+html[data-style="survey"] :is(.project-type, .fact-label, .resume-row > span) {
+  font-family: var(--font-ui);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--accent-two);
+}
+html[data-style="survey"] :is(.tag-list span, .hero-meta span) {
+  font-family: var(--font-body);
+  border-radius: 999px;
+}
+
+/* Surfaces: translucent so the map reads through, light blur only */
+html[data-style="survey"] .glass {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+html[data-style="survey"] .immersive-card:hover { border-color: rgba(217, 163, 91, 0.45); }
+html[data-style="survey"] .brand-mark {
+  border-color: var(--line-bright);
+  background: transparent;
+  color: var(--accent);
+  box-shadow: none;
+}
+html[data-style="survey"] .button { border-radius: 10px; }
+html[data-style="survey"] .project-visual { background-color: rgba(4, 9, 12, 0.55); }

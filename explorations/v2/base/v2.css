@@ -1,0 +1,447 @@
+/*
+===============================================================================
+v2 SHARED LAYER — v2.css (explorations/v2)
+===============================================================================
+
+Loads after the live styles.css and enhancements.css.
+
+1. Effect tokens. The live CSS writes its glow colors as raw rgba() literals,
+   so a palette change cannot reach them. These rules restate the effect
+   components (scroll progress, cursor aura, hover light, shimmer, ripple,
+   card hover glow, page glows, grid, primary button) in terms of tokens.
+   The :root defaults reproduce the live look exactly; each style overrides
+   only the tokens. This is the pattern the real design system should adopt.
+2. Shared v2 structure: section kicker keys, overview cards, featured senior
+   project card, Playground terrain lab, three-column project grid.
+3. The style switcher (exploration only).
+*/
+
+/* ---------------------------------------------------------------- 1 */
+:root {
+  /* glow / light colors as "r, g, b" so alpha can vary per use */
+  --fx: 100, 229, 255;
+  --fx-2: 76, 145, 255;
+  --fx-glow: 1;                 /* 0 removes bloom shadows */
+  --aura-size: 520px;
+  --aura-blend: screen;
+
+  --glow-one: #0f8daf;
+  --glow-two: #155fd4;
+  --glow-opacity: 0.18;
+  --grid-line: rgba(120, 150, 220, 0.045);
+  --grid-size: 74px;
+
+  --btn-bg: linear-gradient(115deg, #0ca8cf 0%, #22c8e7 42%, #397ff1 100%);
+  --btn-text: #ffffff;
+  --btn-shadow: 0 12px 34px rgba(20, 183, 226, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --btn-radius: 14px;
+
+  /* particles (read by base/script.js) */
+  --mote-a: 114, 231, 255;
+  --mote-b: 91, 157, 255;
+  --burst: 119, 235, 255;
+  --mote-glow: 1;
+  --mote-alpha: 1;
+
+  /* Playground + senior-project stand-in */
+  --terrain-line: 216, 236, 242;
+  --terrain-accent: #64e5ff;
+  --terrain-bg: rgba(4, 9, 12, 0.55);
+  --sip-sky: 20, 38, 48;
+  --sip-sky-2: 6, 12, 16;
+  --sip-ink: 100, 229, 255;
+
+  --font-display: inherit;
+  --font-ui: "JetBrains Mono", monospace;
+}
+html[data-theme="light"] {
+  --mote-a: 5, 132, 162;
+  --mote-b: 40, 86, 176;
+  --burst: 8, 142, 174;
+  --terrain-line: 20, 52, 66;
+  --terrain-accent: #087f9f;
+  --terrain-bg: rgba(255, 255, 255, 0.5);
+  --sip-sky: 214, 230, 236;
+  --sip-sky-2: 236, 244, 247;
+  --sip-ink: 8, 95, 120;
+}
+
+#scroll-progress span {
+  background: linear-gradient(90deg, rgba(var(--fx), 0.22), rgb(var(--fx)), rgb(var(--fx-2)));
+  box-shadow: 0 0 calc(16px * var(--fx-glow)) rgba(var(--fx), calc(0.64 * var(--fx-glow)));
+}
+#cursor-aura {
+  width: var(--aura-size);
+  height: var(--aura-size);
+  margin: calc(var(--aura-size) / -2) 0 0 calc(var(--aura-size) / -2);
+  background: radial-gradient(circle, rgba(var(--fx), 0.105) 0%, rgba(var(--fx), 0.05) 24%, rgba(var(--fx-2), 0.026) 48%, transparent 72%);
+  mix-blend-mode: var(--aura-blend);
+}
+.hover-light {
+  background: radial-gradient(330px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(var(--fx), 0.1), rgba(var(--fx-2), 0.035) 35%, transparent 68%);
+}
+.shimmer-surface {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--fx), 0.03) 24%, rgba(var(--fx), 0.16) 50%, rgba(var(--fx), 0.06) 67%, transparent 100%);
+}
+.mote-ripple {
+  border-color: rgba(var(--fx), 0.75);
+  box-shadow: 0 0 calc(18px * var(--fx-glow)) rgba(var(--fx), calc(0.68 * var(--fx-glow))), inset 0 0 10px rgba(var(--fx), calc(0.32 * var(--fx-glow)));
+}
+.immersive-card:hover {
+  border-color: rgba(var(--fx), 0.29);
+  box-shadow: 0 26px 75px rgba(0, 0, 0, 0.28), 0 0 calc(45px * var(--fx-glow)) rgba(var(--fx), calc(0.055 * var(--fx-glow))), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.visual-shell::after {
+  background: radial-gradient(380px circle at var(--visual-x, 50%) var(--visual-y, 40%), rgba(var(--fx), 0.095), transparent 68%);
+}
+.project-visual::after,
+.vision-stage::after {
+  background: linear-gradient(115deg, transparent 20%, rgba(var(--fx), 0.045) 48%, transparent 70%);
+}
+.glow-one { background: var(--glow-one); }
+.glow-two { background: var(--glow-two); }
+.page-glow { opacity: var(--glow-opacity); }
+.background-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+}
+.button-primary,
+.button-primary:hover {
+  background: var(--btn-bg);
+  background-size: 150% 100%;
+  color: var(--btn-text);
+}
+.button-primary:hover { background-position: 100% 0; }
+.button.shimmer-target {
+  box-shadow: 0 12px 34px rgba(var(--fx), calc(0.18 * var(--fx-glow))), inset 0 1px 0 rgba(255, 255, 255, calc(0.15 * var(--fx-glow)));
+}
+.button-secondary:hover { box-shadow: 0 12px 34px rgba(var(--fx), calc(0.1 * var(--fx-glow))); }
+.button.shimmer-target.button-primary { box-shadow: var(--btn-shadow); }
+
+/* Disabled state (missing from the live CSS). */
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Signature canvas: hidden unless a style turns it on. */
+#signature-canvas,
+#signature-lit {
+  display: none;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- 2 */
+
+/* Section kickers show the keyboard shortcut for that section. */
+.section-kicker kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  margin-right: 0.55em;
+  padding: 0 0.3em;
+  border: 1px solid var(--line-bright);
+  border-radius: 5px;
+  font: inherit;
+  font-size: 0.92em;
+  line-height: 1;
+  color: var(--text);
+  vertical-align: 0.05em;
+}
+
+/* Section rail fix (live-site bug): the active item expanded to 118px and
+   covered the hero headline at laptop widths. Now the active item stays a
+   compact highlighted key and only expands on hover or keyboard focus. */
+.section-rail a.active:not(:hover):not(:focus-visible) {
+  width: 42px;
+  color: var(--accent, var(--cyan));
+  border-color: var(--line-bright);
+}
+
+/* Overview cards ("What I work on") */
+.expertise-card { display: flex; flex-direction: column; }
+.expertise-card .seen-in {
+  margin: 14px 0 0;
+  font-size: 0.86rem;
+  color: var(--text-soft);
+}
+.expertise-card .seen-in span {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.74rem;
+  color: var(--text-faint);
+}
+.card-jump {
+  position: relative;
+  z-index: 3;
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 18px;
+  font-weight: 650;
+  font-size: 0.9rem;
+  color: var(--accent, var(--cyan));
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.card-jump:hover { text-decoration-thickness: 2px; }
+
+/* Project grid: featured card on its own row, three cards below. */
+@media (min-width: 1080px) {
+  .projects-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 761px) and (max-width: 1079px) {
+  .projects-grid > .project-card:last-child { grid-column: 1 / -1; }
+}
+
+/* Featured senior-project card */
+.visual-sip { position: relative; }
+.sip-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.sip-caption {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  z-index: 2;
+  max-width: calc(100% - 28px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #f1f1f1;
+  font-size: 0.74rem;
+}
+html[data-theme="light"] .sip-caption { background: rgba(255, 255, 255, 0.75); color: #222; }
+.sip-pipeline {
+  margin: 18px 0 4px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 4px;
+  counter-reset: step;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+.sip-pipeline li { counter-increment: step; display: inline-flex; align-items: center; gap: 4px; }
+.sip-pipeline li::before {
+  content: counter(step);
+  display: inline-grid;
+  place-items: center;
+  width: 1.45em;
+  height: 1.45em;
+  border-radius: 50%;
+  border: 1px solid var(--line-bright);
+  font-size: 0.78em;
+  color: var(--text);
+}
+.sip-pipeline li:not(:last-child)::after { content: ""; width: 14px; height: 1px; margin-left: 4px; background: var(--line-bright); }
+.sip-more { margin: 16px 0 0; }
+.placeholder-note {
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px dashed var(--line-bright);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+/* Playground terrain lab */
+.terrain-lab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+.terrain-stage {
+  position: relative;
+  min-height: 460px;
+  background: var(--terrain-bg);
+}
+#terrain-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+#terrain-canvas:active { cursor: grabbing; }
+#terrain-canvas:focus-visible { outline: 2px solid var(--terrain-accent); outline-offset: -4px; }
+.terrain-gizmo { position: absolute; left: 12px; bottom: 10px; width: 60px; height: 60px; pointer-events: none; }
+.terrain-hud,
+.terrain-hint {
+  position: absolute;
+  top: 14px;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  color: var(--text-soft);
+  pointer-events: none;
+}
+.terrain-hud { left: 16px; }
+.terrain-hint { right: 16px; }
+.terrain-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px 24px;
+  border-left: 1px solid var(--line);
+}
+.terrain-field,
+.terrain-range { display: grid; gap: 7px; font-size: 0.85rem; color: var(--text-soft); }
+.terrain-field input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+}
+.terrain-field input:focus-visible { outline: 2px solid var(--terrain-accent); outline-offset: 2px; }
+.terrain-range input { width: 100%; accent-color: var(--terrain-accent); }
+.terrain-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; }
+.terrain-actions .button { min-height: 44px; padding: 0 16px; font-size: 0.88rem; }
+
+@media (max-width: 860px) {
+  .terrain-lab { grid-template-columns: 1fr; }
+  .terrain-stage { min-height: 340px; }
+  .terrain-controls { border-left: 0; border-top: 1px solid var(--line); }
+}
+
+.project-card .sip-more { margin: 16px 0 0; }
+
+/* ---------------------------------------------------------------- 2b
+   Rules shared by every style except Original. These remove the generic
+   tells the live page leans on (a gradient phrase in each headline, tracked
+   ALL-CAPS mono labels) and let each style set its fonts through tokens.
+   The CSS-drawn illustrations are re-hued with --art-filter instead of
+   rewriting their many raw cyan literals. */
+html:not([data-style="original"]) body { font-family: var(--font-body); }
+html:not([data-style="original"]) :is(h1, h2, h3, .hero-title, .brand, .lead, .fact-card strong, .resume-row strong, .interest-rotator strong) {
+  font-family: var(--font-display);
+}
+html:not([data-style="original"]) .gradient-text {
+  background: none;
+  color: inherit;
+  -webkit-text-fill-color: currentColor;
+  animation: none;
+}
+html:not([data-style="original"]) :is(.section-kicker, .eyebrow) {
+  font-family: var(--font-kicker, var(--font-body));
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9rem;
+}
+html:not([data-style="original"]) :is(.code-window, .vision-panel, .project-visual:not(.visual-sip)) {
+  filter: var(--art-filter, none);
+}
+html:not([data-style="original"]) .status-dot { background: var(--accent); box-shadow: none; }
+
+/* Light mode for the new styles. The live enhancements.css hard-codes cyan
+   into html[data-theme="light"] rules; these selectors are one attribute
+   more specific so the style's tokens win. Original keeps the live light
+   theme untouched. */
+html:not([data-style="original"])[data-theme="light"] .button-primary,
+html:not([data-style="original"])[data-theme="light"] .button-primary:hover {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  box-shadow: none;
+}
+html:not([data-style="original"])[data-theme="light"] :is(.button-secondary, .filter-button, .hero-meta span, .tag-list span) {
+  color: var(--text-soft);
+  border-color: var(--line);
+  background: var(--surface-soft);
+}
+html:not([data-style="original"])[data-theme="light"] :is(.button-secondary, .filter-button):hover {
+  color: var(--text);
+  border-color: var(--line-bright);
+  background: var(--surface-soft);
+}
+html:not([data-style="original"])[data-theme="light"] .filter-button[aria-pressed="true"] {
+  color: var(--bg);
+  border-color: transparent;
+  background: var(--accent);
+  box-shadow: none;
+}
+html:not([data-style="original"])[data-theme="light"] :is(.nav-links a:hover, .nav-links a.active, .nav-tool, .project-detail-trigger) {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+html:not([data-style="original"])[data-theme="light"] :is(.nav-tool, .project-detail-trigger):hover {
+  border-color: var(--line-bright);
+  box-shadow: none;
+}
+html:not([data-style="original"])[data-theme="light"] :is(.nav-shell, .site-header.scrolled .nav-shell) {
+  background: var(--surface-strong);
+  border-color: var(--line);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+html:not([data-style="original"])[data-theme="light"] .background-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  opacity: 1;
+}
+html:not([data-style="original"])[data-theme="light"] .page-glow { opacity: var(--glow-opacity); }
+html:not([data-style="original"])[data-theme="light"] .glow-one { background: var(--glow-one); }
+html:not([data-style="original"])[data-theme="light"] .glow-two { background: var(--glow-two); }
+html:not([data-style="original"])[data-theme="light"] #cursor-aura {
+  background: radial-gradient(circle, rgba(var(--fx), 0.12) 0%, rgba(var(--fx-2), 0.05) 30%, transparent 72%);
+}
+
+/* ---------------------------------------------------------------- 3 */
+.style-switcher {
+  position: fixed;
+  z-index: 450;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 24px);
+  padding: 6px 8px 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(20, 20, 22, 0.92);
+  color: #f2f2f2;
+  font: 500 13px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.style-switcher-label { color: #b8b8b8; }
+.style-switcher-options { display: flex; gap: 2px; overflow-x: auto; }
+.style-switcher button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #e8e8e8;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.style-switcher button:hover { background: rgba(255, 255, 255, 0.1); }
+.style-switcher button[aria-pressed="true"] { background: #f2f2f2; color: #111; }
+.style-switcher a { color: #e8e8e8; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+.style-switcher :focus-visible { outline: 2px solid #f2f2f2; outline-offset: 2px; }
+@media (max-width: 760px) {
+  .style-switcher { bottom: 8px; gap: 6px; padding: 5px 6px; font-size: 12px; }
+  .style-switcher-label,
+  .style-switcher a:last-child { display: none; }
+  .back-to-top { bottom: 64px !important; }
+}
+@media print { .style-switcher { display: none; } }

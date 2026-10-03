@@ -27,11 +27,27 @@
   .card p { margin: 0; color: var(--soft); font-size: .95rem; }
   .card .k { display: block; margin-top: 10px; font-size: .85rem; color: var(--soft); }
   .back { display: inline-block; margin-top: 44px; color: var(--soft); }
+  h2.set { margin: 48px 0 6px; font-size: 1.35rem; }
+  h2.set:first-of-type { margin-top: 24px; }
+  .card-text { display: flex; align-items: flex-end; min-height: 220px; }
 </style>
 </head>
 <body>
 <main>
   <h1>Style explorations</h1>
+
+  <h2 class="set">Round 2: styles built on the live site</h2>
+  <p class="intro">Your original page with every mechanic kept (particles, cursor glow, card tilt and shimmer, magnetic buttons, click bursts, progress bar, keyboard shortcuts, command palette, light/dark), restyled five ways. Same page, same content; switch styles with the bar at the bottom. Each style also has a style guide showing its colors, type, buttons, inputs, cards and effects.</p>
+  <div class="grid">
+    <a class="card" href="v2/index.html?style=original"><img src="v2/previews/original.jpg" alt="Preview of Original" loading="lazy" /><div><h2>Original</h2><p>The live look, unchanged, with the new structure: work overview first, senior project featured, terrain Playground.</p><span class="k">The control to compare against.</span></div></a>
+    <a class="card" href="v2/index.html?style=mist"><img src="v2/previews/mist.jpg" alt="Preview of Mist" loading="lazy" /><div><h2>Mist</h2><p>Weathered after dark: warm stone, washi text, kintsugi gold, serif display. Panels and screen edges fade instead of ending.</p><span class="k">Signature: ink-wash ridges behind the hero, new each visit; sections clear in like fog.</span></div></a>
+    <a class="card" href="v2/index.html?style=survey"><img src="v2/previews/survey.jpg" alt="Preview of Survey" loading="lazy" /><div><h2>Survey</h2><p>Refined's contour texture as a night topographic map under the whole page; cyan kept, amber index contours.</p><span class="k">Signature: the map lights up around your cursor and redraws from the Playground seed.</span></div></a>
+    <a class="card" href="v2/index.html?style=field"><img src="v2/previews/field.jpg" alt="Preview of Field" loading="lazy" /><div><h2>Field</h2><p>Signal's flow field on indigo ink with ultramarine; one bold grotesk, flat sharp panels.</p><span class="k">Signature: a flow field behind the hero that bends around your pointer.</span></div></a>
+    <a class="card" href="v2/index.html?style=graphite"><img src="v2/previews/graphite.jpg" alt="Preview of Graphite" loading="lazy" /><div><h2>Graphite</h2><p>The Viewport palette without the editor chrome: neutral grey where orange only ever means "selected".</p><span class="k">Signature: editor grid, orange selection outlines, spark particles.</span></div></a>
+    <a class="card card-text" href="v2/styleguide.html"><div><h2>Style guides</h2><p>One page per style: palette with contrast ratios, type scale, buttons, chips, inputs, cards, dialogs and the effects list. Uses the same CSS as the portfolio page, so it can't drift from it.</p><span class="k">Open, then switch styles with the bar at the bottom.</span></div></a>
+  </div>
+
+  <h2 class="set">Round 1: standalone directions</h2>
   <p class="intro">Five standalone directions for the portfolio, all using the same real content. Each one makes a single bold choice and keeps everything else quiet. Image areas are labeled placeholders. Open one, resize the window, and try it on your phone. Mixing elements across directions is fine.</p>
   <div class="grid">
     <a class="card" href="01-weathered.html"><img src="previews/01-weathered.jpg" alt="Preview of Weathered" loading="lazy" /><div><h2>1 · Weathered</h2><p>The SIP's wabi-sabi philosophy as the site's visual language: stone-grey paper, ink and moss, asymmetric layout.</p><span class="k">Bold move: ink-wash mountains drawn fresh on every visit, plus a gold kintsugi seam down the page.</span></div></a>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<!--
+  STYLE GUIDE — explorations/v2/styleguide.html
+  Shows one style's tokens and components using the same classes and CSS as
+  the portfolio page (live styles.css + enhancements.css + base/v2.css +
+  styles/<name>.css). Switch styles with the bar at the bottom.
+  Swatch values are read from the active CSS, so they can't drift from it.
+-->
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Quentin | Style guide</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="../../enhancements.css" />
+  <link rel="stylesheet" href="base/v2.css" />
+  <link rel="stylesheet" href="base/styleguide.css" />
+  <script src="base/style-boot.js"></script>
+  <script src="base/config.js" defer></script>
+  <script src="base/script.js" defer></script>
+  <script src="base/enhancements.js" defer></script>
+  <script src="base/signatures.js" defer></script>
+  <script src="base/v2.js" defer></script>
+  <script src="base/styleguide.js" defer></script>
+</head>
+<body data-page="styleguide">
+  <div id="scroll-progress" aria-hidden="true"><span></span></div>
+  <div id="cursor-aura" aria-hidden="true"></div>
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+  <canvas id="signature-canvas" aria-hidden="true"></canvas>
+  <div class="background-grid" aria-hidden="true"></div>
+  <div class="page-glow glow-one" aria-hidden="true"></div>
+  <div class="page-glow glow-two" aria-hidden="true"></div>
+
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav-shell glass" aria-label="Style guide navigation">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span>Style guide</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="#color">Color</a>
+        <a href="#type">Type</a>
+        <a href="#controls">Controls</a>
+        <a href="#surfaces">Cards</a>
+        <a href="#effects">Effects</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-tool command-trigger" type="button" aria-label="Open command palette"><span>⌘K</span></button>
+        <button class="nav-tool settings-trigger" type="button" aria-label="Open effects settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.5 1a8 8 0 0 0-1.7-1L14.4 3h-4.8l-.4 3.1a8 8 0 0 0-1.7 1l-2.5-1-2 3.4L5.1 11a7 7 0 0 0 0 2L3 14.5l2 3.4 2.5-1a8 8 0 0 0 1.7 1l.4 3.1h4.8l.4-3.1a8 8 0 0 0 1.7 1l2.5 1 2-3.4-2.1-1.5a7 7 0 0 0 .1-1Z"></path></svg>
+        </button>
+        <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <!-- id="home" lets the hero signatures (Mist, Field) draw behind this intro -->
+    <section class="section sg-intro" id="home">
+      <span class="section-kicker">Style guide</span>
+      <h1 class="hero-title" id="sg-name">Style</h1>
+      <p class="hero-copy" id="sg-idea"></p>
+      <dl class="sg-facts" id="sg-facts"></dl>
+      <div class="hero-actions">
+        <a class="button button-primary" id="sg-open-page" href="index.html">See it on the portfolio page</a>
+      </div>
+    </section>
+
+    <section class="section" id="color">
+      <div class="section-heading">
+        <span class="section-kicker">Color</span>
+        <h2>Palette and roles</h2>
+        <p>Read live from the active style's CSS tokens. Contrast is measured against the page background.</p>
+      </div>
+      <div class="sg-swatches" id="sg-swatches"></div>
+    </section>
+
+    <section class="section" id="type">
+      <div class="section-heading">
+        <span class="section-kicker">Type</span>
+        <h2>Typefaces and scale</h2>
+      </div>
+      <div class="sg-type glass">
+        <div class="sg-type-row"><span class="sg-meta">Display · hero</span><p class="hero-title sg-hero-sample">Procedural systems for visual worlds.</p></div>
+        <div class="sg-type-row"><span class="sg-meta">Display · section</span><h2 class="sg-h2">Selected work and experiments.</h2></div>
+        <div class="sg-type-row"><span class="sg-meta">Display · card</span><h3 class="sg-h3">Computational World-Building</h3></div>
+        <div class="sg-type-row"><span class="sg-meta">Body · lead</span><p class="lead sg-lead">I’m a Computer Science major with a minor in Art at Connecticut College and an Ammerman Center for Arts and Technology Scholar.</p></div>
+        <div class="sg-type-row"><span class="sg-meta">Body</span><p class="sg-body">A still photograph is read for a few understandable features, and those features shape an explorable environment in Unreal Engine, written in C++. The photograph influences the world; it is not reconstructed.</p></div>
+        <div class="sg-type-row"><span class="sg-meta">Label</span><div><span class="section-kicker"><kbd>3</kbd> Projects</span> <span class="project-type sg-inline">Senior Integrative Project · Ammerman Center</span></div></div>
+        <div class="sg-type-row"><span class="sg-meta">Families</span><p class="sg-body" id="sg-fonts"></p></div>
+      </div>
+    </section>
+
+    <section class="section" id="controls">
+      <div class="section-heading">
+        <span class="section-kicker">Controls</span>
+        <h2>Buttons, chips and inputs</h2>
+        <p>Hover and press them; use Tab to see focus rings. Buttons pull toward the pointer and every click sends a small particle burst.</p>
+      </div>
+
+      <div class="sg-grid">
+        <div class="sg-panel glass">
+          <h3 class="sg-panel-title">Buttons</h3>
+          <div class="sg-row">
+            <a class="button button-primary" href="#controls">Explore projects <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></a>
+            <a class="button button-secondary" href="#controls">View résumé</a>
+          </div>
+          <div class="sg-row">
+            <a class="button button-small button-primary" href="#controls">Let’s connect</a>
+            <button class="button button-secondary magnetic" type="button">Generate</button>
+            <button class="button button-secondary" type="button" disabled>Disabled</button>
+          </div>
+          <div class="sg-row">
+            <a class="text-link" href="#controls">GitHub profile <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg></a>
+            <a class="card-jump" href="#controls">Show these projects</a>
+          </div>
+          <div class="sg-row">
+            <button class="nav-tool" type="button" aria-label="Example icon button"><span>⌘K</span></button>
+            <button class="project-detail-trigger" type="button" aria-label="Example expand button"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg></button>
+          </div>
+        </div>
+
+        <div class="sg-panel glass">
+          <h3 class="sg-panel-title">Chips and tags</h3>
+          <div class="project-filters sg-row" id="project-filters" aria-label="Example filters">
+            <button type="button" class="filter-button" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="filter-button" data-filter="visual">Visual Computing</button>
+            <button type="button" class="filter-button" data-filter="procedural">Procedural</button>
+          </div>
+          <div class="tag-list sg-row"><span>Unreal Engine 5</span><span>C++</span><span>Procedural Generation</span></div>
+          <div class="hero-meta sg-row"><span>AI</span><span>Computer Vision</span><span>3D + VFX</span></div>
+          <div class="sg-row"><div class="eyebrow"><span class="status-dot"></span>Open to software engineering opportunities</div></div>
+          <div class="sg-row"><span class="placeholder-note">Placeholder note: content not built yet.</span></div>
+        </div>
+
+        <form class="contact-form glass sg-panel" onsubmit="return false">
+          <div class="form-heading"><span>Inputs</span><span class="form-status">Contact form fields</span></div>
+          <label><span>Name</span><input type="text" placeholder="Your name" /></label>
+          <label><span>Message</span><textarea rows="3" placeholder="Tell me a little about the opportunity or project."></textarea></label>
+          <div class="terrain-controls sg-terrain-controls">
+            <label class="terrain-field"><span>Seed</span><input type="text" value="wabi-sabi" /></label>
+            <label class="terrain-range"><span>Roughness</span><input type="range" min="0" max="10" value="5" /></label>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="surfaces">
+      <div class="section-heading">
+        <span class="section-kicker">Cards</span>
+        <h2>Surfaces and cards</h2>
+        <p>Cards tilt slightly toward the pointer, catch light where it is, and shimmer on entry.</p>
+      </div>
+      <div class="sg-cards">
+        <article class="expertise-card glass">
+          <div class="expertise-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"></path><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18v3"></path></svg></div>
+          <h3>Procedural Systems</h3>
+          <p>Rule-based generation, deterministic worlds, simulation, and tools for controlled creative variation.</p>
+          <p class="seen-in"><span>Seen in</span> Computational World-Building, the Playground</p>
+          <a class="card-jump" href="index.html#projects">Show these projects</a>
+        </article>
+        <article class="project-card glass">
+          <div class="project-visual visual-world" aria-hidden="true">
+            <div class="terrain terrain-back"></div><div class="terrain terrain-mid"></div><div class="terrain terrain-front"></div><div class="world-sun"></div>
+          </div>
+          <div class="project-body">
+            <div class="project-topline"><span class="project-type">3D · VR · Real-Time</span></div>
+            <h3>VR Environment — Meta Quest 3</h3>
+            <p>Interactive 3D environments in Unity with physics-based object interactions. Co-lead on a 2-person team.</p>
+            <div class="tag-list"><span>C#</span><span>Unity</span><span>VR</span></div>
+          </div>
+        </article>
+        <div class="sg-stack">
+          <article class="fact-card glass">
+            <span class="fact-label">Current focus</span>
+            <strong>Visual intelligence</strong>
+            <p>Computer vision, image understanding, graphics, and multimodal systems.</p>
+          </article>
+          <a class="contact-link glass" href="mailto:qdruck@gmail.com">
+            <span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"></path><path d="m4 6 8 7 8-7"></path></svg></span>
+            <span><small>Email</small><strong>qdruck@gmail.com</strong></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="effects">
+      <div class="section-heading">
+        <span class="section-kicker">Effects</span>
+        <h2>Motion and interaction</h2>
+        <p>Everything here respects reduced motion and the motion switch in the effects settings (gear icon).</p>
+      </div>
+      <div class="sg-effects" id="sg-effects"></div>
+    </section>
+  </main>
+
+  <dialog class="command-dialog" id="command-dialog" aria-labelledby="command-title">
+    <div class="dialog-shell command-shell">
+      <div class="command-search">
+        <span aria-hidden="true">⌕</span>
+        <label class="sr-only" for="command-input">Search commands</label>
+        <input id="command-input" type="search" placeholder="Go to a section or run a command…" />
+        <kbd>Esc</kbd>
+      </div>
+      <h2 id="command-title" class="sr-only">Command palette</h2>
+      <div id="command-results" class="command-results" role="listbox"></div>
+    </div>
+  </dialog>
+
+  <dialog class="settings-dialog" id="settings-dialog" aria-labelledby="settings-title">
+    <div class="dialog-shell settings-shell">
+      <header>
+        <div>
+          <span class="section-kicker">Preferences</span>
+          <h2 id="settings-title">Display effects</h2>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog aria-label="Close settings">×</button>
+      </header>
+      <div class="settings-group">
+        <label class="setting-switch" for="effects-toggle">
+          <span class="setting-copy"><strong>Motion effects</strong><small>Controls moving motes, shimmer, card tilt, cursor glow, and other decorative animation.</small></span>
+          <span class="switch-control">
+            <input id="effects-toggle" type="checkbox" role="switch" aria-describedby="effects-status" checked />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+        <p class="setting-status" id="effects-status" aria-live="polite">Motion effects are enabled.</p>
+      </div>
+      <div class="settings-group density-group" id="density-group">
+        <label class="range-setting" for="particle-density">
+          <span class="setting-copy"><strong>Particle density</strong><small>Adjust the number of background motes.</small></span>
+          <span class="range-control">
+            <input id="particle-density" type="range" min="0" max="100" step="10" value="70" />
+            <output id="particle-density-value" for="particle-density">70%</output>
+          </span>
+        </label>
+      </div>
+      <div class="settings-actions">
+        <button class="button button-secondary settings-reset" id="settings-reset" type="button">Restore defaults</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="style-switcher" id="style-switcher" role="group" aria-label="Style exploration"></div>
+</body>
+</html>

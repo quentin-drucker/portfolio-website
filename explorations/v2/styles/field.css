@@ -1,0 +1,159 @@
+@import url("https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap");
+/*
+===============================================================================
+FIELD — Signal's flow field, after dark
+===============================================================================
+Idea: rules make the image. A vector field of noise steers thousands of short
+strokes behind the hero, and your pointer bends it. Everything else is flat
+and direct, so the field is the one loud thing on the page.
+
+Signature: pointer-reactive flow field behind the hero, which settles into a
+still frame for reduced motion (base/signatures.js → field). Cards gain an
+ultramarine edge where your pointer enters them.
+
+Palette   indigo ink #10121C · panel #171A28 · paper #EEF0FA ·
+          ultramarine #3D52FF (actions) · periwinkle #8E9BFF (marks)
+Type      Schibsted Grotesk only, from 400 body to 800 display
+Shape     2–4px radii, flat fills, 1px rules
+*/
+html[data-style="field"] {
+  --bg: #10121c;
+  --surface: rgba(23, 26, 40, 0.86);
+  --surface-strong: rgba(20, 22, 34, 0.97);
+  --surface-soft: rgba(142, 155, 255, 0.06);
+  --text: #eef0fa;
+  --text-soft: #a9afcb;
+  --text-faint: #7d84a5;
+  --line: rgba(170, 180, 255, 0.13);
+  --line-bright: rgba(142, 155, 255, 0.42);
+  --cyan: #8e9bff;
+  --blue: #8e9bff;
+  --blue-strong: #3d52ff;
+  --violet: #b5bdff;
+  --green: #8e9bff;
+  --accent: #8e9bff;
+  --accent-two: #b5bdff;
+  --shadow: none;
+  --shadow-soft: none;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+
+  --fx: 124, 140, 255;
+  --fx-2: 90, 110, 255;
+  --fx-glow: 0.6;
+  --glow-one: #262c78;
+  --glow-two: #1a1e52;
+  --glow-opacity: 0.22;
+  --grid-line: transparent;
+
+  --btn-bg: #3d52ff;
+  --btn-text: #ffffff;
+  --btn-shadow: none;
+
+  --mote-a: 160, 172, 255;
+  --mote-b: 110, 125, 255;
+  --burst: 160, 172, 255;
+  --mote-glow: 1;
+  --mote-alpha: 0.75;
+
+  --field-bg: 16, 18, 28;
+  --field-line: 124, 140, 255;
+
+  --terrain-line: 214, 219, 255;
+  --terrain-accent: #8e9bff;
+  --terrain-bg: rgba(10, 11, 20, 0.6);
+  --sip-sky: 30, 34, 70;
+  --sip-sky-2: 14, 16, 28;
+  --sip-ink: 142, 155, 255;
+
+  --font-display: "Schibsted Grotesk", system-ui, sans-serif;
+  --font-body: "Schibsted Grotesk", system-ui, sans-serif;
+  --font-ui: "Schibsted Grotesk", system-ui, sans-serif;
+  --terrain-font: "Schibsted Grotesk", sans-serif;
+  --art-filter: hue-rotate(42deg) saturate(1.1);
+}
+html[data-style="field"][data-theme="light"] {
+  --bg: #eeeef4;
+  --surface: rgba(248, 248, 252, 0.88);
+  --surface-strong: rgba(246, 246, 251, 0.97);
+  --surface-soft: rgba(35, 64, 255, 0.05);
+  --text: #0e1020;
+  --text-soft: #464b66;
+  --text-faint: #5d627c;
+  --line: rgba(20, 30, 90, 0.14);
+  --line-bright: rgba(35, 64, 255, 0.45);
+  --cyan: #2340ff;
+  --blue: #2340ff;
+  --accent: #2340ff;
+  --accent-two: #4a5bd6;
+  --fx: 35, 64, 255;
+  --fx-2: 74, 91, 214;
+  --aura-blend: multiply;
+  --glow-opacity: 0.08;
+  --mote-a: 35, 64, 255;
+  --mote-b: 74, 91, 214;
+  --burst: 35, 64, 255;
+  --field-bg: 238, 238, 244;
+  --field-line: 35, 64, 255;
+  --terrain-line: 14, 16, 40;
+  --terrain-accent: #2340ff;
+  --terrain-bg: rgba(226, 226, 236, 0.7);
+  --sip-sky: 220, 222, 240;
+  --sip-sky-2: 240, 240, 246;
+  --sip-ink: 35, 64, 255;
+}
+
+/* Signature: flow field behind the hero, fading into the page below */
+html[data-style="field"] #signature-canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: max(100vh, 720px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent);
+}
+
+/* Type */
+html[data-style="field"] .hero-title { font-weight: 800; letter-spacing: -0.05em; line-height: 0.96; font-size: clamp(2.7rem, 4.9vw, 4.8rem); }
+html[data-style="field"] :is(.section-heading h2, .resume-intro h2, .contact-copy h2) { font-weight: 800; letter-spacing: -0.045em; line-height: 1; }
+html[data-style="field"] .section-kicker { color: var(--accent); font-weight: 600; }
+html[data-style="field"] :is(.project-type, .fact-label, .resume-row > span) {
+  font-family: var(--font-body);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+  color: var(--accent);
+}
+html[data-style="field"] :is(.tag-list span, .hero-meta span) {
+  font-family: var(--font-body);
+  border-radius: 2px;
+  background: transparent;
+}
+
+/* Surfaces: flat, sharp; the accent edge follows the pointer in */
+html[data-style="field"] .glass {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+html[data-style="field"] .immersive-card:hover {
+  border-color: var(--line-bright);
+  box-shadow: inset 3px 0 0 rgb(var(--fx));
+}
+html[data-style="field"] .brand-mark {
+  border: 0;
+  border-radius: 2px;
+  background: #3d52ff;
+  color: #fff;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+html[data-style="field"] :is(.button, .filter-button, .nav-tool, .theme-toggle, .project-detail-trigger) { border-radius: 3px; }
+html[data-style="field"] .filter-button[aria-pressed="true"] { background: #3d52ff; color: #fff; }
+html[data-style="field"] .project-visual { background-color: rgba(8, 9, 18, 0.5); }
