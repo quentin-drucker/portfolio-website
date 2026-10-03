@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!--
+  STYLE EXPLORATION 01 — "Weathered"
+  Grounded in the wabi-sabi philosophy behind the SIP: asymmetry, irregularity,
+  natural variation, transience. Standalone; does not use the site's CSS/JS.
+
+  Tokens
+    --paper  #E6E4DE  stone-grey washi (cool, deliberately not cream)
+    --ink    #23221F  sumi ink
+    --moss   #56604A  primary accent (links, emphasis)
+    --lichen #A7AE97  quiet secondary
+    --seam   #B08D4C  kintsugi gold — used ONLY for the seam and focus rings
+  Type: Shippori Mincho (display) · Zen Kaku Gothic New (body)
+  The one bold move: the procedural ink-wash ridgelines (different every visit)
+  and the gold seam that runs down the page joining sections.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Weathered — Quentin Drucker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #e6e4de;
+    --paper-deep: #dcd9d1;
+    --ink: #23221f;
+    --ink-soft: #4a4842;
+    --ink-faint: #7a776e;
+    --moss: #56604a;
+    --lichen: #a7ae97;
+    --seam: #b08d4c;
+    --rule: rgba(35, 34, 31, 0.16);
+    --display: "Shippori Mincho", "Hiragino Mincho ProN", Georgia, serif;
+    --body: "Zen Kaku Gothic New", system-ui, sans-serif;
+    --measure: 62ch;
+    --gutter: clamp(20px, 5vw, 72px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+  /* paper fibre */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: .45;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .14 0 0 0 0 .13 0 0 0 0 .12 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  a { color: var(--moss); text-decoration-thickness: 1px; text-underline-offset: .22em; }
+  a:hover { color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--seam); outline-offset: 4px; border-radius: 2px; }
+
+  .page { position: relative; z-index: 1; }
+  #seam { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 0; }
+
+  header.top {
+    position: relative; z-index: 2;
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 28px var(--gutter);
+  }
+  .mark { font-family: var(--display); font-weight: 600; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  nav ul { display: flex; gap: clamp(14px, 3vw, 34px); list-style: none; margin: 0; padding: 0; }
+  nav a { color: var(--ink-soft); text-decoration: none; font-size: .95rem; }
+  nav a:hover { color: var(--ink); text-decoration: underline; }
+
+  /* HERO — text sits low-left, landscape bleeds right; deliberately off-centre */
+  .hero {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: end;
+    gap: 0;
+    min-height: min(88vh, 860px);
+    padding: 0 0 0 var(--gutter);
+  }
+  .hero-text { padding-bottom: clamp(40px, 9vh, 110px); position: relative; z-index: 2; }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(3rem, 7.4vw, 6.6rem);
+    line-height: 1.02;
+    letter-spacing: -.01em;
+    margin: 0 0 .5em;
+  }
+  .hero h1 span { display: block; margin-left: .9em; }
+  .hero p { max-width: 34ch; color: var(--ink-soft); margin: 0 0 1.2em; }
+  .hero-canvas-wrap { position: relative; align-self: stretch; margin-top: 40px; }
+  #ink { width: 100%; height: 100%; display: block; -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%); mask-image: linear-gradient(90deg, transparent, #000 18%); }
+  .caption {
+    font-size: .8rem; color: var(--ink-faint);
+    position: absolute; right: var(--gutter); bottom: 18px;
+  }
+
+  section { position: relative; z-index: 1; padding: clamp(70px, 12vh, 140px) var(--gutter); }
+  h2 {
+    font-family: var(--display); font-weight: 600;
+    font-size: clamp(2rem, 4.2vw, 3.4rem);
+    line-height: 1.12; margin: 0 0 .6em;
+  }
+  h3 { font-family: var(--display); font-weight: 600; font-size: 1.5rem; line-height: 1.25; margin: 0 0 .4em; }
+  .lede { font-size: 1.22rem; color: var(--ink); max-width: var(--measure); }
+  p { max-width: var(--measure); }
+  .muted { color: var(--ink-soft); }
+
+  /* SIP — asymmetric two-column with an irregular photo slot */
+  .sip { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(30px, 6vw, 90px); align-items: start; }
+  .sip-body { padding-left: 6%; }
+  .status { display: inline-block; font-size: .88rem; color: var(--moss); margin-bottom: 1.2em; border-bottom: 1px solid var(--lichen); }
+  .slot {
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--rule);
+    border-radius: 3px 14px 6px 22px;   /* imperfect on purpose */
+    background:
+      linear-gradient(160deg, rgba(86,96,74,.10), transparent 60%),
+      var(--paper-deep);
+    display: grid; place-items: center; text-align: center;
+    color: var(--ink-faint); font-size: .85rem; padding: 24px;
+    transform: rotate(-1.2deg);
+    margin-top: 60px;
+  }
+  .pipeline {
+    margin: 2.2em 0 0; padding: 0; list-style: none;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: .35em .2em;
+    font-family: var(--display); font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  }
+  .pipeline li:not(:last-child)::after { content: "⟶"; color: var(--lichen); margin-left: .45em; font-family: var(--body); }
+  .note { font-size: .92rem; color: var(--ink-faint); margin-top: 1.4em; }
+
+  /* Other work — staggered, never a uniform grid */
+  .work-list { list-style: none; margin: 2em 0 0; padding: 0; }
+  .work-list li {
+    padding: 34px 0;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); gap: 4vw;
+  }
+  .work-list li:nth-child(2) { margin-left: 9%; }
+  .work-list li:nth-child(3) { margin-left: 3%; }
+  .work-list li:nth-child(4) { margin-left: 13%; }
+  .tools { font-size: .88rem; color: var(--ink-faint); margin: .3em 0 0; }
+
+  .about { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(30px, 6vw, 100px); }
+  dl { margin: 0; }
+  dt { font-size: .85rem; color: var(--moss); margin-top: 1.3em; }
+  dd { margin: .15em 0 0; }
+
+  .contact h2 { margin-bottom: .3em; }
+  .email { font-family: var(--display); font-size: clamp(1.6rem, 4.5vw, 3.2rem); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--seam); }
+  .email:hover { color: var(--moss); }
+  .elsewhere { margin-top: 1.6em; display: flex; gap: 28px; flex-wrap: wrap; }
+
+  footer { position: relative; z-index: 1; padding: 40px var(--gutter) 50px; color: var(--ink-faint); font-size: .85rem; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding-right: var(--gutter); min-height: auto; }
+    .hero-text { padding-bottom: 0; padding-top: 30px; }
+    .hero h1 span { margin-left: .5em; }
+    .hero-canvas-wrap { height: 300px; margin: 10px calc(-1 * var(--gutter)) 0 calc(-1 * var(--gutter)); }
+    .sip, .about { grid-template-columns: 1fr; }
+    .sip-body { padding-left: 0; }
+    .slot { max-width: 360px; margin-top: 0; }
+    .work-list li { grid-template-columns: 1fr; gap: 8px; }
+    .work-list li:nth-child(n) { margin-left: 0; }
+    nav ul { gap: 14px; }
+  }
+  @media (max-width: 520px) { nav { display: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <svg id="seam" aria-hidden="true"></svg>
+
+  <header class="top">
+    <a class="mark" href="#">Quentin Drucker</a>
+    <nav aria-label="Primary"><ul>
+      <li><a href="#sip">Senior project</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul></nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="hero-text">
+        <h1>Systems that<span>grow worlds.</span></h1>
+        <p>I study computer science and art at Connecticut College, building procedural and visual systems where code and image shape each other.</p>
+        <a href="#sip">See the senior project</a>
+      </div>
+      <div class="hero-canvas-wrap">
+        <canvas id="ink" aria-label="Procedurally generated ink-wash mountain range"></canvas>
+        <span class="caption">Drawn fresh on each visit</span>
+      </div>
+    </div>
+
+    <section id="sip">
+      <div class="sip">
+        <div class="sip-body">
+          <span class="status">Senior Integrative Project · Ammerman Center · in progress</span>
+          <h2>Computational World-Building</h2>
+          <p class="lede">A wabi-sabi-inspired system for generative worlds, in which a still photograph shapes an explorable environment without being copied by it.</p>
+          <p class="muted">Brightness, color, contrast, density and texture are read from an image and translated into a small set of understandable parameters. Those parameters bias terrain, scattering, weathering and atmosphere in Unreal Engine, built in C++, toward asymmetry, irregularity and controlled disorder.</p>
+          <ol class="pipeline" aria-label="Pipeline">
+            <li>photograph</li><li>image features</li><li>parameters</li><li>terrain</li><li>weathering</li><li>atmosphere</li><li>a world to walk through</li>
+          </ol>
+          <p class="note">Builds on an earlier UE5 prototype: a PCG forest with ambient sound, fog and first-person exploration.</p>
+        </div>
+        <div class="slot">Photograph to be added<br />(source image + generated world)</div>
+      </div>
+    </section>
+
+    <section id="work">
+      <h2>Other work</h2>
+      <ul class="work-list">
+        <li>
+          <div><h3>Autonomous driving safety research</h3><p class="tools">Python · CARLA · reinforcement learning</p></div>
+          <p class="muted">Designing parameterized rare-hazard scenarios in the CARLA simulator and training RL agents to evaluate how autonomous vehicles behave in safety-critical edge cases. Solo research with Prof. Ozgur Izmirli, ongoing since January 2026.</p>
+        </li>
+        <li>
+          <div><h3>AI Vision Scavenger Hunt</h3><p class="tools">React · Node/Express · Azure AI Vision · Docker</p></div>
+          <p class="muted">A multiplayer game where players photograph real-world objects and Azure AI Vision validates each find. Deployed on an Azure VM in Docker containers.</p>
+        </li>
+        <li>
+          <div><h3>VR environment for Meta Quest 3</h3><p class="tools">Unity · C#</p></div>
+          <p class="muted">Interactive 3D spaces with physics-based object interaction. Co-lead and sole programmer on a two-person team.</p>
+        </li>
+        <li>
+          <div><h3>Photography</h3><p class="tools">Ongoing</p></div>
+          <p class="muted">Placeholder: a small selection of photographs could live here, and could double as source images for the senior project.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section id="about">
+      <div class="about">
+        <div>
+          <h2>About</h2>
+          <p class="lede">My interest began where technology meets visual art, and grew into how computing can both generate visual experience and interpret it.</p>
+          <p class="muted">Computer graphics, computer vision, procedural generation, game engines, photography. I like building systems I can explain, and outcomes I couldn't have drawn by hand.</p>
+          <p><a href="../2026_0603_Resume_QD.pdf">Résumé (PDF)</a></p>
+        </div>
+        <dl>
+          <dt>Study</dt><dd>B.A. Computer Science, Art minor. Connecticut College, class of 2027, 4.00 GPA</dd>
+          <dt>Recognition</dt><dd>Ammerman Center for Arts &amp; Technology Scholar; Founders Scholarship; Junior and Sophomore CS awards; Dean's High Honors</dd>
+          <dt>Now</dt><dd>Student researcher and teaching assistant, CS Department</dd>
+          <dt>Tools</dt><dd>C++, Python, C#, JavaScript · Unreal, Unity, Maya, OpenCV, Azure, Docker</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <h2>Write to me</h2>
+      <a class="email" href="mailto:qdruck@gmail.com">qdruck@gmail.com</a>
+      <div class="elsewhere">
+        <a href="https://github.com/quentin-drucker">GitHub</a>
+        <a href="https://www.linkedin.com/in/quentin-drucker">LinkedIn</a>
+      </div>
+    </section>
+  </main>
+  <footer>Quentin Drucker, 2026</footer>
+</div>
+
+<script>
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // --- small seeded value noise -------------------------------------------
+  function rng(seed) { return () => ((seed = Math.imul(seed ^ (seed >>> 15), 2246822507) + 0x9e3779b9 | 0) >>> 0) / 4294967296; }
+  function noise1D(r) {
+    const pts = Array.from({ length: 512 }, r);
+    return (x) => { const i = Math.floor(x), f = x - i, t = f * f * (3 - 2 * f);
+      return pts[i & 511] * (1 - t) + pts[(i + 1) & 511] * t; };
+  }
+  function fbm(n, x) { let v = 0, a = .5, fr = 1; for (let o = 0; o < 5; o++) { v += a * n(x * fr); a *= .5; fr *= 2.03; } return v; }
+
+  // --- ink-wash ridgelines --------------------------------------------------
+  const canvas = document.getElementById("ink");
+  const ctx = canvas.getContext("2d");
+  const seed = (Date.now() / 1000) | 0;   // transience: a new range each visit
+
+  function drawInk(progress = 1) {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    const r = rng(seed);
+    const layers = 7;
+    for (let L = 0; L < layers; L++) {
+      const t = L / (layers - 1);                     // 0 far → 1 near
+      const n = noise1D(rng(seed + L * 977));
+      const base = h * (0.28 + t * 0.52);
+      const amp = h * (0.10 + t * 0.16) * (0.7 + r() * 0.6);
+      const scale = 0.0022 + t * 0.0016 + r() * 0.001;
+      const alpha = 0.10 + t * 0.55;
+      const visible = Math.max(0, Math.min(1, progress * layers - L));
+      if (visible <= 0) continue;
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      for (let x = 0; x <= w; x += 3) {
+        const y = base - fbm(n, x * scale) * amp - Math.max(0, fbm(n, x * scale * 3.1 + 40) - .45) * amp * .9;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(w, h); ctx.closePath();
+      const g = ctx.createLinearGradient(0, base - amp, 0, h);
+      g.addColorStop(0, `rgba(35,34,31,${alpha * visible})`);
+      g.addColorStop(.55, `rgba(35,34,31,${alpha * visible * .35})`);
+      g.addColorStop(1, `rgba(35,34,31,0)`);
+      ctx.fillStyle = g; ctx.fill();
+    }
+    // mist bands between ranges
+    const mist = ctx.createLinearGradient(0, h * .35, 0, h);
+    mist.addColorStop(0, "rgba(230,228,222,0)");
+    mist.addColorStop(.6, "rgba(230,228,222,.25)");
+    mist.addColorStop(1, "rgba(230,228,222,.9)");
+    ctx.fillStyle = mist; ctx.fillRect(0, 0, w, h);
+  }
+
+  if (reduce) drawInk(1);
+  else { const start = performance.now(); (function step(now) { const p = Math.min(1, (now - start) / 2200); drawInk(1 - Math.pow(1 - p, 3)); if (p < 1) requestAnimationFrame(step); })(start); }
+
+  // --- kintsugi seam: an irregular gold crack down the full page -----------
+  function drawSeam() {
+    const svg = document.getElementById("seam");
+    const H = document.querySelector(".page").scrollHeight, W = document.documentElement.clientWidth;
+    svg.setAttribute("height", H); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const r = rng(seed + 31);
+    const lane = Math.min(72, Math.max(20, W * 0.05));  // the left margin, matching --gutter
+    let x = lane * 0.5, y = document.getElementById("sip").offsetTop - 30, d = `M${x.toFixed(1)} ${y}`;
+    const branches = [];
+    while (y < H - 120) {
+      y += 30 + r() * 70;
+      x += (r() - 0.5) * lane * 0.55 + (lane * 0.5 - x) * 0.25;
+      x = Math.max(4, Math.min(lane - 6, x));
+      d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+      if (r() < 0.07) { let bx = x, by = y, bd = `M${bx.toFixed(1)} ${by.toFixed(1)}`; const dir = r() < .5 ? -1 : 1;
+        for (let k = 0; k < 3; k++) { bx = Math.max(2, Math.min(lane - 2, bx + dir * (6 + r() * 12))); by += 15 + r() * 40; bd += ` L${bx.toFixed(1)} ${by.toFixed(1)}`; } branches.push(bd); }
+    }
+    svg.innerHTML = `<defs><linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9a764"/><stop offset=".5" stop-color="#b08d4c"/><stop offset="1" stop-color="#8e6f36"/></linearGradient></defs>
+      <path d="${d}" fill="none" stroke="url(#gold)" stroke-width="1.6" stroke-linejoin="round" opacity=".75"/>
+      ${branches.map(b => `<path d="${b}" fill="none" stroke="url(#gold)" stroke-width="1" opacity=".55"/>`).join("")}`;
+  }
+  addEventListener("load", drawSeam);
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { drawInk(1); drawSeam(); }, 150); });
+</script>
+</body>
+</html>

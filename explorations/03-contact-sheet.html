@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<!--
+  STYLE EXPLORATION 03 — "Contact Sheet"
+  Grounded in photography: the medium the SIP starts from. Work is laid out as
+  frames on a strip of film; choosing one marks it with a grease-pencil circle
+  and opens it under the "loupe". Frame numbers are used because film frames
+  genuinely are a sequence.
+
+  Tokens
+    --sheet  #F5F4F0  contact-sheet paper
+    --film   #000000  film base (true black, only on the strip)
+    --ink    #161616  body text
+    --edge   #E8A33D  edge-print orange (film rebate text only)
+    --grease #D3282E  grease-pencil red — selection marks only
+    --graph  #6E6E69  secondary text
+  Type: Bricolage Grotesque (display + body) · IBM Plex Mono (edge print only)
+        · Caveat (grease-pencil notes, sparingly)
+  Frame images are generated stand-ins, clearly captioned, to be replaced with
+  real photographs and renders.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Contact Sheet — Quentin Drucker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@500&family=Caveat:wght@600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --sheet: #f5f4f0; --film: #000; --ink: #161616; --graph: #6e6e69;
+    --edge: #e8a33d; --grease: #d3282e; --rule: #d8d6cf;
+    --sans: "Bricolage Grotesque", system-ui, sans-serif; --mono: "IBM Plex Mono", monospace; --hand: "Caveat", cursive;
+    --gutter: clamp(18px, 4vw, 56px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--sheet); color: var(--ink); font-family: var(--sans); font-size: 1.04rem; line-height: 1.6; }
+  a { color: var(--ink); text-underline-offset: .2em; }
+  a:hover { color: var(--grease); }
+  :focus-visible { outline: 2px solid var(--grease); outline-offset: 3px; }
+
+  header { display: flex; justify-content: space-between; align-items: center; padding: 22px var(--gutter); }
+  header .name { font-weight: 700; text-decoration: none; font-size: 1.05rem; }
+  header nav { display: flex; gap: 22px; }
+  header nav a { text-decoration: none; color: var(--graph); }
+  header nav a:hover { color: var(--ink); }
+
+  .intro { padding: clamp(30px, 8vh, 90px) var(--gutter) 40px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 5vw; align-items: end; }
+  .intro h1 { font-size: clamp(2.8rem, 7vw, 6.4rem); font-variation-settings: "opsz" 96; font-weight: 750; line-height: .96; letter-spacing: -.035em; margin: 0; }
+  .intro p { color: var(--graph); margin: 0; max-width: 42ch; font-size: 1.1rem; }
+  .intro .hand { font-family: var(--hand); color: var(--grease); font-size: 1.5rem; display: block; margin-top: 14px; transform: rotate(-2deg); }
+
+  /* ---------- the strip ---------- */
+  .strip-wrap { padding: 20px 0 10px; overflow-x: auto; scrollbar-width: thin; }
+  .strip {
+    --hole: 9px;
+    display: flex; gap: 0; width: max-content; margin: 0 var(--gutter);
+    background: var(--film); padding: 40px 14px;
+    position: relative;
+    box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 18px 40px -20px rgba(0,0,0,.35);
+  }
+  /* sprocket holes, top and bottom */
+  .strip::before, .strip::after {
+    content: ""; position: absolute; left: 0; right: 0; height: var(--hole);
+    background: repeating-linear-gradient(90deg, transparent 0 9px, var(--sheet) 9px 21px, transparent 21px 30px);
+    border-radius: 2px;
+  }
+  .strip::before { top: 9px; } .strip::after { bottom: 9px; }
+  .frame {
+    position: relative; margin: 0 7px; padding: 0; border: 0; background: none; cursor: pointer;
+    width: clamp(220px, 23vw, 320px); text-align: left; color: inherit;
+  }
+  .frame canvas { display: block; width: 100%; aspect-ratio: 3 / 2; background: #222; }
+  .frame .edge {
+    position: absolute; left: 0; right: 0; bottom: -15px;
+    display: flex; justify-content: space-between; font: 500 10.5px var(--mono); letter-spacing: .08em; color: var(--edge);
+  }
+  .frame .circle { position: absolute; inset: -18px -16px; width: calc(100% + 32px); height: calc(100% + 36px); pointer-events: none; overflow: visible; }
+  .frame .circle path { fill: none; stroke: var(--grease); stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset .7s cubic-bezier(.6,.05,.3,1); }
+  .frame[aria-pressed="true"] .circle path { stroke-dashoffset: 0; }
+  .frame:hover canvas, .frame:focus-visible canvas { filter: brightness(1.12); }
+  .frame:focus-visible { outline-offset: 10px; }
+  .strip-note { padding: 18px var(--gutter) 0; color: var(--graph); font-size: .9rem; }
+
+  /* ---------- loupe ---------- */
+  .loupe { padding: 50px var(--gutter) 80px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 5vw; align-items: start; border-bottom: 1px solid var(--rule); }
+  .loupe canvas { width: 100%; aspect-ratio: 3 / 2; display: block; background: #222; }
+  .loupe figcaption { font-size: .85rem; color: var(--graph); margin-top: 8px; }
+  .loupe .kicker { font-family: var(--hand); color: var(--grease); font-size: 1.45rem; display: block; margin-bottom: 2px; }
+  .loupe h2 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1; letter-spacing: -.03em; margin: 0 0 16px; }
+  .loupe p { margin: 0 0 14px; max-width: 58ch; }
+  .loupe .meta { color: var(--graph); font-size: .95rem; }
+  .loupe ol { padding-left: 1.2em; margin: 6px 0 14px; color: var(--graph); }
+
+  section.text { padding: 80px var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 5vw; border-bottom: 1px solid var(--rule); }
+  section.text h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); letter-spacing: -.03em; line-height: 1.05; margin: 0; }
+  section.text p { margin: 0 0 14px; max-width: 62ch; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 30px; margin-top: 24px; }
+  .facts div { border-top: 1px solid var(--ink); padding-top: 8px; }
+  .facts b { display: block; font-size: .85rem; color: var(--graph); font-weight: 500; }
+  .mail { font-size: clamp(1.6rem, 4.6vw, 3.4rem); font-weight: 700; letter-spacing: -.03em; text-decoration: none; display: inline-block; position: relative; }
+  .mail::after { content: ""; position: absolute; left: 0; right: 0; bottom: .05em; height: 3px; background: var(--grease); transform: scaleX(.18); transform-origin: left; transition: transform .35s ease; }
+  .mail:hover::after { transform: scaleX(1); }
+  footer { padding: 26px var(--gutter); color: var(--graph); font-size: .85rem; }
+
+  @media (max-width: 820px) {
+    .intro, .loupe, section.text { grid-template-columns: 1fr; }
+    header nav { display: none; }
+    .facts { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .frame .circle path, .mail::after { transition: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+  <header>
+    <a class="name" href="#">Quentin Drucker</a>
+    <nav aria-label="Primary"><a href="#frames">Work</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+  </header>
+
+  <main>
+    <div class="intro">
+      <h1>Image in.<br />World out.</h1>
+      <div>
+        <p>Computer science and art at Connecticut College. I photograph, and I build the systems (graphics, vision, procedural generation) that turn images into other images, and into places.</p>
+        <span class="hand">pick a frame ↓</span>
+      </div>
+    </div>
+
+    <div class="strip-wrap" id="frames" aria-label="Projects, laid out as film frames">
+      <div class="strip" role="group" aria-label="Project frames"></div>
+    </div>
+    <p class="strip-note">Frame images are generated stand-ins. Real photographs and renders go here.</p>
+
+    <section class="loupe" aria-live="polite">
+      <figure style="margin:0"><canvas id="loupe-canvas" aria-hidden="true"></canvas><figcaption id="loupe-cap"></figcaption></figure>
+      <div id="loupe-text"></div>
+    </section>
+
+    <section class="text" id="about">
+      <h2>On the sleeve</h2>
+      <div>
+        <p>I'm a Computer Science major with an Art minor and an Ammerman Center for Arts &amp; Technology Scholar. I'm drawn to visual computing from both directions: generating visual experience, and teaching machines to read it.</p>
+        <p><a href="../2026_0603_Resume_QD.pdf">Résumé (PDF)</a></p>
+        <div class="facts">
+          <div><b>Study</b>B.A. CS, Art minor · class of 2027 · 4.00 GPA</div>
+          <div><b>Now</b>Student researcher and teaching assistant</div>
+          <div><b>Build with</b>C++, Python, C#, JavaScript</div>
+          <div><b>Work in</b>Unreal, Unity, Maya, OpenCV, Azure</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="text" id="contact">
+      <h2>Contact</h2>
+      <div>
+        <a class="mail" href="mailto:qdruck@gmail.com">qdruck@gmail.com</a>
+        <p style="margin-top:18px"><a href="https://github.com/quentin-drucker">GitHub</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/quentin-drucker">LinkedIn</a></p>
+      </div>
+    </section>
+  </main>
+  <footer>Quentin Drucker, 2026</footer>
+
+<script>
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function rng(a) { return () => { a |= 0; a = a + 0x6d2b79f5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  /* Each painter draws a stand-in "photograph" for a project into a 3:2 canvas. */
+  const P = {
+    land(ctx, w, h, r) { // SIP: misty layered ridges, monochrome
+      const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#d9d8d2"); g.addColorStop(1, "#8b8a84"); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      for (let L = 0; L < 5; L++) { const base = h * (.35 + L * .13), amp = h * (.08 + L * .03), ph = r() * 9; ctx.beginPath(); ctx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 4) ctx.lineTo(x, base - (Math.sin(x * .012 + ph) * .5 + Math.sin(x * .031 + ph * 2) * .3 + Math.sin(x * .07 + ph) * .12) * amp);
+        ctx.lineTo(w, h); ctx.fillStyle = `rgba(30,30,28,${.18 + L * .16})`; ctx.fill(); }
+    },
+    road(ctx, w, h, r) { // CARLA: night road vanishing point, one hazard box
+      ctx.fillStyle = "#1b1d22"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = "#2b2e35"; ctx.beginPath(); ctx.moveTo(w * .46, h * .45); ctx.lineTo(w * .54, h * .45); ctx.lineTo(w * .95, h); ctx.lineTo(w * .05, h); ctx.fill();
+      ctx.strokeStyle = "#cfc9a8"; ctx.setLineDash([10, 12]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(w * .5, h * .46); ctx.lineTo(w * .5, h); ctx.stroke(); ctx.setLineDash([]);
+      const bx = w * (.55 + r() * .1), by = h * .58; ctx.strokeStyle = "#e8a33d"; ctx.lineWidth = 1.5; ctx.strokeRect(bx, by, w * .1, h * .12);
+    },
+    things(ctx, w, h, r) { // Scavenger hunt: objects on a table, detection boxes
+      ctx.fillStyle = "#b9b2a4"; ctx.fillRect(0, 0, w, h);
+      for (let i = 0; i < 5; i++) { const x = r() * w * .8, y = h * .3 + r() * h * .5, s = 18 + r() * 40; ctx.fillStyle = `hsl(${30 + r() * 30} 12% ${30 + r() * 35}%)`; ctx.beginPath(); ctx.ellipse(x + s / 2, y + s / 2, s / 2, s / 2.4, 0, 0, 7); ctx.fill();
+        if (i < 2) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.strokeRect(x - 4, y - 4, s + 8, s + 8); } }
+    },
+    room(ctx, w, h) { // VR: one-point room grid
+      ctx.fillStyle = "#2a2d31"; ctx.fillRect(0, 0, w, h); ctx.strokeStyle = "rgba(240,240,235,.35)"; ctx.lineWidth = 1;
+      const cx = w / 2, cy = h * .48, iw = w * .28, ih = h * .3; ctx.strokeRect(cx - iw / 2, cy - ih / 2, iw, ih);
+      [[0, 0], [w, 0], [0, h], [w, h]].forEach(([x, y]) => { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(cx + (x ? iw / 2 : -iw / 2), cy + (y ? ih / 2 : -ih / 2)); ctx.stroke(); });
+      for (let k = 1; k < 6; k++) { const t = k / 6; ctx.beginPath(); ctx.moveTo(cx - iw / 2 - t * (w / 2 - iw / 2), cy + ih / 2 + t * (h - cy - ih / 2)); ctx.lineTo(cx + iw / 2 + t * (w / 2 - iw / 2), cy + ih / 2 + t * (h - cy - ih / 2)); ctx.stroke(); }
+      ctx.fillStyle = "#d8d6cf"; ctx.fillRect(cx - 10, cy + ih * .2, 20, 20);
+    },
+    blank(ctx, w, h, r) { // photography placeholder: soft grain
+      ctx.fillStyle = "#4a4a47"; ctx.fillRect(0, 0, w, h); const img = ctx.getImageData(0, 0, w, h);
+      for (let i = 0; i < img.data.length; i += 4) { const n = (r() - .5) * 26; img.data[i] += n; img.data[i + 1] += n; img.data[i + 2] += n; } ctx.putImageData(img, 0, 0);
+      ctx.fillStyle = "rgba(245,244,240,.7)"; ctx.font = "13px Bricolage Grotesque, sans-serif"; ctx.textAlign = "center"; ctx.fillText("your photograph", w / 2, h / 2 + 4);
+    }
+  };
+
+  const FRAMES = [
+    { n: "14", p: "land", kicker: "senior project", title: "Computational World-Building",
+      body: `<p>A wabi-sabi-inspired system for generative worlds. A photograph is read for a few understandable features (brightness, color, contrast, density, texture) and those become parameters that shape an explorable environment in Unreal Engine, written in C++.</p><ol><li>Photograph</li><li>Image features</li><li>Parameters</li><li>Terrain, scattering, weathering</li><li>Light, fog, sound</li></ol><p class="meta">Senior Integrative Project · Ammerman Center · in progress. Builds on an earlier UE5 PCG forest prototype.</p>` ,
+      cap: "Stand-in: replace with a source photograph and its generated world." },
+    { n: "15", p: "road", kicker: "research", title: "Autonomous driving safety",
+      body: `<p>Parameterized rare-hazard scenarios in the CARLA simulator, and reinforcement learning agents trained to evaluate how autonomous vehicles behave when the unusual happens.</p><p class="meta">Python · CARLA · RL · solo research with Prof. Ozgur Izmirli, since January 2026</p>`,
+      cap: "Stand-in: replace with a CARLA scenario capture." },
+    { n: "16", p: "things", kicker: "full-stack", title: "AI Vision Scavenger Hunt",
+      body: `<p>A multiplayer game: players photograph real-world objects and Azure AI Vision decides whether each find counts.</p><p class="meta">React · Node/Express · Azure AI Vision · Docker on an Azure VM · solo developer</p>`,
+      cap: "Stand-in: replace with gameplay screenshots." },
+    { n: "17", p: "room", kicker: "real-time 3D", title: "VR environment for Quest 3",
+      body: `<p>Interactive 3D spaces in Unity with physics-based object interaction and tuned lighting for standalone VR.</p><p class="meta">Unity · C# · co-lead and sole programmer, two-person team</p>`,
+      cap: "Stand-in: replace with in-headset capture." },
+    { n: "18", p: "blank", kicker: "photography", title: "Photographs",
+      body: `<p>Placeholder: a selection of photographs, which may also serve as source images for the senior project.</p>`,
+      cap: "Placeholder." }
+  ];
+
+  const strip = document.querySelector(".strip");
+  const circlePath = "M40 22 C 140 -6, 300 4, 330 60 C 356 120, 300 200, 180 214 C 70 226, 6 180, 10 110 C 14 50, 70 16, 150 12";
+  FRAMES.forEach((f, i) => {
+    const b = document.createElement("button");
+    b.className = "frame"; b.type = "button"; b.setAttribute("aria-pressed", "false"); b.setAttribute("aria-label", `Frame ${f.n}: ${f.title}`);
+    b.innerHTML = `<canvas width="480" height="320" aria-hidden="true"></canvas>
+      <span class="edge" aria-hidden="true"><span>${f.n}</span><span>▸ ${f.n}A</span><span>QD 2026</span></span>
+      <svg class="circle" viewBox="0 0 340 228" preserveAspectRatio="none" aria-hidden="true"><path d="${circlePath}"/></svg>`;
+    P[f.p](b.querySelector("canvas").getContext("2d"), 480, 320, rng(i * 101 + 7));
+    b.addEventListener("click", () => select(i));
+    strip.appendChild(b);
+  });
+
+  function select(i) {
+    const f = FRAMES[i];
+    strip.querySelectorAll(".frame").forEach((b, k) => b.setAttribute("aria-pressed", String(k === i)));
+    const lc = document.getElementById("loupe-canvas"); lc.width = 960; lc.height = 640;
+    P[f.p](lc.getContext("2d"), 960, 640, rng(i * 101 + 7));
+    document.getElementById("loupe-cap").textContent = `Frame ${f.n}. ${f.cap}`;
+    document.getElementById("loupe-text").innerHTML = `<span class="kicker">${f.kicker}</span><h2>${f.title}</h2>${f.body}`;
+  }
+  select(0);
+</script>
+</body>
+</html>

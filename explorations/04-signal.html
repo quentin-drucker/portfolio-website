@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!--
+  STYLE EXPLORATION 04 — "Signal"
+  International-style poster typography meeting generative systems. Huge type,
+  a strict 12-column grid with generous empty space, one saturated color, and a
+  flow field (the same kind of noise-driven vector field used in procedural
+  generation) moving behind the name. Projects are a sortable-feeling index.
+
+  Tokens
+    --paper  #EEEEE9  light grey stock
+    --ink    #0A0A0A
+    --signal #2340FF  ultramarine — the single color; the SIP block is fully signal
+    --mid    #85857F  secondary text
+  Type: Schibsted Grotesk, used at extreme size contrast (display 800 / text 400)
+  The one bold move: the flow field + oversized name; everything else is quiet.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Signal — Quentin Drucker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #eeeee9; --ink: #0a0a0a; --signal: #2340ff; --mid: #85857f;
+    --sans: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --g: clamp(16px, 2.4vw, 36px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 1.02rem; line-height: 1.5; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+  .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); padding: 0 var(--g); }
+
+  header.grid { padding-top: 20px; padding-bottom: 20px; align-items: baseline; position: relative; z-index: 3; }
+  header .id { grid-column: 1 / 5; font-weight: 700; text-decoration: none; }
+  header nav { grid-column: 7 / 13; display: flex; justify-content: space-between; }
+  header nav a { text-decoration: none; }
+  header nav a:hover { color: var(--signal); }
+
+  .hero { position: relative; min-height: calc(100vh - 64px); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+  #field { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-name {
+    position: relative; z-index: 2; margin: 0; padding: 0 calc(var(--g) * .6);
+    font-weight: 900; font-size: clamp(4rem, 15.5vw, 17rem); line-height: .82; letter-spacing: -.055em;
+  }
+  .hero-name span { display: block; }
+  .hero-name span:last-child { padding-left: 1.2em; }
+  .hero-meta { position: relative; z-index: 2; padding-top: 28px; padding-bottom: 28px; }
+  .hero-meta p { margin: 0; }
+  .hero-meta .a { grid-column: 1 / 4; color: var(--ink); }
+  .hero-meta .b { grid-column: 7 / 12; font-size: 1.2rem; font-weight: 500; line-height: 1.35; }
+
+  /* SIP: the only full-color block on the page */
+  .sip { background: var(--signal); color: #fff; padding-top: clamp(60px, 10vh, 120px); padding-bottom: clamp(60px, 10vh, 120px); }
+  .sip .label { grid-column: 1 / 4; font-weight: 500; }
+  .sip h2 { grid-column: 4 / 13; margin: 0 0 30px; font-weight: 800; font-size: clamp(2.6rem, 6.4vw, 6.6rem); line-height: .9; letter-spacing: -.045em; }
+  .sip .text { grid-column: 4 / 10; font-size: 1.15rem; line-height: 1.5; }
+  .sip .text p { margin: 0 0 1em; }
+  .sip .side { grid-column: 10 / 13; font-size: .92rem; opacity: .85; }
+  .flow { grid-column: 4 / 13; display: flex; flex-wrap: wrap; gap: 0; margin: 34px 0 0; padding: 0; list-style: none; border-top: 2px solid #fff; }
+  .flow li { flex: 1 1 0; min-width: 120px; padding: 12px 14px 0 0; font-weight: 700; font-size: 1.05rem; }
+  .flow li small { display: block; font-weight: 400; opacity: .8; font-size: .82rem; }
+  .media-slot { grid-column: 4 / 13; margin-top: 40px; aspect-ratio: 21 / 9; border: 2px dashed rgba(255,255,255,.6); display: grid; place-items: center; font-weight: 500; }
+
+  /* index */
+  .index { padding-top: 100px; padding-bottom: 60px; }
+  .index h2, .about h2, .contact h2 { grid-column: 1 / 4; margin: 0; font-size: 1rem; font-weight: 700; }
+  .rows { grid-column: 4 / 13; list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+  .row { display: grid; grid-template-columns: 4fr 3fr 3fr 1fr; gap: var(--g); padding: 18px 0 20px; border-bottom: 1px solid rgba(10,10,10,.25); align-items: baseline; position: relative; }
+  .row h3 { margin: 0; font-size: clamp(1.25rem, 2.2vw, 1.8rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+  .row p { margin: 6px 0 0; color: var(--mid); grid-column: 1 / -1; max-width: 70ch; display: none; }
+  .row span { color: var(--mid); }
+  .row:hover h3, .row:focus-within h3 { color: var(--signal); }
+  .row:hover p, .row:focus-within p { display: block; }
+  .row button { all: unset; cursor: pointer; }
+  .head { color: var(--mid); font-size: .82rem; border-bottom: 2px solid var(--ink); padding: 8px 0; }
+
+  .about, .contact { padding-top: 80px; padding-bottom: 80px; border-top: 2px solid var(--ink); margin: 0 var(--g); padding-left: 0; padding-right: 0; }
+  .about .lead { grid-column: 4 / 10; font-size: clamp(1.4rem, 2.6vw, 2.2rem); line-height: 1.2; letter-spacing: -.02em; font-weight: 500; margin: 0 0 30px; }
+  .about dl { grid-column: 4 / 13; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--g); margin: 0; }
+  .about dt { font-weight: 700; font-size: .9rem; }
+  .about dd { margin: 4px 0 0; color: #3a3a37; }
+  .contact a.big { grid-column: 4 / 13; font-weight: 800; font-size: clamp(2rem, 7vw, 7rem); letter-spacing: -.05em; line-height: 1; text-decoration: none; }
+  .contact a.big:hover { color: var(--signal); }
+  .contact .links { grid-column: 4 / 13; margin-top: 20px; display: flex; gap: 30px; }
+  footer { padding: 20px var(--g) 30px; color: var(--mid); font-size: .85rem; }
+
+  @media (max-width: 860px) {
+    header nav { grid-column: 5 / 13; gap: 14px; justify-content: flex-end; }
+    .hero-meta .a, .hero-meta .b, .sip .label, .sip h2, .sip .text, .sip .side, .flow, .media-slot,
+    .index h2, .rows, .about h2, .contact h2, .about .lead, .about dl, .contact a.big, .contact .links { grid-column: 1 / -1; }
+    .hero-meta .b { margin-top: 12px; }
+    .sip .label, .index h2, .about h2, .contact h2 { margin-bottom: 16px; }
+    .row { grid-template-columns: 1fr; gap: 4px; }
+    .row p { display: block; }
+    .head { display: none; }
+    .about dl { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 520px) { header nav a:nth-child(n+3) { display: none; } }
+</style>
+</head>
+<body>
+  <header class="grid">
+    <a class="id" href="#">Quentin Drucker</a>
+    <nav aria-label="Primary"><a href="#sip">Senior project</a><a href="#index">Index</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <canvas id="field" aria-hidden="true"></canvas>
+      <h1 class="hero-name"><span>Quentin</span><span>Drucker</span></h1>
+      <div class="grid hero-meta">
+        <p class="a">Computer Science + Art<br />Connecticut College, 2027</p>
+        <p class="b">Procedural systems, computer graphics and computer vision. I write the rules, the rules make the image.</p>
+      </div>
+    </div>
+
+    <section class="sip grid" id="sip">
+      <p class="label">Senior Integrative Project<br />Ammerman Center<br />2026–27, in progress</p>
+      <h2>Computational World&#8209;Building</h2>
+      <div class="text">
+        <p>A wabi-sabi-inspired system for generative worlds. A still photograph does not get rebuilt in 3D. It gets read, and what's read steers how a world grows.</p>
+        <p>Brightness, color, contrast, density and texture become a small set of legible parameters. Unreal Engine, programmed in C++, uses them to bias terrain, scattering, weathering and atmosphere toward asymmetry and controlled disorder.</p>
+      </div>
+      <p class="side">Predecessor: a UE5 PCG forest prototype with ambient sound, fog and first-person exploration.</p>
+      <ol class="flow" aria-label="Pipeline">
+        <li>Photograph<small>input</small></li><li>Features<small>analysis</small></li><li>Parameters<small>translation</small></li><li>Terrain<small>C++, milestone 1</small></li><li>Weathering<small>variation rules</small></li><li>Atmosphere<small>light, fog, sound</small></li>
+      </ol>
+      <div class="media-slot">Media placeholder: photograph → generated world</div>
+    </section>
+
+    <section class="index grid" id="index">
+      <h2>Index</h2>
+      <ul class="rows">
+        <li class="row head" aria-hidden="true"><span>Project</span><span>Field</span><span>Tools</span><span>Year</span></li>
+        <li class="row" tabindex="0"><h3>Computational World-Building</h3><span>Procedural generation</span><span>Unreal, C++</span><span>2026</span><p>Senior project. Photographs shape generated, explorable worlds.</p></li>
+        <li class="row" tabindex="0"><h3>Driving safety research</h3><span>Simulation, RL</span><span>Python, CARLA</span><span>2026</span><p>Parameterized rare-hazard scenarios and RL agents to evaluate autonomous vehicles in safety-critical edge cases. With Prof. Ozgur Izmirli.</p></li>
+        <li class="row" tabindex="0"><h3>AI Vision Scavenger Hunt</h3><span>Full-stack, vision</span><span>React, Node, Azure</span><span>—</span><p>Multiplayer photo game; Azure AI Vision validates each find. Deployed in Docker on an Azure VM.</p></li>
+        <li class="row" tabindex="0"><h3>VR environment</h3><span>Real-time 3D</span><span>Unity, C#</span><span>—</span><p>Physics-based interaction for Meta Quest 3. Co-lead and sole programmer, two-person team.</p></li>
+      </ul>
+    </section>
+
+    <section class="about grid" id="about">
+      <h2>About</h2>
+      <p class="lead">CS major, Art minor, and Ammerman Center for Arts &amp; Technology Scholar, working where technical systems become visual experience.</p>
+      <dl>
+        <div><dt>Study</dt><dd>B.A. CS, Art minor<br />4.00 GPA</dd></div>
+        <div><dt>Now</dt><dd>Student researcher<br />Teaching assistant</dd></div>
+        <div><dt>Languages</dt><dd>C++, Python, C#, JavaScript</dd></div>
+        <div><dt>Résumé</dt><dd><a href="../2026_0603_Resume_QD.pdf">Download PDF</a></dd></div>
+      </dl>
+    </section>
+
+    <section class="contact grid" id="contact">
+      <h2>Contact</h2>
+      <a class="big" href="mailto:qdruck@gmail.com">qdruck@gmail.com</a>
+      <div class="links"><a href="https://github.com/quentin-drucker">GitHub</a><a href="https://www.linkedin.com/in/quentin-drucker">LinkedIn</a></div>
+    </section>
+  </main>
+  <footer>Quentin Drucker, 2026. The field above is a seeded noise vector field, redrawn live.</footer>
+
+<script>
+  /* Flow field: particles follow angles sampled from smooth noise. Trails fade
+     slowly; the pointer adds a local swirl. Static frame under reduced motion. */
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const cv = document.getElementById("field"), ctx = cv.getContext("2d");
+  let w, h, parts = [], mouse = { x: -1e4, y: -1e4 };
+  function rng(a) { return () => { a |= 0; a = a + 0x6d2b79f5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const r = rng(2340);
+  const perm = Float32Array.from({ length: 4096 }, r);
+  const vn = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi, a = perm[(xi + yi * 64) & 4095], b = perm[(xi + 1 + yi * 64) & 4095], c = perm[(xi + (yi + 1) * 64) & 4095], d = perm[(xi + 1 + (yi + 1) * 64) & 4095], sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy); return a + (b - a) * sx + (c - a + (a - b + d - c) * sx) * sy; };
+  function size() {
+    const dpr = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight;
+    cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = "#eeeee9"; ctx.fillRect(0, 0, w, h);
+    parts = Array.from({ length: Math.round(w * h / 1800) }, () => ({ x: r() * w, y: r() * h, life: r() * 200 }));
+  }
+  let t = 0;
+  function step() {
+    ctx.fillStyle = "rgba(238,238,233,0.045)"; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = "rgba(35,64,255,0.55)"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (const p of parts) {
+      let a = vn(p.x * .0028, p.y * .0028 + t * .0004) * Math.PI * 4;
+      const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+      if (d2 < 32000) a += Math.atan2(dy, dx) + Math.PI / 2 * (1 - d2 / 32000);
+      const nx = p.x + Math.cos(a) * 1.4, ny = p.y + Math.sin(a) * 1.4;
+      ctx.moveTo(p.x, p.y); ctx.lineTo(nx, ny); p.x = nx; p.y = ny;
+      if (--p.life < 0 || nx < 0 || nx > w || ny < 0 || ny > h) { p.x = r() * w; p.y = r() * h; p.life = 120 + r() * 200; }
+    }
+    ctx.stroke(); t++;
+  }
+  size();
+  if (reduce) { for (let i = 0; i < 220; i++) step(); }
+  else (function loop() { if (!document.hidden) step(); requestAnimationFrame(loop); })();
+  cv.parentElement.addEventListener("pointermove", e => { const b = cv.getBoundingClientRect(); mouse.x = e.clientX - b.left; mouse.y = e.clientY - b.top; });
+  cv.parentElement.addEventListener("pointerleave", () => { mouse.x = mouse.y = -1e4; });
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { size(); if (reduce) for (let i = 0; i < 220; i++) step(); }, 150); });
+</script>
+</body>
+</html>
