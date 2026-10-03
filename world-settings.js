@@ -34,20 +34,29 @@ saved seed is in place before either draws.
     timeOfDay: 50,        // 0 dawn … 100 sunset, used when not following scroll
     cursorLight: 240,     // radius in px of the lit contour circle; 0 = off
     moteSpeed: 100,       // % particle speed
-    transitionMs: 1500,   // biome transition length
+    transitionMs: 2500,   // biome transition length
     fogReveal: true,
     edgeFade: true,
     meteors: true         // shooting stars over the sea
   };
+  /* Defaults that changed after visitors may have saved them. A saved value
+     equal to an old default is treated as "never chosen" and dropped. */
+  const OLD_DEFAULTS = { transitionMs: [1500] };
   const SEED_WORDS = ["moss", "ridge", "basalt", "fog", "kiln", "tide", "lichen", "cedar", "ember", "drift", "scree", "delta"];
 
   function load() {
-    try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
-    catch (error) { return { ...DEFAULTS }; }
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      Object.entries(OLD_DEFAULTS).forEach(([key, old]) => { if (old.includes(saved[key])) delete saved[key]; });
+      return { ...DEFAULTS, ...saved };
+    } catch (error) { return { ...DEFAULTS }; }
   }
   const values = load();
+  /* Only values that differ from the defaults are stored, so a later change
+     to a default reaches visitors who never touched that control. */
   function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(values)); } catch (error) {}
+    const changed = Object.fromEntries(Object.entries(values).filter(([key, value]) => value !== DEFAULTS[key]));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(changed)); } catch (error) {}
   }
 
   /* The public object other scripts read. moteSpeed is exposed as a factor. */
