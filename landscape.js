@@ -559,7 +559,7 @@ only when you do).
   let tween = null;
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   function startTween() {
-    const duration = still() ? 450 : (world()?.transitionMs ?? 2500);
+    const duration = still() ? 450 : (world()?.transitionMs ?? 800);
     tween = { from: { ...weights }, start: performance.now(), duration };
   }
 

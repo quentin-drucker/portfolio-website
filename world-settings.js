@@ -34,7 +34,7 @@ saved seed is in place before either draws.
     timeOfDay: 50,        // 0 dawn … 100 sunset, used when not following scroll
     cursorLight: 240,     // radius in px of the lit contour circle; 0 = off
     moteSpeed: 100,       // % particle speed
-    transitionMs: 2500,   // biome transition length
+    transitionMs: 800,    // biome transition length
     fogReveal: true,
     edgeFade: true,
     meteors: true,        // shooting stars over the sea
@@ -42,7 +42,7 @@ saved seed is in place before either draws.
   };
   /* Defaults that changed after visitors may have saved them. A saved value
      equal to an old default is treated as "never chosen" and dropped. */
-  const OLD_DEFAULTS = { transitionMs: [1500] };
+  const OLD_DEFAULTS = { transitionMs: [1500, 2500] };
   const SEED_WORDS = ["moss", "ridge", "basalt", "fog", "kiln", "tide", "lichen", "cedar", "ember", "drift", "scree", "delta"];
 
   function load() {
