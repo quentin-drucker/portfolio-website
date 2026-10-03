@@ -446,8 +446,8 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
 
 /* ---------------------------------------------------------------- 4
    Interface scale and breathing room.
-   On desktop the interface renders smaller than its original size (75% by
-   default, adjustable 50–100% with "Interface size" in the world controls,
+   On desktop the content renders smaller than its original size (82% by
+   default, adjustable 64–100% with "Interface size" in the world controls,
    which sets --ui-scale). It works like browser zoom, but only the content
    is scaled: the fixed background (landscape, particles, cursor glow) stays
    full size, so more of it shows around the content. Fixed full-screen
@@ -457,15 +457,18 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
    "full screen" hero still fills the screen. Dialogs use a fixed scale so
    the settings panel doesn't resize under the pointer while its slider is
    dragged. Phones keep 100%. */
-:root { --ui-zoom: 1; }
+:root { --ui-zoom: 1; --chrome-zoom: 1; }
 @media (min-width: 900px) {
-  :root { --ui-zoom: var(--ui-scale, 0.75); }
+  /* Content (sections, cards, text, visuals, footer) follows the slider. */
+  :root { --ui-zoom: var(--ui-scale, 0.82); --chrome-zoom: 0.92; }
   main,
-  .site-footer,
+  .site-footer { zoom: var(--ui-zoom); }
+  /* Peripheral UI (header bar, section rail, back-to-top, loader) keeps a
+     fixed, near-original size so it stays easy to see and use. */
   .nav-shell,
   .section-rail,
   .back-to-top,
-  .intro-loader-panel { zoom: var(--ui-zoom); }
+  .intro-loader-panel { zoom: var(--chrome-zoom); }
   .dialog-shell { zoom: 0.85; }
 }
 @media (max-width: 899px) {
@@ -483,4 +486,10 @@ main > .section:not(.hero):not(.sip-hero) { padding-top: 150px; padding-bottom: 
   main > .section:not(.hero):not(.sip-hero) { padding-top: 96px; padding-bottom: 96px; }
   [data-biome="ridgeline"] + [data-biome="survey"],
   [data-biome="survey"] + [data-biome="tide"] { margin-top: 18vh; }
+}
+/* The header bar's items stay at the peripheral size, but the bar lines up
+   with the content column (which follows the slider). 960px is the least
+   room its links and tools need. */
+@media (min-width: 900px) {
+  .nav-shell { width: min(max(calc(var(--max) * var(--ui-zoom) / var(--chrome-zoom)), 960px), calc(100% - 8px)); }
 }

@@ -38,11 +38,11 @@ saved seed is in place before either draws.
     fogReveal: true,
     edgeFade: true,
     meteors: true,        // shooting stars over the sea
-    uiScale: 75           // % interface size on larger screens (50–100)
+    uiScale: 82           // % content size on larger screens (64–100)
   };
   /* Defaults that changed after visitors may have saved them. A saved value
      equal to an old default is treated as "never chosen" and dropped. */
-  const OLD_DEFAULTS = { transitionMs: [1500, 2500] };
+  const OLD_DEFAULTS = { transitionMs: [1500, 2500], uiScale: [75] };
   const SEED_WORDS = ["moss", "ridge", "basalt", "fog", "kiln", "tide", "lichen", "cedar", "ember", "drift", "scree", "delta"];
 
   function load() {
