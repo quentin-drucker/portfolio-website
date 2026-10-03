@@ -446,8 +446,8 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
 
 /* ---------------------------------------------------------------- 4
    Interface scale and breathing room.
-   On desktop the content renders smaller than its original size (82% by
-   default, adjustable 64–100% with "Interface size" in the world controls,
+   On desktop the content renders smaller than its original size (85% by
+   default, adjustable 70–100% with "Interface size" in the world controls,
    which sets --ui-scale). It works like browser zoom, but only the content
    is scaled: the fixed background (landscape, particles, cursor glow) stays
    full size, so more of it shows around the content. Fixed full-screen
@@ -460,11 +460,11 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
 :root { --ui-zoom: 1; --chrome-zoom: 1; }
 @media (min-width: 900px) {
   /* Content (sections, cards, text, visuals, footer) follows the slider. */
-  :root { --ui-zoom: var(--ui-scale, 0.82); --chrome-zoom: 0.92; }
+  :root { --ui-zoom: var(--ui-scale, 0.85); --chrome-zoom: 1; }
   main,
   .site-footer { zoom: var(--ui-zoom); }
-  /* Peripheral UI (header bar, section rail, back-to-top, loader) keeps a
-     fixed, near-original size so it stays easy to see and use. */
+  /* Peripheral UI (header bar, section rail, back-to-top, loader) stays at
+     its original size, ignoring the slider, so it stays easy to see and use. */
   .nav-shell,
   .section-rail,
   .back-to-top,
