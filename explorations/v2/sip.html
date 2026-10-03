@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<!--
+  SENIOR PROJECT PAGE (draft) — explorations/v2/sip.html
+  Demonstrates a page-level biome: the page is locked to the Ridgeline style
+  and sets data-page-biome="kiln", so the whole page uses the warm, Mist-like
+  palette and landscape instead of the home page's cool scroll biomes.
+  Content comes only from the project description in docs/HANDOFF-2026-10-03.md.
+  Sections not built yet are labeled as planned.
+-->
+<html lang="en" data-theme="dark" data-lock-style="ridgeline" data-page-biome="kiln">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Computational World-Building | Quentin</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="../../enhancements.css" />
+  <link rel="stylesheet" href="base/v2.css" />
+  <link rel="stylesheet" href="base/sip.css" />
+  <script src="base/style-boot.js"></script>
+  <script src="base/config.js" defer></script>
+  <script src="base/script.js" defer></script>
+  <script src="base/landscape.js" defer></script>
+  <script src="base/v2.js" defer></script>
+</head>
+<body data-page="sip">
+  <div id="scroll-progress" aria-hidden="true"><span></span></div>
+  <div id="cursor-aura" aria-hidden="true"></div>
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav-shell glass" aria-label="Senior project navigation">
+      <a class="brand" href="index.html?style=ridgeline">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span>Quentin</span>
+      </a>
+      <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links" id="nav-links">
+        <a href="#idea">Idea</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#variation">Variation</a>
+        <a href="#build">Build</a>
+        <a href="#planned">Planned</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path></svg>
+        </button>
+        <a class="button button-small button-secondary desktop-cta" href="index.html?style=ridgeline#projects">All projects</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="section sip-hero" id="overview">
+      <span class="section-kicker">Senior Integrative Project · Ammerman Center for Arts and Technology</span>
+      <h1 class="hero-title">Computational World-Building</h1>
+      <p class="hero-copy">A wabi-sabi-inspired system for generative worlds. A still photograph influences a procedurally generated, explorable world.</p>
+      <p class="sip-status"><span class="status-dot"></span> In progress. First milestone: terrain.</p>
+    </section>
+
+    <section class="section sip-section" id="idea">
+      <div class="section-heading reveal">
+        <span class="section-kicker">The idea</span>
+        <h2>A photograph steers the world. It doesn’t rebuild it.</h2>
+      </div>
+      <div class="sip-two reveal">
+        <p class="lead">The photograph is not reconstructed and this is not photogrammetry. The image is read for a small set of understandable features, and those features become parameters that bias how a world is generated.</p>
+        <p>The project is both artistic and technical: the variation rules come from wabi-sabi, and the system that applies them is written in C++ for Unreal Engine.</p>
+      </div>
+    </section>
+
+    <section class="section sip-section" id="pipeline">
+      <div class="section-heading reveal">
+        <span class="section-kicker">Pipeline</span>
+        <h2>From one image to a place you can walk through.</h2>
+      </div>
+      <ol class="sip-steps reveal">
+        <li><strong>Photograph</strong><span>A single still image is the input.</span></li>
+        <li><strong>Image analysis</strong><span>The image is measured.</span></li>
+        <li><strong>Features</strong><span>Brightness, color, contrast, density, texture, structure, mood.</span></li>
+        <li><strong>Parameters</strong><span>Features become generation parameters.</span></li>
+        <li><strong>Unreal C++</strong><span>The generation system.</span></li>
+        <li class="is-milestone"><strong>Terrain</strong><span>First milestone.</span></li>
+        <li><strong>Variation rules</strong><span>Wabi-sabi rules bend the result.</span></li>
+        <li><strong>Scattering</strong><span>Placement across the terrain.</span></li>
+        <li><strong>Materials and weathering</strong></li>
+        <li><strong>Lighting, fog, atmosphere</strong></li>
+        <li><strong>Sound</strong></li>
+        <li><strong>Explorable environment</strong><span>First-person.</span></li>
+      </ol>
+    </section>
+
+    <section class="section sip-section" id="variation">
+      <div class="section-heading reveal">
+        <span class="section-kicker">Variation rules</span>
+        <h2>Wabi-sabi as a set of rules.</h2>
+        <p>The generator leans toward these qualities instead of clean, uniform output.</p>
+      </div>
+      <ul class="sip-rules reveal">
+        <li>Asymmetry</li><li>Irregularity</li><li>Imperfection</li><li>Transience</li>
+        <li>Weathering</li><li>Non-uniform repetition</li><li>Controlled disorder</li><li>Atmospheric softness</li>
+      </ul>
+    </section>
+
+    <section class="section sip-section" id="build">
+      <div class="section-heading reveal">
+        <span class="section-kicker">Build</span>
+        <h2>Tools and where it started.</h2>
+      </div>
+      <div class="sip-two reveal">
+        <dl class="sip-facts">
+          <div><dt>Engine</dt><dd>Unreal Engine 5</dd></div>
+          <div><dt>Language</dt><dd>C++</dd></div>
+          <div><dt>IDE</dt><dd>Visual Studio 2022</dd></div>
+          <div><dt>Experience</dt><dd>First-person exploration</dd></div>
+        </dl>
+        <div>
+          <h3 class="sip-h3">Predecessor</h3>
+          <p>A larger Unreal Engine PCG forest prototype: foliage, ambient sound, fog, optimization and first-person exploration.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section sip-section" id="planned">
+      <div class="section-heading reveal">
+        <span class="section-kicker">Planned</span>
+        <h2>Still to come on this page.</h2>
+      </div>
+      <div class="sip-planned reveal">
+        <div class="placeholder-note">Image → world comparisons</div>
+        <div class="placeholder-note">Process journal</div>
+        <div class="placeholder-note">Gallery</div>
+        <div class="placeholder-note">Iterations</div>
+        <div class="placeholder-note">Reflection</div>
+      </div>
+      <p class="sip-back"><a class="card-jump" href="index.html?style=ridgeline#projects">Back to all projects</a></p>
+    </section>
+  </main>
+
+  <div class="style-switcher" id="style-switcher" role="group" aria-label="Exploration navigation"></div>
+</body>
+</html>

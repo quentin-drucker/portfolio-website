@@ -45,6 +45,7 @@ Structural changes from the live page:
   <script src="base/enhancements.js" defer></script>
   <script src="base/terrain.js" defer></script>
   <script src="base/signatures.js" defer></script>
+  <script src="base/landscape.js" defer></script>
   <script src="base/v2.js" defer></script>
 </head>
 
@@ -122,7 +123,7 @@ Structural changes from the live page:
 
   <main id="main-content">
     <!-- HERO -->
-    <section class="hero section" id="home">
+    <section class="hero section" id="home" data-biome="ridgeline">
       <div class="hero-content">
         <div class="eyebrow reveal">
           <span class="status-dot"></span>
@@ -213,7 +214,7 @@ Structural changes from the live page:
       Overview of the kinds of work. Each card names the real projects in that
       area and jumps to Projects with the matching filter applied.
     -->
-    <section class="section" id="expertise">
+    <section class="section" id="expertise" data-biome="ridgeline">
       <div class="section-heading reveal">
         <span class="section-kicker"><kbd>2</kbd> What I work on</span>
         <h2>Core areas I’m developing.</h2>
@@ -264,7 +265,7 @@ Structural changes from the live page:
     </section>
 
     <!-- PROJECTS: the senior project is the featured (wide) card. -->
-    <section class="section" id="projects">
+    <section class="section" id="projects" data-biome="survey">
       <div class="section-heading section-heading-row reveal">
         <div>
           <span class="section-kicker"><kbd>3</kbd> Projects</span>
@@ -305,7 +306,7 @@ Structural changes from the live page:
               <li>Photograph</li><li>Image features</li><li>Parameters</li><li>Terrain</li><li>Weathering</li><li>Atmosphere</li>
             </ol>
             <div class="tag-list"><span>Unreal Engine 5</span><span>C++</span><span>Procedural Generation</span></div>
-            <p class="sip-more"><span class="placeholder-note">Planned: a dedicated senior-project section (concept, process, pipeline, gallery). Not built yet.</span></p>
+            <p class="sip-more"><a class="card-jump" href="sip.html">Open the senior project page (draft)</a></p>
           </div>
         </article>
 
@@ -384,7 +385,7 @@ Structural changes from the live page:
       base/terrain.js builds a seeded heightfield and draws it as a wireframe.
       The form keeps the original ids (seed-form, seed-input).
     -->
-    <section class="section" id="playground">
+    <section class="section" id="playground" data-biome="survey">
       <div class="section-heading reveal">
         <span class="section-kicker"><kbd>4</kbd> Playground</span>
         <h2>Generate a terrain.</h2>
@@ -415,7 +416,7 @@ Structural changes from the live page:
     </section>
 
     <!-- ABOUT (moved after the work) -->
-    <section class="section section-narrow" id="about">
+    <section class="section section-narrow" id="about" data-biome="dusk">
       <div class="section-heading reveal">
         <span class="section-kicker"><kbd>5</kbd> About</span>
         <h2>Curious about how machines can <span class="gradient-text">see, reason, and create.</span></h2>
@@ -455,7 +456,7 @@ Structural changes from the live page:
     </section>
 
     <!-- RÉSUMÉ SUMMARY -->
-    <section class="section section-narrow" id="resume">
+    <section class="section section-narrow" id="resume" data-biome="dusk">
       <div class="resume-shell glass reveal">
         <div class="resume-intro">
           <span class="section-kicker"><kbd>6</kbd> Résumé</span>
@@ -507,7 +508,7 @@ Structural changes from the live page:
     </section>
 
     <!-- CONTACT -->
-    <section class="section" id="contact">
+    <section class="section" id="contact" data-biome="dusk">
       <div class="contact-shell">
         <div class="contact-copy reveal">
           <span class="section-kicker"><kbd>7</kbd> Contact</span>

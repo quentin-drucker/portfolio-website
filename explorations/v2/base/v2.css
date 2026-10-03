@@ -421,7 +421,8 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
   font: 500 13px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
-.style-switcher-label { color: #b8b8b8; }
+.style-switcher-label { color: #b8b8b8; white-space: nowrap; }
+.style-switcher-sep { width: 1px; height: 20px; background: rgba(255, 255, 255, 0.2); }
 .style-switcher-options { display: flex; gap: 2px; overflow-x: auto; }
 .style-switcher button {
   min-height: 32px;
@@ -441,6 +442,8 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
 @media (max-width: 760px) {
   .style-switcher { bottom: 8px; gap: 6px; padding: 5px 6px; font-size: 12px; }
   .style-switcher-label,
+  .style-switcher-sep,
+  .style-switcher [aria-label="Biome transition"],
   .style-switcher a:last-child { display: none; }
   .back-to-top { bottom: 64px !important; }
 }

@@ -1,0 +1,91 @@
+/* Senior project page layout (explorations/v2/sip.html). Colors come from
+   the Ridgeline style's "kiln" page biome; this file only adds layout. */
+.sip-hero {
+  min-height: 92vh;
+  padding-top: calc(var(--header-height) + 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sip-hero .hero-title { margin: 16px 0 18px; max-width: 14ch; }
+.sip-hero .hero-copy { max-width: 46ch; }
+.sip-status { display: inline-flex; align-items: center; gap: 10px; margin: 26px 0 0; color: var(--text-soft); }
+.sip-section { padding: 90px 0; }
+.sip-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 64px);
+  align-items: start;
+}
+.sip-two p { margin: 0; color: var(--text-soft); max-width: 60ch; }
+.sip-two .lead { color: var(--text); }
+.sip-h3 { margin: 0 0 8px; font-size: 1.2rem; }
+
+.sip-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+.sip-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 18px 18px 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+.sip-steps li::before {
+  content: counter(step);
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--text-faint);
+}
+.sip-steps strong { display: block; font-family: var(--font-display); font-size: 1.08rem; font-weight: 600; }
+.sip-steps span { display: block; margin-top: 4px; font-size: 0.9rem; color: var(--text-soft); }
+.sip-steps .is-milestone::before { color: var(--accent); }
+.sip-steps .is-milestone strong::after {
+  content: "milestone";
+  margin-left: 8px;
+  padding: 1px 6px;
+  border: 1px solid var(--line-bright);
+  border-radius: 3px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--accent);
+  vertical-align: 0.2em;
+}
+
+.sip-rules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+  color: var(--text);
+}
+/* Each rule is set slightly off the baseline: irregularity, on purpose. */
+.sip-rules li:nth-child(3n + 1) { transform: translateY(2px); }
+.sip-rules li:nth-child(4n + 2) { transform: translateY(-3px); color: var(--text-soft); }
+.sip-rules li:nth-child(5n) { color: var(--accent); }
+
+.sip-facts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+.sip-facts dt { font-size: 0.8rem; color: var(--text-faint); }
+.sip-facts dd { margin: 2px 0 0; font-family: var(--font-display); font-size: 1.15rem; }
+
+.sip-planned { display: flex; flex-wrap: wrap; gap: 12px; }
+.sip-planned .placeholder-note { padding: 18px 22px; font-size: 0.95rem; }
+.sip-back { margin-top: 40px; }
+
+@media (max-width: 760px) {
+  .sip-two { grid-template-columns: 1fr; }
+  .sip-hero { min-height: 80vh; }
+}

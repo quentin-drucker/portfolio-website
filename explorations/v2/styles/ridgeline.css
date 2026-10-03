@@ -1,0 +1,363 @@
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+/*
+===============================================================================
+RIDGELINE — Survey's palette, Mist's craft, mountains under a map sky
+===============================================================================
+Palette (Survey): cool slate, cyan for actions and links, amber kept for
+highlights only (selected states, key caps, index contours, the peak marker).
+Craft (Mist): Shippori Mincho display, Zen Kaku Gothic body, panels whose
+fill fades out instead of ending, fog-clearing reveals, faded screen edges.
+
+Background (base/landscape.js): a contour-map sky with mountain ridges in
+front, both cut from the same generated land. The page moves through biomes:
+
+  ridgeline   home, focus     mountains under the contour sky
+  survey      projects, play  mountains sink, the map comes forward
+  dusk        about → contact mountains return, warm horizon, orb setting
+  kiln        SIP page only   warm stone and gold: a page-level biome
+
+Palette   slate #0B1318 · panel #12232B · mist #E4EEF0 · cyan #79DDEB ·
+          amber #D9A35B · lichen #A4B8BE
+Type      Shippori Mincho · Zen Kaku Gothic New · IBM Plex Mono (data only)
+*/
+html[data-style="ridgeline"] {
+  --bg: #0b1318;
+  --surface: rgba(16, 30, 37, 0.72);
+  --surface-strong: rgba(11, 20, 25, 0.95);
+  --surface-soft: rgba(121, 221, 235, 0.05);
+  --text: #e4eef0;
+  --text-soft: #a8bcc2;
+  --text-faint: #7d939a;
+  --line: rgba(160, 210, 220, 0.12);
+  --line-bright: rgba(121, 221, 235, 0.36);
+  --cyan: #79ddeb;
+  --blue: #79ddeb;
+  --blue-strong: #4fc3d5;
+  --violet: #d9a35b;
+  --green: #79ddeb;
+  --accent: #79ddeb;
+  --accent-two: #d9a35b;
+  --shadow: none;
+  --shadow-soft: none;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --fx: 121, 221, 235;
+  --fx-2: 217, 163, 91;
+  --fx-glow: 0.4;
+  --aura-size: 600px;
+  --glow-opacity: 0;
+  --grid-line: transparent;
+
+  --btn-bg: #79ddeb;
+  --btn-text: #062a31;
+  --btn-shadow: none;
+
+  --mote-a: 200, 228, 234;
+  --mote-b: 217, 163, 91;
+  --burst: 121, 221, 235;
+  --mote-glow: 0;
+  --mote-alpha: 0.7;
+
+  --contour: 111, 200, 215;
+  --contour-index: 217, 163, 91;
+  --contour-dim: 0.62;
+  --contour-lit: 2.1;
+  --ridge-far: 40, 62, 72;
+  --ridge-near: 5, 10, 13;
+  --orb-ring: rgba(228, 238, 240, 0.7);
+  --orb-fill: rgba(228, 238, 240, 0.1);
+  --orb-glow: 0 0 36px 6px rgba(200, 232, 238, 0.1);
+  --sky-ridgeline: linear-gradient(to bottom, #0b1318 0%, #0d1a20 45%, #12262e 72%, #0b1318 100%);
+  --sky-survey: linear-gradient(to bottom, #0b1318, #0b1318);
+  --sky-dusk: linear-gradient(to bottom, #0b1318 0%, #121a21 40%, #2a2619 68%, #0b1318 100%);
+  --sky-kiln: linear-gradient(to bottom, #191815 0%, #22201b 50%, #2c281f 70%, #191815 100%);
+  --haze-dusk: radial-gradient(70% 40% at 60% 68%, rgba(217, 163, 91, 0.22), transparent 70%);
+  --haze-kiln: radial-gradient(70% 40% at 50% 70%, rgba(201, 167, 100, 0.14), transparent 70%);
+
+  --terrain-line: 205, 232, 238;
+  --terrain-accent: #d9a35b;
+  --terrain-bg: rgba(6, 12, 15, 0.55);
+  --terrain-axis-x: #d9735b;
+  --terrain-axis-y: #79c38a;
+  --terrain-axis-z: #79ddeb;
+  --sip-sky: 22, 40, 48;
+  --sip-sky-2: 8, 15, 19;
+  --sip-ink: 121, 221, 235;
+
+  --font-display: "Shippori Mincho", "Yu Mincho", Georgia, serif;
+  --font-body: "Zen Kaku Gothic New", "Segoe UI", system-ui, sans-serif;
+  --font-ui: "IBM Plex Mono", monospace;
+  --terrain-font: "IBM Plex Mono", monospace;
+  --art-filter: saturate(0.8) brightness(0.95);
+}
+html[data-style="ridgeline"][data-theme="light"] {
+  --bg: #edf0ea;
+  --surface: rgba(246, 248, 243, 0.78);
+  --surface-strong: rgba(244, 246, 241, 0.96);
+  --surface-soft: rgba(20, 70, 80, 0.05);
+  --text: #13232a;
+  --text-soft: #42575e;
+  --text-faint: #56696f;
+  --line: rgba(20, 60, 70, 0.14);
+  --line-bright: rgba(10, 110, 125, 0.4);
+  --cyan: #0b6e7c;
+  --blue: #0b6e7c;
+  --accent: #0b6e7c;
+  --accent-two: #9a6420;
+  --btn-bg: #0b6e7c;
+  --btn-text: #ffffff;
+  --fx: 11, 110, 124;
+  --fx-2: 154, 100, 32;
+  --aura-blend: multiply;
+  --mote-a: 11, 110, 124;
+  --mote-b: 154, 100, 32;
+  --burst: 11, 110, 124;
+  --contour: 40, 100, 110;
+  --contour-index: 160, 100, 30;
+  --contour-dim: 0.75;
+  --contour-lit: 1.6;
+  --ridge-far: 222, 228, 225;
+  --ridge-near: 182, 194, 194;
+  --orb-ring: rgba(154, 100, 32, 0.0);
+  --orb-fill: radial-gradient(circle, #e9b765 0%, #d9a35b 60%, rgba(217, 163, 91, 0.4) 100%);
+  --orb-glow: 0 0 60px 16px rgba(217, 163, 91, 0.25);
+  --sky-ridgeline: linear-gradient(to bottom, #edf0ea 0%, #e6ece8 60%, #dfe8e6 100%);
+  --sky-survey: linear-gradient(to bottom, #edf0ea, #edf0ea);
+  --sky-dusk: linear-gradient(to bottom, #edf0ea 0%, #efe9dc 60%, #f0e2c8 100%);
+  --sky-kiln: linear-gradient(to bottom, #e6e3db 0%, #e2ddd0 100%);
+  --haze-dusk: radial-gradient(70% 40% at 60% 68%, rgba(217, 163, 91, 0.18), transparent 70%);
+  --terrain-line: 20, 50, 58;
+  --terrain-accent: #9a6420;
+  --terrain-bg: rgba(225, 230, 222, 0.6);
+  --sip-sky: 214, 224, 218;
+  --sip-sky-2: 236, 240, 234;
+  --sip-ink: 150, 165, 166;
+}
+
+/* Page biome: kiln (the SIP page). A warm, Mist-like palette for one page. */
+html[data-style="ridgeline"][data-page-biome="kiln"] {
+  --bg: #191815;
+  --surface: rgba(38, 35, 30, 0.72);
+  --surface-strong: rgba(28, 27, 23, 0.96);
+  --surface-soft: rgba(236, 231, 220, 0.04);
+  --text: #ece7dc;
+  --text-soft: #b6af9f;
+  --text-faint: #918a7b;
+  --line: rgba(236, 231, 220, 0.1);
+  --line-bright: rgba(201, 167, 100, 0.42);
+  --cyan: #c9a764;
+  --blue: #c9a764;
+  --accent: #c9a764;
+  --accent-two: #9aa77c;
+  --btn-bg: #c9a764;
+  --btn-text: #1d1a12;
+  --fx: 214, 190, 140;
+  --fx-2: 154, 167, 124;
+  --mote-a: 222, 212, 188;
+  --mote-b: 170, 180, 146;
+  --burst: 214, 190, 140;
+  --contour: 150, 140, 112;
+  --contour-index: 201, 167, 100;
+  --contour-dim: 0.35;
+  --ridge-far: 74, 70, 61;
+  --ridge-near: 9, 9, 8;
+  --orb-ring: rgba(201, 167, 100, 0.8);
+  --orb-fill: rgba(201, 167, 100, 0.12);
+  --orb-glow: 0 0 36px 6px rgba(201, 167, 100, 0.12);
+}
+html[data-style="ridgeline"][data-page-biome="kiln"][data-theme="light"] {
+  --bg: #e6e3db;
+  --surface: rgba(240, 237, 230, 0.75);
+  --surface-strong: rgba(236, 233, 226, 0.97);
+  --surface-soft: rgba(35, 34, 30, 0.04);
+  --text: #23221e;
+  --text-soft: #57534a;
+  --text-faint: #6b665b;
+  --line: rgba(35, 34, 30, 0.12);
+  --line-bright: rgba(140, 110, 50, 0.45);
+  --cyan: #8a6a2c;
+  --blue: #8a6a2c;
+  --accent: #8a6a2c;
+  --accent-two: #56604a;
+  --btn-bg: #2a2925;
+  --btn-text: #f0ece2;
+  --fx: 120, 96, 50;
+  --mote-a: 60, 56, 48;
+  --contour: 120, 110, 90;
+  --ridge-far: 214, 210, 200;
+  --ridge-near: 170, 165, 154;
+}
+
+/* ---------------------------------------------------------------- scene */
+html[data-style="ridgeline"] :is(.background-grid, .page-glow, #signature-canvas) { display: none; }
+
+.landscape {
+  position: fixed;
+  inset: 0;
+  z-index: -6;
+  overflow: hidden;
+  pointer-events: none;
+  --w-ridgeline: 1;
+  --w-survey: 0;
+  --w-dusk: 0;
+  --w-kiln: 0;
+}
+.landscape > * { position: absolute; }
+.ls-sky { inset: 0; }
+.ls-sky-ridgeline { background: var(--sky-ridgeline); opacity: var(--w-ridgeline); }
+.ls-sky-survey { background: var(--sky-survey); opacity: var(--w-survey); }
+.ls-sky-dusk { background: var(--sky-dusk); opacity: var(--w-dusk); }
+.ls-sky-kiln { background: var(--sky-kiln); opacity: var(--w-kiln); }
+
+.ls-contours,
+.ls-contours-lit { inset: 0; width: 100%; height: 100%; }
+.ls-contours {
+  opacity: calc(0.7 + var(--w-survey) * 0.3 - var(--w-dusk) * 0.45);
+}
+.ls-contours-lit {
+  opacity: 0;
+  transition: opacity 400ms ease;
+  -webkit-mask-image: radial-gradient(240px circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+  mask-image: radial-gradient(240px circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+}
+.landscape.ls-lit .ls-contours-lit { opacity: calc(0.55 + var(--w-survey) * 0.45 - var(--w-dusk) * 0.3); }
+
+.ls-orb {
+  left: 0;
+  top: 0;
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  will-change: transform;
+}
+.ls-orb span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1.5px solid var(--orb-ring);
+  background: var(--orb-fill);
+  box-shadow: var(--orb-glow);
+}
+
+.ls-ridge {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 60vh;
+  will-change: transform;
+}
+.ls-ridge[data-layer="0"] { opacity: calc(1 - var(--w-survey) * 0.6); }
+.ls-ridge[data-layer="1"] { opacity: calc(1 - var(--w-survey) * 0.5); }
+.ls-ridge[data-layer="2"] { opacity: calc(1 - var(--w-survey) * 0.35); }
+
+.ls-haze { inset: 0; background: var(--haze-dusk); opacity: var(--w-dusk); }
+html[data-page-biome="kiln"] .ls-haze { background: var(--haze-kiln); opacity: var(--w-kiln); }
+
+/* "Cut" transitions: biome changes snap at the boundary with a short fade. */
+.landscape.ls-cut :is(.ls-sky, .ls-contours, .ls-ridge, .ls-haze) {
+  transition: opacity 650ms ease, transform 650ms cubic-bezier(.2, .7, .2, 1);
+}
+
+@media (max-width: 760px) {
+  .ls-ridge { height: 46vh; }
+  .ls-orb { width: 40px; height: 40px; margin: -20px 0 0 -20px; }
+}
+
+/* ---------------------------------------------------------------- Mist craft */
+/* Faded screen edges */
+html[data-style="ridgeline"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, var(--bg) 0, transparent 72px),
+    linear-gradient(to top, var(--bg) 0, transparent 56px);
+}
+
+/* Type */
+html[data-style="ridgeline"] .hero-title {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  font-size: clamp(2.6rem, 4.6vw, 4.5rem);
+}
+html[data-style="ridgeline"] :is(.section-heading h2, .resume-intro h2, .contact-copy h2) {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+}
+html[data-style="ridgeline"] :is(.expertise-card h3, .project-card h3) { font-weight: 600; letter-spacing: -0.01em; }
+html[data-style="ridgeline"] .section-kicker { color: var(--accent); font-weight: 500; }
+html[data-style="ridgeline"] .section-kicker kbd { border-color: rgba(217, 163, 91, 0.55); color: var(--accent-two); }
+html[data-style="ridgeline"] :is(.project-type, .fact-label, .resume-row > span) {
+  font-family: var(--font-body);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  color: var(--accent-two);
+}
+html[data-style="ridgeline"] :is(.tag-list span, .hero-meta span) {
+  font-family: var(--font-body);
+  border-color: transparent;
+  background: rgba(121, 221, 235, 0.08);
+  color: var(--text-soft);
+  border-radius: 3px;
+}
+
+/* Surfaces: no box, the fill fades away from the top-left */
+html[data-style="ridgeline"] .glass {
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: radial-gradient(130% 120% at 0% 0%, rgba(18, 35, 43, 0.9), rgba(13, 25, 31, 0.6) 55%, rgba(11, 19, 24, 0.12) 100%);
+  box-shadow: none;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+html[data-style="ridgeline"][data-theme="light"] .glass {
+  background: radial-gradient(130% 120% at 0% 0%, rgba(250, 251, 248, 0.92), rgba(240, 244, 238, 0.6) 55%, rgba(237, 240, 234, 0.15) 100%);
+}
+html[data-style="ridgeline"][data-page-biome="kiln"] .glass {
+  background: radial-gradient(130% 120% at 0% 0%, rgba(48, 45, 39, 0.9), rgba(34, 32, 28, 0.55) 55%, rgba(25, 24, 21, 0.1) 100%);
+}
+html[data-style="ridgeline"] .nav-shell,
+html[data-style="ridgeline"] .site-header.scrolled .nav-shell {
+  background: rgba(11, 19, 24, 0.82);
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+}
+html[data-style="ridgeline"][data-page-biome="kiln"] .nav-shell { background: rgba(25, 24, 21, 0.84); }
+html[data-style="ridgeline"] .immersive-card:hover {
+  border-color: transparent;
+  border-top-color: rgba(217, 163, 91, 0.6);
+  box-shadow: none;
+}
+html[data-style="ridgeline"] .brand-mark {
+  border-color: var(--line-bright);
+  background: transparent;
+  color: var(--accent);
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+html[data-style="ridgeline"] .button { border-radius: 4px; }
+html[data-style="ridgeline"] .button-secondary { background: transparent; border-color: var(--line-bright); }
+html[data-style="ridgeline"] .filter-button { border-radius: 4px; }
+html[data-style="ridgeline"] .filter-button[aria-pressed="true"] { background: var(--accent-two); color: #1d1406; }
+html[data-style="ridgeline"] .project-visual { background-color: rgba(4, 9, 12, 0.45); }
+html[data-style="ridgeline"] .section-rail a.active:not(:hover):not(:focus-visible) { color: var(--accent-two); border-color: rgba(217, 163, 91, 0.5); }
+
+/* Fog-clearing reveal */
+html[data-style="ridgeline"] .reveal {
+  transform: none;
+  filter: blur(6px);
+  transition: opacity 1100ms ease, filter 1300ms ease;
+}
+html[data-style="ridgeline"] .reveal.visible { filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-style="ridgeline"] .reveal { filter: none; }
+}
+html[data-style="ridgeline"][data-motion="off"] .reveal { filter: none; }

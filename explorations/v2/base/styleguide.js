@@ -37,6 +37,12 @@
       idea: "The Viewport palette without the editor chrome. Neutral 3D-editor grey where the only color is the selection: orange means selected or actionable and nothing else. The Playground terrain feels native here.",
       facts: [["Mood", "Tool-like, focused, engineered"], ["Type", "Archivo (condensed display), JetBrains Mono"], ["Surfaces", "Opaque panels, no blur or glow"], ["Signature", "Editor grid and selection outlines"]],
       signature: "An editor-style floor grid that fades down the page. The hovered card takes an orange selection outline, and the particle field becomes small orange sparks."
+    },
+    ridgeline: {
+      name: "Ridgeline",
+      idea: "Survey's cool slate palette with cyan for actions and amber kept for highlights, set with Mist's typography, spacing, fading panels and fog. Mountain ridges stand in front of a contour-map sky, and both are cut from the same generated land: the map is that land seen from above.",
+      facts: [["Mood", "Nocturnal atlas: technical and handmade"], ["Type", "Shippori Mincho, Zen Kaku Gothic New"], ["Surfaces", "Borderless, fills fade from the top-left"], ["Signature", "Mountains under a map sky, biomes by scroll"]],
+      signature: "A landscape that changes as you move through the page. Intro and focus: mountains under the contour sky. Projects and Playground: the mountains sink and the map comes forward. About to Contact: the mountains return at dusk with a warm horizon. A moon (a sun in light mode) arcs over the ridges as you scroll and sets at the bottom of the page. Pages can also fix their own biome; the senior-project draft uses a warm \"kiln\" biome."
     }
   };
   const data = GUIDE[style] || GUIDE.original;

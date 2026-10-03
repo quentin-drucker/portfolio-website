@@ -13,6 +13,24 @@ cards and effects.
 | Field | Signal's flow field on indigo, ultramarine, one grotesk | pointer-reactive flow field behind the hero |
 | Graphite | Viewport palette, orange = selected | editor grid, selection outlines, spark particles |
 
+## Round 3: Ridgeline and biomes
+
+`?style=ridgeline`: Survey's palette (cyan actions, amber highlights) with
+Mist's type, spacing, fading panels, fog reveals and faded screen edges.
+
+- **Landscape** (`base/landscape.js`): mountains in front of a contour-map
+  sky, both cut from one seeded heightfield (the map is the land from above;
+  each ridge is a side-on slice). The Playground seed redraws both.
+- **Scroll biomes**: sections carry `data-biome`. Home and Focus are
+  `ridgeline`; Projects and Playground are `survey` (mountains sink, map comes
+  forward); About to Contact are `dusk` (warm horizon). "Blend" mixes over one
+  screen of scrolling; "Cut" switches at the boundary with a short fade.
+- **Page biomes**: `<html data-page-biome="kiln">` fixes a page's biome and
+  palette. `sip.html` is a draft senior-project page that uses it.
+- **Moon/sun**: arcs left → right with scroll progress and sets behind the
+  ridges. A sun in light mode.
+- Reduced motion or motion-off: no parallax or sinking; biomes cross-fade.
+
 ## How it's built
 
 - Loads the live `../../styles.css` and `../../enhancements.css` **unchanged**.
