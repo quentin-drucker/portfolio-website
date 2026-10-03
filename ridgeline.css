@@ -69,7 +69,7 @@ html[data-style="ridgeline"] {
   --mote-alpha: 0.7;
 
   --contour: 111, 200, 215;
-  --contour-index: 61, 255, 157;
+  --contour-index: 217, 163, 91;
   --contour-dim: 0.62;
   --contour-lit: 2.1;
   --ridge-far: 40, 62, 72;
@@ -83,9 +83,9 @@ html[data-style="ridgeline"] {
     radial-gradient(70% 50% at 100% 100%, rgba(217, 163, 91, 0.035), transparent 60%),
     linear-gradient(to bottom, #0a1216, #0c171d 55%, #0a1216);
   --sky-tide:
-    radial-gradient(80% 50% at 70% 0%, rgba(122, 82, 214, 0.22), transparent 70%),
-    radial-gradient(60% 40% at 15% 20%, rgba(170, 90, 200, 0.10), transparent 70%),
-    linear-gradient(to bottom, #120f26 0%, #16142f 30%, #141a30 50%, #13232c 62%, #0b1318 100%);
+    radial-gradient(80% 50% at 70% 0%, rgba(190, 178, 232, 0.13), transparent 70%),
+    radial-gradient(60% 40% at 15% 20%, rgba(222, 196, 228, 0.06), transparent 70%),
+    linear-gradient(to bottom, #181c2e 0%, #1a1e31 30%, #182030 50%, #14232c 62%, #0b1318 100%);
   --sky-kiln: linear-gradient(to bottom, #191815 0%, #22201b 50%, #2c281f 70%, #191815 100%);
   --star-line: 121, 221, 235;
   --star: 220, 236, 240;
@@ -93,14 +93,17 @@ html[data-style="ridgeline"] {
   --sea-deep: 4, 9, 12;
   --sea-line: 160, 205, 218;
   --sea-moon: 228, 238, 240;
-  /* Biome color spice: nebula (mountains), survey green (map), violet sky
-     and bioluminescence (sea). Background only; UI keeps cyan/amber/gold. */
+  /* Biome color spice: nebula (mountains), one traced green contour (map),
+     lavender sky, neutral clouds and bioluminescence (sea). Background only;
+     the UI keeps cyan/amber/gold. */
   --nebula-a: 255, 92, 138;
   --nebula-b: 255, 106, 61;
-  --nebula-alpha: 0.34;
+  --nebula-alpha: 0.2;
   --survey-green: 61, 255, 157;
   --biolume: 70, 170, 255;
   --biolume-core: 200, 235, 255;
+  --cloud: 196, 204, 214;
+  --trace-alpha: 0.6;
   /* Horizon glow color along the orb's arc: dawn | morning | moonlight |
      evening | sunset. Interpolated by scroll progress in landscape.js. */
   --glow-stops: 214,140,96 | 217,163,91 | 140,205,222 | 230,170,80 | 232,112,58;
@@ -145,7 +148,7 @@ html[data-style="ridgeline"][data-theme="light"] {
   --mote-b: 154, 100, 32;
   --burst: 11, 110, 124;
   --contour: 40, 100, 110;
-  --contour-index: 0, 150, 85;
+  --contour-index: 160, 100, 30;
   --contour-dim: 0.75;
   --contour-lit: 1.6;
   --ridge-far: 222, 228, 225;
@@ -169,10 +172,12 @@ html[data-style="ridgeline"][data-theme="light"] {
   --stars-alpha: 0.4;
   --nebula-a: 236, 120, 160;
   --nebula-b: 240, 140, 90;
-  --nebula-alpha: 0.2;
+  --nebula-alpha: 0.12;
   --survey-green: 0, 150, 85;
   --biolume: 20, 110, 220;
   --biolume-core: 40, 90, 200;
+  --cloud: 250, 250, 252;
+  --trace-alpha: 0.75;
   --glow-stops: 230,160,110 | 232,180,110 | 170,210,220 | 238,190,110 | 236,140,90;
   --glow-alpha: 0.3;
   --terrain-line: 20, 50, 58;
@@ -214,7 +219,7 @@ html[data-style="ridgeline"][data-page-biome="kiln"] {
   --star-line: 201, 167, 100;
   --nebula-a: 214, 120, 120;
   --nebula-b: 230, 146, 72;
-  --nebula-alpha: 0.26;
+  --nebula-alpha: 0.15;
   --orb-ring: rgba(201, 167, 100, 0.8);
   --orb-fill: rgba(201, 167, 100, 0.12);
   --orb-glow: 0 0 18px 4px rgba(214, 190, 140, 0.2), 0 0 70px 26px rgba(201, 167, 100, 0.08);
@@ -319,32 +324,25 @@ html[data-theme="light"] .ls-nebula { mix-blend-mode: normal; }
 @media (prefers-reduced-motion: reduce) { .ls-meteors { display: none; } }
 html[data-motion="off"] .ls-meteors { display: none; }
 
-/* Survey beacons (map biome): the four highest summits pulse in green. */
-.ls-beacons { inset: 0; opacity: var(--w-survey); }
-.ls-beacons i {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  margin: -4px 0 0 -4px;
-  border-radius: 50%;
-  background: rgb(var(--survey-green));
-  box-shadow: 0 0 10px 2px rgba(var(--survey-green), 0.6);
+/* Stylized clouds (sea biome): canvases two screens wide, drawn opaque and
+   faded here; they slide left by half their width and loop. */
+.ls-clouds {
+  top: 0;
+  left: 0;
+  width: 200vw;
+  height: 100vh;
+  animation: ls-cloud-drift 260s linear infinite;
 }
-.ls-beacons i::after {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 1px solid rgba(var(--survey-green), 0.8);
-  animation: ls-beacon 3.4s ease-out infinite;
-  animation-delay: inherit;
-}
-@keyframes ls-beacon {
-  0% { transform: scale(0.6); opacity: 0.9; }
-  100% { transform: scale(4.5); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) { .ls-beacons i::after { animation: none; opacity: 0; } }
-html[data-motion="off"] .ls-beacons i::after { animation: none; opacity: 0; }
+/* Only in the sea biome: every layer's opacity is a multiple of --w-tide. */
+.ls-clouds-far { opacity: calc(var(--w-tide) * 0.08); animation-duration: 420s; }
+.ls-clouds-mid { opacity: calc(var(--w-tide) * 0.12); animation-duration: 300s; }
+.ls-clouds-near { opacity: calc(var(--w-tide) * 0.16); animation-duration: 200s; }
+html[data-theme="light"] .ls-clouds-far { opacity: calc(var(--w-tide) * 0.4); }
+html[data-theme="light"] .ls-clouds-mid { opacity: calc(var(--w-tide) * 0.55); }
+html[data-theme="light"] .ls-clouds-near { opacity: calc(var(--w-tide) * 0.7); }
+@keyframes ls-cloud-drift { to { transform: translateX(-100vw); } }
+@media (prefers-reduced-motion: reduce) { .ls-clouds { animation: none; } }
+html[data-motion="off"] .ls-clouds { animation: none; }
 
 /* Contour map: the background of Projects and Playground only */
 .ls-contours,

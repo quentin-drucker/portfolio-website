@@ -5,22 +5,26 @@ LANDSCAPE + BIOMES — landscape.js
 
 A fixed background scene, back to front:
   sky        one gradient per biome, cross-faded by weight
+  nebula     faint pink/ember clouds above the mountains (a detail)
   stars      night sky: static stars, a few twinkling, rare gold ones, faint
              celestial arcs (behind the mountains and the sea)
-  contours   topographic map of a heightfield, plus a brighter copy revealed
-             around the pointer (behind Projects and Playground)
+  meteors    occasional shooting stars over the sea
+  contours   topographic map of a heightfield with amber index lines and one
+             line traced in glowing green, plus a green copy revealed around
+             the pointer (behind Projects and Playground)
   glow       horizon glow centered under the orb; its color follows the orb's
              arc (dawn → moonlight → sunset) as you move down the page
   orb        moon (dark theme) / sun (light theme) that arcs left → right with
              scroll progress
+  clouds     two layers of stylized, neutral clouds drifting over the sea
   ridges     three canvases (far, mid, near) of mountain silhouettes
-  sea        night sea: wave strokes that drift, and a reflection path under
-             the orb in the glow's color
+  sea        night sea: drifting wave strokes, a reflection path under the orb
+             in the glow's color, and bioluminescence around the pointer
 
 Biomes on the homepage (data-biome on sections):
-  ridgeline  Home, What I work on      stars + moon + mountains
+  ridgeline  Home, What I work on      stars + nebula + moon + mountains
   survey     Projects, Playground      the contour map, clean and quiet
-  tide       About, Résumé, Contact    stars + moon + sea
+  tide       About, Résumé, Contact    lavender sky + clouds + moon + sea
 A page can fix one biome with <html data-page-biome="…"> (sip.html: "kiln",
 a warm version of ridgeline).
 
@@ -63,9 +67,11 @@ only when you do).
      <div class="ls-stars"><canvas class="ls-stars-canvas"></canvas><div class="ls-twinkles"></div></div>
      <div class="ls-meteors"></div>
      <canvas class="ls-contours"></canvas><canvas class="ls-contours-lit"></canvas>
-     <div class="ls-beacons"></div>
      <div class="ls-glow"></div>
      <div class="ls-orb"><span></span></div>
+     <canvas class="ls-clouds ls-clouds-far"></canvas>
+     <canvas class="ls-clouds ls-clouds-mid"></canvas>
+     <canvas class="ls-clouds ls-clouds-near"></canvas>
      <canvas class="ls-ridge" data-layer="0"></canvas>
      <canvas class="ls-ridge" data-layer="1"></canvas>
      <canvas class="ls-ridge" data-layer="2"></canvas>
@@ -73,13 +79,13 @@ only when you do).
   document.body.prepend(scene);
   const nebulaCanvas = scene.querySelector(".ls-nebula");
   const meteors = scene.querySelector(".ls-meteors");
-  const beacons = scene.querySelector(".ls-beacons");
   const starsCanvas = scene.querySelector(".ls-stars-canvas");
   const twinkles = scene.querySelector(".ls-twinkles");
   const contourCanvas = scene.querySelector(".ls-contours");
   const litCanvas = scene.querySelector(".ls-contours-lit");
   const ridgeCanvases = [...scene.querySelectorAll(".ls-ridge")];
   const seaCanvas = scene.querySelector(".ls-sea");
+  const cloudCanvases = [...scene.querySelectorAll(".ls-clouds")];
   const orb = scene.querySelector(".ls-orb");
 
   /* ---------- noise ---------- */
@@ -128,10 +134,11 @@ only when you do).
     return { context, w, h };
   }
 
-  /* ---------- contour map (marching squares) ---------- */
-  /* `lit` draws the pointer-revealed copy entirely in the survey green; the
-     main copy uses cyan lines with green index contours (every fifth) and
-     marks the highest summits with survey triangles and their heights. */
+  /* ---------- contour map (marching squares) ----------
+     Main copy: cyan lines, amber index contours (every fifth), and one
+     elevation line traced in glowing survey green, the map's single green
+     accent. `lit` draws the pointer-revealed copy in green, so the map
+     glows green where you point. */
   function drawContours(canvas, alphaScale, lit = false) {
     const { context, w, h } = fit(canvas);
     const cell = w < 700 ? 12 : 9, levels = world()?.contourLevels ?? 14, unit = 1 / 260;
@@ -140,8 +147,10 @@ only when you do).
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) grid[j * cols + i] = field(i * cell * unit, j * cell * unit + 40, 3);
     const green = css("--survey-green", "61, 255, 157");
     const line = lit ? green : css("--contour", "111, 200, 215");
-    const index = lit ? green : css("--contour-index", green);
-    if (!lit) drawSummits(context, grid, cols, rows, cell, w, h, green);
+    const index = lit ? green : css("--contour-index", "217, 163, 91");
+    /* the traced level: a little above the middle, never an index level */
+    let traced = Math.round(levels * 0.55);
+    if (traced % 5 === 0) traced += 1;
     for (let L = 1; L < levels; L++) {
       const iso = 0.25 + (L / levels) * 0.5;
       context.beginPath();
@@ -154,46 +163,21 @@ only when you do).
         const seg = { 1: [Lp, T], 2: [T, R], 3: [Lp, R], 4: [R, B], 5: [Lp, T, R, B], 6: [T, B], 7: [Lp, B], 8: [B, Lp], 9: [T, B], 10: [T, R, B, Lp], 11: [R, B], 12: [R, Lp], 13: [T, R], 14: [Lp, T] }[idx];
         for (let k = 0; k < seg.length; k += 2) { context.moveTo(seg[k][0], seg[k][1]); context.lineTo(seg[k + 1][0], seg[k + 1][1]); }
       }
+      if (!lit && L === traced) {
+        context.save();
+        context.shadowColor = `rgba(${green}, 0.75)`;
+        context.shadowBlur = 10;
+        context.strokeStyle = `rgba(${green}, ${parseFloat(css("--trace-alpha", "0.6"))})`;
+        context.lineWidth = 1.5;
+        context.stroke();
+        context.restore();
+        continue;
+      }
       const isIndex = L % 5 === 0;
       context.strokeStyle = `rgba(${isIndex ? index : line}, ${Math.min(1, (isIndex ? 0.5 : 0.22) * alphaScale)})`;
       context.lineWidth = isIndex ? 1.2 : 0.8;
       context.stroke();
     }
-  }
-
-  /* Summit markers: true local maxima of the generated field, labeled with
-     their generated height (0–999), like benchmarks on a survey map. The four
-     highest also get a slowly pulsing beacon (DOM, CSS animation). */
-  function drawSummits(context, grid, cols, rows, cell, w, h, green) {
-    const peaks = [];
-    const R = 4;
-    for (let j = R; j < rows - R; j++) for (let i = R; i < cols - R; i++) {
-      const v = grid[j * cols + i];
-      let top = true;
-      for (let dj = -R; dj <= R && top; dj++) for (let di = -R; di <= R; di++) {
-        if ((di || dj) && grid[(j + dj) * cols + i + di] > v) { top = false; break; }
-      }
-      if (top) peaks.push({ x: i * cell, y: j * cell, v });
-    }
-    peaks.sort((a, b) => b.v - a.v);
-    const chosen = [];
-    for (const p of peaks) {
-      if (p.x < 40 || p.x > w - 60 || p.y < 90 || p.y > h - 40) continue;
-      if (chosen.every((q) => Math.hypot(q.x - p.x, q.y - p.y) > 170)) chosen.push(p);
-      if (chosen.length >= 9) break;
-    }
-    context.font = `10px ${css("--font-ui", "monospace")}`;
-    chosen.forEach((p) => {
-      context.strokeStyle = `rgba(${green}, 0.55)`;
-      context.lineWidth = 1;
-      context.beginPath();
-      context.moveTo(p.x, p.y - 5); context.lineTo(p.x + 4.5, p.y + 3); context.lineTo(p.x - 4.5, p.y + 3); context.closePath();
-      context.stroke();
-      context.fillStyle = `rgba(${green}, 0.5)`;
-      context.fillText(String(Math.round(p.v * 1000)), p.x + 8, p.y + 3);
-    });
-    beacons.innerHTML = chosen.slice(0, 4).map((p, k) =>
-      `<i style="left:${p.x}px;top:${p.y}px;animation-delay:-${(k * 1.7).toFixed(1)}s"></i>`).join("");
   }
 
   /* ---------- ridges: side-on slices of the same field ---------- */
@@ -318,9 +302,9 @@ only when you do).
         const dust = gas(wx * 2.4 + 21, wy * 2.4 + 9, 3);
         /* a soft band that rises from left to right through the upper sky */
         const centre = 0.34 - (u - 0.5) * 0.18;
-        const band = Math.exp(-Math.pow((v - centre) / 0.16, 2));
-        const a1 = Math.pow(clamp01((d1 - 0.47) * 6), 2) * band;
-        const a2 = Math.pow(clamp01((d2 - 0.5) * 6), 2) * band;
+        const band = Math.exp(-Math.pow((v - centre) / 0.12, 2));
+        const a1 = Math.pow(clamp01((d1 - 0.51) * 6), 2) * band;
+        const a2 = Math.pow(clamp01((d2 - 0.53) * 6), 2) * band;
         const total = a1 + a2;
         const o = (y * W + x) * 4;
         if (total < 0.004) { image.data[o + 3] = 0; continue; }
@@ -333,6 +317,73 @@ only when you do).
       }
     }
     context.putImageData(image, 0, 0);
+  }
+
+  /* ---------- stylized clouds (sea biome) ----------
+     Flat-bottomed clouds with rounded bumps on top, in a neutral color,
+     shaded lighter along their upper edge as if lit by the moon. Three depth
+     layers (far: small, high, faint; mid; near: larger, lower), each with its
+     own size range and drift speed. Each canvas is
+     two screens wide with the same clouds drawn in both halves, so a CSS
+     animation can slide it left by half its width and loop seamlessly. */
+  function drawClouds() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const color = css("--cloud", "196, 204, 214");
+    const narrow = vw < 700 ? 0.7 : 1;
+    const layers = [
+      { count: 6, w: [90, 170], h: [11, 19], y: [0.08, 0.26], seed: "clouds-far" },
+      { count: 5, w: [150, 260], h: [17, 28], y: [0.16, 0.36], seed: "clouds-mid" },
+      { count: 4, w: [210, 380], h: [24, 40], y: [0.24, 0.46], seed: "clouds-near" }
+    ].map((L) => ({ ...L, w: L.w.map((v) => v * narrow), h: L.h.map((v) => v * narrow) }));
+    cloudCanvases.forEach((canvas, n) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(vw * 2 * dpr);
+      canvas.height = Math.round(vh * dpr);
+      const c = canvas.getContext("2d");
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      c.clearRect(0, 0, vw * 2, vh);
+      const L = layers[n];
+      const random = rng(hash(L.seed));
+      const span = (r) => r[0] + random() * (r[1] - r[0]);
+      for (let k = 0; k < L.count; k++) {
+        const width = span(L.w), height = span(L.h);
+        const x = (k + random() * 0.6) * (vw / L.count);
+        const y = span(L.y) * vh;
+        const bumps = 3 + Math.floor(random() * 3);
+        const shape = Array.from({ length: bumps }, (_, i) => ({
+          dx: width * (0.18 + 0.64 * (i + 0.5) / bumps) + (random() - 0.5) * width * 0.08,
+          r: height * (0.55 + random() * 0.55)
+        }));
+        for (const offset of [0, vw]) cloud(c, x + offset, y, width, height, shape, color);
+      }
+    });
+  }
+  function cloud(c, x, y, width, height, shape, color) {
+    const base = height * 0.5;
+    c.save();
+    c.beginPath();
+    c.rect(x - 4, y - height * 3, width + 8, height * 3); // keep the bottom flat
+    c.clip();
+    c.fillStyle = `rgb(${color})`;
+    c.beginPath();
+    c.arc(x + base, y - base, base, 0, Math.PI * 2);
+    c.arc(x + width - base, y - base, base, 0, Math.PI * 2);
+    c.fill();
+    c.fillRect(x + base, y - base * 2, width - base * 2, base * 2);
+    for (const b of shape) {
+      c.beginPath();
+      c.arc(x + b.dx, y - base - b.r * 0.35, b.r, 0, Math.PI * 2);
+      c.fill();
+    }
+    /* moonlit upper edge, shadowed base */
+    c.globalCompositeOperation = "source-atop";
+    const shade = c.createLinearGradient(0, y - height * 2, 0, y);
+    shade.addColorStop(0, "rgba(255, 255, 255, 0.35)");
+    shade.addColorStop(0.55, "rgba(255, 255, 255, 0)");
+    shade.addColorStop(1, "rgba(0, 0, 0, 0.3)");
+    c.fillStyle = shade;
+    c.fillRect(x - 4, y - height * 3, width + 8, height * 3);
+    c.restore();
   }
 
   /* ---------- night sea (About, Résumé, Contact) ----------
@@ -466,6 +517,7 @@ only when you do).
     drawRidges();
     drawStars();
     drawNebula();
+    drawClouds();
     prepareSea();
     kick();
   }
