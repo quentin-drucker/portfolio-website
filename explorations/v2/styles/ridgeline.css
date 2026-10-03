@@ -12,7 +12,7 @@ Background (base/landscape.js): a contour-map sky with mountain ridges in
 front, both cut from the same generated land. The page moves through biomes:
 
   ridgeline   home, focus     mountains under the contour sky
-  survey      projects, play  mountains sink, the map comes forward
+  chart       projects, play  a quiet star chart; mountains and map fade out
   dusk        about → contact mountains return, warm horizon, orb setting
   kiln        SIP page only   warm stone and gold: a page-level biome
 
@@ -37,6 +37,11 @@ html[data-style="ridgeline"] {
   --green: #79ddeb;
   --accent: #79ddeb;
   --accent-two: #d9a35b;
+  --accent-two-rgb: 217, 163, 91;
+  /* Third tier: saturated gold, used for only four things (status dot,
+     featured project label and edge, terrain peak, current section). */
+  --accent-key: #ffc53d;
+  --accent-key-rgb: 255, 197, 61;
   --shadow: none;
   --shadow-soft: none;
   --radius-md: 6px;
@@ -65,18 +70,25 @@ html[data-style="ridgeline"] {
   --contour-lit: 2.1;
   --ridge-far: 40, 62, 72;
   --ridge-near: 5, 10, 13;
-  --orb-ring: rgba(228, 238, 240, 0.7);
-  --orb-fill: rgba(228, 238, 240, 0.1);
-  --orb-glow: 0 0 36px 6px rgba(200, 232, 238, 0.1);
+  --orb-ring: rgba(232, 242, 244, 0.75);
+  --orb-fill: rgba(228, 238, 240, 0.12);
+  --orb-glow: 0 0 18px 4px rgba(214, 236, 242, 0.22), 0 0 70px 26px rgba(190, 225, 235, 0.09);
   --sky-ridgeline: linear-gradient(to bottom, #0b1318 0%, #0d1a20 45%, #12262e 72%, #0b1318 100%);
-  --sky-survey: linear-gradient(to bottom, #0b1318, #0b1318);
-  --sky-dusk: linear-gradient(to bottom, #0b1318 0%, #121a21 40%, #2a2619 68%, #0b1318 100%);
+  --sky-chart:
+    radial-gradient(90% 60% at 15% 0%, rgba(121, 221, 235, 0.05), transparent 60%),
+    radial-gradient(70% 50% at 100% 100%, rgba(217, 163, 91, 0.035), transparent 60%),
+    linear-gradient(to bottom, #0a1216, #0c171d 55%, #0a1216);
+  --sky-dusk: linear-gradient(to bottom, #0b1318 0%, #111a21 45%, #1d2224 70%, #0b1318 100%);
   --sky-kiln: linear-gradient(to bottom, #191815 0%, #22201b 50%, #2c281f 70%, #191815 100%);
-  --haze-dusk: radial-gradient(70% 40% at 60% 68%, rgba(217, 163, 91, 0.22), transparent 70%);
-  --haze-kiln: radial-gradient(70% 40% at 50% 70%, rgba(201, 167, 100, 0.14), transparent 70%);
+  --chart-line: 121, 221, 235;
+  --chart-star: 220, 236, 240;
+  /* Horizon glow color along the orb's arc: dawn | morning | moonlight |
+     evening | sunset. Interpolated by scroll progress in landscape.js. */
+  --glow-stops: 214,140,96 | 217,163,91 | 140,205,222 | 230,170,80 | 232,112,58;
+  --glow-alpha: 0.3;
 
   --terrain-line: 205, 232, 238;
-  --terrain-accent: #d9a35b;
+  --terrain-accent: #ffc53d;
   --terrain-bg: rgba(6, 12, 15, 0.55);
   --terrain-axis-x: #d9735b;
   --terrain-axis-y: #79c38a;
@@ -119,16 +131,22 @@ html[data-style="ridgeline"][data-theme="light"] {
   --contour-lit: 1.6;
   --ridge-far: 222, 228, 225;
   --ridge-near: 182, 194, 194;
-  --orb-ring: rgba(154, 100, 32, 0.0);
-  --orb-fill: radial-gradient(circle, #e9b765 0%, #d9a35b 60%, rgba(217, 163, 91, 0.4) 100%);
-  --orb-glow: 0 0 60px 16px rgba(217, 163, 91, 0.25);
+  --accent-two-rgb: 154, 100, 32;
+  --accent-key: #c27c00;
+  --accent-key-rgb: 214, 140, 0;
+  --orb-ring: rgba(154, 100, 32, 0);
+  --orb-fill: radial-gradient(circle, #f0bf62 0%, #e2a94a 60%, rgba(226, 169, 74, 0.5) 100%);
+  --orb-glow: 0 0 22px 6px rgba(240, 191, 98, 0.35), 0 0 80px 30px rgba(240, 191, 98, 0.14);
   --sky-ridgeline: linear-gradient(to bottom, #edf0ea 0%, #e6ece8 60%, #dfe8e6 100%);
-  --sky-survey: linear-gradient(to bottom, #edf0ea, #edf0ea);
+  --sky-chart: linear-gradient(to bottom, #eef1ec, #e9eee9 55%, #eef1ec);
   --sky-dusk: linear-gradient(to bottom, #edf0ea 0%, #efe9dc 60%, #f0e2c8 100%);
   --sky-kiln: linear-gradient(to bottom, #e6e3db 0%, #e2ddd0 100%);
-  --haze-dusk: radial-gradient(70% 40% at 60% 68%, rgba(217, 163, 91, 0.18), transparent 70%);
+  --chart-line: 20, 70, 80;
+  --chart-star: 40, 70, 80;
+  --glow-stops: 230,160,110 | 232,180,110 | 170,210,220 | 238,190,110 | 236,140,90;
+  --glow-alpha: 0.3;
   --terrain-line: 20, 50, 58;
-  --terrain-accent: #9a6420;
+  --terrain-accent: #c27c00;
   --terrain-bg: rgba(225, 230, 222, 0.6);
   --sip-sky: 214, 224, 218;
   --sip-sky-2: 236, 240, 234;
@@ -164,7 +182,11 @@ html[data-style="ridgeline"][data-page-biome="kiln"] {
   --ridge-near: 9, 9, 8;
   --orb-ring: rgba(201, 167, 100, 0.8);
   --orb-fill: rgba(201, 167, 100, 0.12);
-  --orb-glow: 0 0 36px 6px rgba(201, 167, 100, 0.12);
+  --orb-glow: 0 0 18px 4px rgba(214, 190, 140, 0.2), 0 0 70px 26px rgba(201, 167, 100, 0.08);
+  --glow-stops: 201,150,90 | 214,170,110 | 201,167,100 | 220,150,80 | 210,120,70;
+  --glow-alpha: 0.18;
+  --accent-key: #e8b84a;
+  --accent-key-rgb: 232, 184, 74;
 }
 html[data-style="ridgeline"][data-page-biome="kiln"][data-theme="light"] {
   --bg: #e6e3db;
@@ -199,29 +221,54 @@ html[data-style="ridgeline"] :is(.background-grid, .page-glow, #signature-canvas
   overflow: hidden;
   pointer-events: none;
   --w-ridgeline: 1;
-  --w-survey: 0;
+  --w-chart: 0;
   --w-dusk: 0;
   --w-kiln: 0;
 }
 .landscape > * { position: absolute; }
 .ls-sky { inset: 0; }
 .ls-sky-ridgeline { background: var(--sky-ridgeline); opacity: var(--w-ridgeline); }
-.ls-sky-survey { background: var(--sky-survey); opacity: var(--w-survey); }
+.ls-sky-chart { background: var(--sky-chart); opacity: var(--w-chart); }
 .ls-sky-dusk { background: var(--sky-dusk); opacity: var(--w-dusk); }
 .ls-sky-kiln { background: var(--sky-kiln); opacity: var(--w-kiln); }
 
+/* Star chart (Projects, Playground): quiet arcs, still stars, a few twinkles */
+.ls-chart { inset: 0; opacity: var(--w-chart); }
+.ls-chart-canvas,
+.ls-twinkles { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ls-twinkles i {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgb(var(--chart-star));
+  box-shadow: 0 0 6px 1px rgba(var(--chart-star), 0.5);
+  opacity: 0.15;
+  animation: ls-twinkle 6s ease-in-out infinite;
+}
+@keyframes ls-twinkle { 50% { opacity: 0.85; } }
+@media (prefers-reduced-motion: reduce) { .ls-twinkles i { animation: none; opacity: 0.45; } }
+html[data-motion="off"] .ls-twinkles i { animation: none; opacity: 0.45; }
+
+/* Map sky: fades out entirely in the chart biome, dims at dusk */
 .ls-contours,
 .ls-contours-lit { inset: 0; width: 100%; height: 100%; }
-.ls-contours {
-  opacity: calc(0.7 + var(--w-survey) * 0.3 - var(--w-dusk) * 0.45);
-}
+.ls-contours { opacity: calc(0.75 - var(--w-chart) * 0.75 - var(--w-dusk) * 0.35); }
 .ls-contours-lit {
   opacity: 0;
   transition: opacity 400ms ease;
   -webkit-mask-image: radial-gradient(240px circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
   mask-image: radial-gradient(240px circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
 }
-.landscape.ls-lit .ls-contours-lit { opacity: calc(0.55 + var(--w-survey) * 0.45 - var(--w-dusk) * 0.3); }
+.landscape.ls-lit .ls-contours-lit { opacity: calc(0.6 - var(--w-chart) * 0.6 - var(--w-dusk) * 0.25); }
+
+/* Horizon glow: always present behind the mountains, centered under the orb,
+   colored by the orb's place in its arc (set by landscape.js). */
+.ls-glow {
+  inset: 0;
+  background: radial-gradient(48vw 34vh at var(--glow-x, 50%) 64%, rgba(var(--glow-rgb, 217, 163, 91), var(--glow-alpha)), rgba(var(--glow-rgb, 217, 163, 91), calc(var(--glow-alpha) * 0.35)) 45%, transparent 75%);
+  opacity: calc(1 - var(--w-chart) * 0.9);
+}
 
 .ls-orb {
   left: 0;
@@ -229,6 +276,7 @@ html[data-style="ridgeline"] :is(.background-grid, .page-glow, #signature-canvas
   width: 58px;
   height: 58px;
   margin: -29px 0 0 -29px;
+  opacity: calc(1 - var(--w-chart) * 0.45);
   will-change: transform;
 }
 .ls-orb span {
@@ -248,17 +296,8 @@ html[data-style="ridgeline"] :is(.background-grid, .page-glow, #signature-canvas
   height: 60vh;
   will-change: transform;
 }
-.ls-ridge[data-layer="0"] { opacity: calc(1 - var(--w-survey) * 0.6); }
-.ls-ridge[data-layer="1"] { opacity: calc(1 - var(--w-survey) * 0.5); }
-.ls-ridge[data-layer="2"] { opacity: calc(1 - var(--w-survey) * 0.35); }
-
-.ls-haze { inset: 0; background: var(--haze-dusk); opacity: var(--w-dusk); }
-html[data-page-biome="kiln"] .ls-haze { background: var(--haze-kiln); opacity: var(--w-kiln); }
-
-/* "Cut" transitions: biome changes snap at the boundary with a short fade. */
-.landscape.ls-cut :is(.ls-sky, .ls-contours, .ls-ridge, .ls-haze) {
-  transition: opacity 650ms ease, transform 650ms cubic-bezier(.2, .7, .2, 1);
-}
+/* Mountains leave the chart biome entirely: they settle and fade out. */
+.ls-ridge { opacity: calc(1 - var(--w-chart)); }
 
 @media (max-width: 760px) {
   .ls-ridge { height: 46vh; }
@@ -348,7 +387,23 @@ html[data-style="ridgeline"] .button-secondary { background: transparent; border
 html[data-style="ridgeline"] .filter-button { border-radius: 4px; }
 html[data-style="ridgeline"] .filter-button[aria-pressed="true"] { background: var(--accent-two); color: #1d1406; }
 html[data-style="ridgeline"] .project-visual { background-color: rgba(4, 9, 12, 0.45); }
-html[data-style="ridgeline"] .section-rail a.active:not(:hover):not(:focus-visible) { color: var(--accent-two); border-color: rgba(217, 163, 91, 0.5); }
+
+/* Playground controls stay amber; gold is kept for the terrain's peak marker. */
+html[data-style="ridgeline"] .terrain-range input { accent-color: var(--accent-two); }
+html[data-style="ridgeline"] :is(#terrain-canvas, .terrain-field input):focus-visible { outline-color: var(--accent); }
+
+/* Gold tier: the few things that should catch the eye first. */
+html[data-style="ridgeline"] .status-dot {
+  background: var(--accent-key);
+  box-shadow: 0 0 10px rgba(var(--accent-key-rgb), 0.55);
+}
+html[data-style="ridgeline"] .project-sip .project-type { color: var(--accent-key); }
+html[data-style="ridgeline"] .project-card.project-sip,
+html[data-style="ridgeline"] .project-card.project-sip:hover { border-top: 2px solid rgba(var(--accent-key-rgb), 0.85); }
+html[data-style="ridgeline"] .section-rail a.active:not(:hover):not(:focus-visible) {
+  color: var(--accent-key);
+  border-color: rgba(var(--accent-key-rgb), 0.55);
+}
 
 /* Fog-clearing reveal */
 html[data-style="ridgeline"] .reveal {

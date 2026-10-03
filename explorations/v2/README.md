@@ -22,14 +22,27 @@ Mist's type, spacing, fading panels, fog reveals and faded screen edges.
   sky, both cut from one seeded heightfield (the map is the land from above;
   each ridge is a side-on slice). The Playground seed redraws both.
 - **Scroll biomes**: sections carry `data-biome`. Home and Focus are
-  `ridgeline`; Projects and Playground are `survey` (mountains sink, map comes
-  forward); About to Contact are `dusk` (warm horizon). "Blend" mixes over one
-  screen of scrolling; "Cut" switches at the boundary with a short fade.
+  `ridgeline`; Projects and Playground are `chart` (a quiet star chart: near-
+  solid slate, faint arcs, still stars, a few twinkling, rare gold ones;
+  mountains and map fade out so the work reads cleanly); About to Contact
+  are `dusk`.
+- **Transitions are time-based**: once the middle of the screen is 24px past a
+  biome boundary, the change plays as one eased 1.5s tween, whether you
+  scrolled one wheel notch or ten. Scrolling back tweens back from the current
+  mix. The orb and parallax are smoothed so wheel steps glide.
+- **Horizon glow**: always present behind the mountains, centered under the
+  orb, its color following the orb's arc (`--glow-stops`: dawn → morning →
+  moonlight → evening → sunset).
+- **Three color tiers**: cyan for actions; amber for notable details (labels,
+  key caps, active filter, index contours, controls); saturated gold
+  `--accent-key` for four things only (status dot, featured project label and
+  edge, terrain peak, current section in the rail).
 - **Page biomes**: `<html data-page-biome="kiln">` fixes a page's biome and
   palette. `sip.html` is a draft senior-project page that uses it.
-- **Moon/sun**: arcs left → right with scroll progress and sets behind the
-  ridges. A sun in light mode.
-- Reduced motion or motion-off: no parallax or sinking; biomes cross-fade.
+- **Moon/sun**: arcs left → right with scroll progress, with a pale halo, and
+  sets behind the ridges. A sun in light mode.
+- Reduced motion or motion-off: no parallax, drift or twinkle; biome changes
+  are a short cross-fade.
 
 ## How it's built
 

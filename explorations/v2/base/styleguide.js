@@ -42,7 +42,7 @@
       name: "Ridgeline",
       idea: "Survey's cool slate palette with cyan for actions and amber kept for highlights, set with Mist's typography, spacing, fading panels and fog. Mountain ridges stand in front of a contour-map sky, and both are cut from the same generated land: the map is that land seen from above.",
       facts: [["Mood", "Nocturnal atlas: technical and handmade"], ["Type", "Shippori Mincho, Zen Kaku Gothic New"], ["Surfaces", "Borderless, fills fade from the top-left"], ["Signature", "Mountains under a map sky, biomes by scroll"]],
-      signature: "A landscape that changes as you move through the page. Intro and focus: mountains under the contour sky. Projects and Playground: the mountains sink and the map comes forward. About to Contact: the mountains return at dusk with a warm horizon. A moon (a sun in light mode) arcs over the ridges as you scroll and sets at the bottom of the page. Pages can also fix their own biome; the senior-project draft uses a warm \"kiln\" biome."
+      signature: "A landscape that changes as you move through the page. Intro and focus: mountains under the contour sky. Projects and Playground: a quiet star chart, so the work is easy to read. About to Contact: the mountains return at dusk. A moon (a sun in light mode) arcs over the ridges as you scroll, and the glow on the horizon beneath it shifts from dawn to moonlight to sunset. Biome changes play as one smooth timed transition however you scroll. Color comes in three tiers: cyan for actions, amber for notable details, and a saturated gold for the four things that matter most. Pages can also set their own biome; the senior-project draft uses a warm \"kiln\" biome."
     }
   };
   const data = GUIDE[style] || GUIDE.original;

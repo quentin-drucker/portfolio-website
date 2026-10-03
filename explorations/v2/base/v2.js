@@ -27,23 +27,7 @@ v2 PAGE GLUE — v2.js (explorations/v2)
     const other = onGuide
       ? `<a href="index.html?style=${current}">Portfolio page</a>`
       : `<a href="styleguide.html?style=${current}">Style guide</a>`;
-    /* Ridgeline only: compare gradual vs. sharp biome transitions. */
-    let biomeToggle = "";
-    if (current === "ridgeline" && !onGuide) {
-      let mode = "blend";
-      try { mode = localStorage.getItem("v2-biome-transition") || "blend"; } catch (error) {}
-      biomeToggle = `<span class="style-switcher-sep" aria-hidden="true"></span><span class="style-switcher-label">Biomes</span><div class="style-switcher-options" role="group" aria-label="Biome transition">` +
-        ["blend", "cut"].map((m) => `<button type="button" data-biome-mode="${m}" aria-pressed="${m === mode}">${m === "blend" ? "Blend" : "Cut"}</button>`).join("") + `</div>`;
-    }
-    switcher.innerHTML = `<span class="style-switcher-label">Style</span><div class="style-switcher-options">${buttons}</div>${biomeToggle}${other}<a href="../index.html">All explorations</a>`;
-    switcher.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-biome-mode]");
-      if (!button) return;
-      const mode = button.dataset.biomeMode;
-      try { localStorage.setItem("v2-biome-transition", mode); } catch (error) {}
-      switcher.querySelectorAll("[data-biome-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
-      window.dispatchEvent(new CustomEvent("landscape:mode", { detail: { mode } }));
-    });
+    switcher.innerHTML = `<span class="style-switcher-label">Style</span><div class="style-switcher-options">${buttons}</div>${other}<a href="../index.html">All explorations</a>`;
     switcher.addEventListener("click", (event) => {
       const choice = event.target.closest("[data-style-choice]")?.dataset.styleChoice;
       if (!choice || choice === current) return;
