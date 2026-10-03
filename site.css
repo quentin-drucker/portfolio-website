@@ -443,3 +443,37 @@ html:not([data-style="original"])[data-theme="light"] #cursor-aura {
 .range-control input:disabled { cursor: not-allowed; }
 .settings-dialog .range-control { grid-template-columns: minmax(150px, 1fr) 64px; }
 @media (max-width: 520px) { .seed-control { min-width: 0; width: 100%; } }
+
+/* ---------------------------------------------------------------- 4
+   Interface scale and breathing room.
+   On desktop the interface renders at 85%, like browser zoom, but only the
+   content is scaled: the fixed background (landscape, particles, cursor
+   glow) stays full size, so more of it shows around the content. Fixed
+   full-screen wrappers (.site-header, .intro-loader) are not zoomed; their
+   inner panels are, which avoids percentage widths shrinking toward the left.
+   vh-based heights inside zoomed content are divided by --ui-zoom so a
+   "full screen" hero still fills the screen. Phones keep 100%. */
+:root { --ui-zoom: 1; }
+@media (min-width: 900px) {
+  :root { --ui-zoom: 0.85; }
+  main,
+  .site-footer,
+  .nav-shell,
+  .section-rail,
+  .back-to-top,
+  .intro-loader-panel,
+  .dialog-shell { zoom: var(--ui-zoom); }
+}
+.hero { min-height: calc(100vh / var(--ui-zoom)); }
+
+/* More space between sections, and an extra stretch of open background
+   where the landscape changes (into Projects, and into About), so each
+   biome has a moment on its own before the next content arrives. */
+main > .section:not(.hero):not(.sip-hero) { padding-top: 150px; padding-bottom: 150px; }
+[data-biome="ridgeline"] + [data-biome="survey"],
+[data-biome="survey"] + [data-biome="tide"] { margin-top: calc(28vh / var(--ui-zoom)); }
+@media (max-width: 760px) {
+  main > .section:not(.hero):not(.sip-hero) { padding-top: 96px; padding-bottom: 96px; }
+  [data-biome="ridgeline"] + [data-biome="survey"],
+  [data-biome="survey"] + [data-biome="tide"] { margin-top: 18vh; }
+}

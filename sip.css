@@ -1,7 +1,7 @@
 /* Senior project page layout (explorations/v2/sip.html). Colors come from
    the Ridgeline style's "kiln" page biome; this file only adds layout. */
 .sip-hero {
-  min-height: 92vh;
+  min-height: calc(92vh / var(--ui-zoom, 1));
   padding-top: calc(var(--header-height) + 60px);
   display: flex;
   flex-direction: column;
@@ -87,5 +87,5 @@
 
 @media (max-width: 760px) {
   .sip-two { grid-template-columns: 1fr; }
-  .sip-hero { min-height: 80vh; }
+  .sip-hero { min-height: calc(80vh / var(--ui-zoom, 1)); }
 }
