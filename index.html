@@ -17,7 +17,7 @@ Scripts (all deferred, run in this order):
                      section rail, back-to-top, keyboard shortcuts (1–7, R, /)
 - world-settings.js  world controls in the settings dialog
 - terrain.js         Playground terrain generator
-- landscape.js       background: map sky, mountains, star chart, biomes, moon
+- landscape.js       background: night sky, mountains, contour map, sea, moon, biomes
 - site.js            overview-card filter jumps, senior-project stand-in image
 
 Sections carry data-biome, which landscape.js uses to change the background
@@ -271,7 +271,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
     </section>
 
     <!-- PROJECTS: the senior project is the featured (wide) card. -->
-    <section class="section" id="projects" data-biome="chart">
+    <section class="section" id="projects" data-biome="survey">
       <div class="section-heading section-heading-row reveal">
         <div>
           <span class="section-kicker"><kbd>3</kbd> Projects</span>
@@ -391,7 +391,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
       base/terrain.js builds a seeded heightfield and draws it as a wireframe.
       The form keeps the original ids (seed-form, seed-input).
     -->
-    <section class="section" id="playground" data-biome="chart">
+    <section class="section" id="playground" data-biome="survey">
       <div class="section-heading reveal">
         <span class="section-kicker"><kbd>4</kbd> Playground</span>
         <h2>Generate a terrain.</h2>
@@ -422,7 +422,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
     </section>
 
     <!-- ABOUT (moved after the work) -->
-    <section class="section section-narrow" id="about" data-biome="dusk">
+    <section class="section section-narrow" id="about" data-biome="tide">
       <div class="section-heading reveal">
         <span class="section-kicker"><kbd>5</kbd> About</span>
         <h2>Curious about how machines can <span class="gradient-text">see, reason, and create.</span></h2>
@@ -462,7 +462,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
     </section>
 
     <!-- RÉSUMÉ SUMMARY -->
-    <section class="section section-narrow" id="resume" data-biome="dusk">
+    <section class="section section-narrow" id="resume" data-biome="tide">
       <div class="resume-shell glass reveal">
         <div class="resume-intro">
           <span class="section-kicker"><kbd>6</kbd> Résumé</span>
@@ -514,7 +514,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
     </section>
 
     <!-- CONTACT -->
-    <section class="section" id="contact" data-biome="dusk">
+    <section class="section" id="contact" data-biome="tide">
       <div class="contact-shell">
         <div class="contact-copy reveal">
           <span class="section-kicker"><kbd>7</kbd> Contact</span>
@@ -622,7 +622,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
         <div class="range-setting">
           <span class="setting-copy">
             <label for="world-seed"><strong>World seed</strong></label>
-            <small>Generates the sky map, the mountains and the Playground terrain. Same seed, same land.</small>
+            <small>Generates the mountains, the contour map behind Projects and the Playground terrain. Same seed, same land.</small>
           </span>
           <span class="seed-control">
             <input id="world-seed" data-world="seed" type="text" maxlength="24" autocomplete="off" spellcheck="false" />
@@ -630,15 +630,15 @@ baseline-2026-10-03. Design explorations are in explorations/.
           </span>
         </div>
         <label class="range-setting" for="world-mountains">
-          <span class="setting-copy"><strong>Mountain height</strong><small>How tall the ridges stand against the sky.</small></span>
+          <span class="setting-copy"><strong>Mountain height</strong><small>How tall the mountains stand against the night sky.</small></span>
           <span class="range-control"><input id="world-mountains" data-world="mountainHeight" type="range" min="40" max="140" step="10" /><output data-world-out="mountainHeight" for="world-mountains"></output></span>
         </label>
         <label class="range-setting" for="world-contours">
-          <span class="setting-copy"><strong>Contour detail</strong><small>Number of elevation lines in the map sky.</small></span>
+          <span class="setting-copy"><strong>Contour detail</strong><small>Number of elevation lines in the contour map behind Projects and Playground.</small></span>
           <span class="range-control"><input id="world-contours" data-world="contourDetail" type="range" min="6" max="24" step="1" /><output data-world-out="contourDetail" for="world-contours"></output></span>
         </label>
         <label class="range-setting" for="world-stars">
-          <span class="setting-copy"><strong>Stars</strong><small>Star count in the chart behind Projects and Playground.</small></span>
+          <span class="setting-copy"><strong>Stars</strong><small>Star count in the night sky above the mountains and the sea.</small></span>
           <span class="range-control"><input id="world-stars" data-world="stars" type="range" min="0" max="250" step="10" /><output data-world-out="stars" for="world-stars"></output></span>
         </label>
       </section>
@@ -647,18 +647,18 @@ baseline-2026-10-03. Design explorations are in explorations/.
       <section class="settings-group" aria-labelledby="settings-light">
         <h3 class="settings-group-title" id="settings-light">Light and time</h3>
         <label class="setting-switch" for="world-follow">
-          <span class="setting-copy"><strong>Time follows scroll</strong><small>The moon and the horizon glow move with your place on the page.</small></span>
+          <span class="setting-copy"><strong>Time follows scroll</strong><small>The moon, the horizon glow and the moon’s reflection on the sea move with your place on the page.</small></span>
           <span class="switch-control">
             <input id="world-follow" data-world="followScroll" type="checkbox" role="switch" />
             <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
           </span>
         </label>
         <label class="range-setting" for="world-time">
-          <span class="setting-copy"><strong>Time of day</strong><small>Set the moon and glow by hand. Turn off “Time follows scroll” to use it.</small></span>
+          <span class="setting-copy"><strong>Time of day</strong><small>Set the moon, glow and reflection by hand. Turn off “Time follows scroll” to use it.</small></span>
           <span class="range-control"><input id="world-time" data-world="timeOfDay" type="range" min="0" max="100" step="1" /><output data-world-out="timeOfDay" for="world-time"></output></span>
         </label>
         <label class="range-setting" for="world-light">
-          <span class="setting-copy"><strong>Cursor light</strong><small>Size of the circle that lights up the map around your pointer.</small></span>
+          <span class="setting-copy"><strong>Cursor light</strong><small>Size of the circle that lights up the contour map around your pointer, behind Projects and Playground.</small></span>
           <span class="range-control"><input id="world-light" data-world="cursorLight" type="range" min="0" max="480" step="20" /><output data-world-out="cursorLight" for="world-light"></output></span>
         </label>
       </section>

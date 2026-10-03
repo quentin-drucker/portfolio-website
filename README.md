@@ -29,7 +29,7 @@ What the redesign added:
 |---|---|
 | `site.css` | Effect tokens (glows, shimmer, progress, particles become themeable) and new page structure: overview cards, featured project, Playground, world controls |
 | `ridgeline.css` | The theme: slate/cyan palette with amber and gold tiers, Shippori Mincho + Zen Kaku Gothic type, fading panels, fog reveals, and the landscape layers |
-| `landscape.js` | Background scene: contour-map sky and mountain ridges from one seeded heightfield, a star chart, scroll biomes, the moon/sun and its horizon glow |
+| `landscape.js` | Background scene: night sky with mountains (top), a contour map of the same land (Projects, Playground), a night sea with the moon's reflection (About to Contact), the moon/sun and its horizon glow, and timed biome transitions |
 | `terrain.js` | Playground: a seeded wireframe heightfield you can orbit |
 | `world-settings.js` | World controls in the settings dialog (seed, mountains, contours, stars, time of day, cursor light, particle speed, transition speed, atmosphere) |
 | `site.js` | Overview-card filter jumps and the senior-project stand-in image |
@@ -44,8 +44,10 @@ Homepage section order and shortcut keys: `1 #home`, `2 #expertise`
 `7 #contact`. `R` opens the résumé; `/` or Ctrl/Cmd+K opens the command
 palette. On `sip.html` these open the homepage sections.
 
-Biomes: sections declare `data-biome` (`ridgeline`, `chart`, `dusk`); a page
-can fix its own with `<html data-page-biome="…">` (`sip.html` uses `kiln`).
+Biomes: sections declare `data-biome`: `ridgeline` (Home, What I work on:
+stars, moon, mountains), `survey` (Projects, Playground: the contour map) and
+`tide` (About, Résumé, Contact: stars, moon, night sea). A page can fix its own
+with `<html data-page-biome="…">` (`sip.html` uses `kiln`, a warm ridgeline).
 Background changes are timed transitions, not scroll-scrubbed.
 
 Projects are matched to `config.js` by a stable `id`

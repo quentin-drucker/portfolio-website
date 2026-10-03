@@ -1,23 +1,32 @@
 /*
 ===============================================================================
-LANDSCAPE + BIOMES — landscape.js (explorations/v2, Ridgeline style)
+LANDSCAPE + BIOMES — landscape.js
 ===============================================================================
 
 A fixed background scene, back to front:
   sky        one gradient per biome, cross-faded by weight
-  chart      star-chart layer for the "chart" biome: faint arcs, static stars,
-             a few twinkling ones (Projects and Playground)
-  contours   topographic map of a heightfield (the map sky), plus a brighter
-             copy revealed around the pointer
+  stars      night sky: static stars, a few twinkling, rare gold ones, faint
+             celestial arcs (behind the mountains and the sea)
+  contours   topographic map of a heightfield, plus a brighter copy revealed
+             around the pointer (behind Projects and Playground)
   glow       horizon glow centered under the orb; its color follows the orb's
              arc (dawn → moonlight → sunset) as you move down the page
   orb        moon (dark theme) / sun (light theme) that arcs left → right with
-             scroll progress and sets behind the ridges
+             scroll progress
   ridges     three canvases (far, mid, near) of mountain silhouettes
+  sea        night sea: wave strokes that drift, and a reflection path under
+             the orb in the glow's color
+
+Biomes on the homepage (data-biome on sections):
+  ridgeline  Home, What I work on      stars + moon + mountains
+  survey     Projects, Playground      the contour map, clean and quiet
+  tide       About, Résumé, Contact    stars + moon + sea
+A page can fix one biome with <html data-page-biome="…"> (sip.html: "kiln",
+a warm version of ridgeline).
 
 Same land, two views: contours and ridges come from ONE seeded heightfield.
 The map is the land seen from above; each ridge is a side-on slice. The
-Playground seed redraws both.
+world seed (Playground or world controls) redraws both.
 
 Transitions are time-based, not scroll-based. The biome under the middle of
 the screen is the target; once it changes (with a small dead zone so it can't
@@ -27,21 +36,18 @@ transition; reversing mid-way tweens back from wherever it is. Scroll-linked
 motion (orb, parallax) is smoothed toward its target every frame, so wheel
 steps glide instead of jumping.
 
-Biomes:
-- Page biome: <html data-page-biome="kiln"> fixes the biome for a whole page.
-- Scroll biomes: sections carry data-biome="ridgeline" | "chart" | "dusk".
 Weights are written as CSS custom properties (--w-<biome>) on .landscape; the
-look of each biome lives in styles/ridgeline.css.
+look of each biome lives in ridgeline.css.
 
-Reduced motion or motion-off: no parallax, drift or twinkle; biome changes
-are a short cross-fade; the orb follows scroll directly (it moves only when
-you do).
+Reduced motion or motion-off: no parallax, drift, waves or twinkle; biome
+changes are a short cross-fade; the orb follows scroll directly (it moves
+only when you do).
 */
 (function () {
   const rootEl = document.documentElement;
   if (rootEl.dataset.style !== "ridgeline") return;
 
-  const BIOMES = ["ridgeline", "chart", "dusk", "kiln"];
+  const BIOMES = ["ridgeline", "survey", "tide", "kiln"];
   const reduceQuery = matchMedia("(prefers-reduced-motion: reduce)");
   const coarse = matchMedia("(hover: none), (pointer: coarse)").matches;
   const still = () => reduceQuery.matches || rootEl.dataset.motion === "off";
@@ -53,19 +59,21 @@ you do).
   scene.setAttribute("aria-hidden", "true");
   scene.innerHTML =
     BIOMES.map((b) => `<div class="ls-sky ls-sky-${b}"></div>`).join("") +
-    `<div class="ls-chart"><canvas class="ls-chart-canvas"></canvas><div class="ls-twinkles"></div></div>
+    `<div class="ls-stars"><canvas class="ls-stars-canvas"></canvas><div class="ls-twinkles"></div></div>
      <canvas class="ls-contours"></canvas><canvas class="ls-contours-lit"></canvas>
      <div class="ls-glow"></div>
      <div class="ls-orb"><span></span></div>
      <canvas class="ls-ridge" data-layer="0"></canvas>
      <canvas class="ls-ridge" data-layer="1"></canvas>
-     <canvas class="ls-ridge" data-layer="2"></canvas>`;
+     <canvas class="ls-ridge" data-layer="2"></canvas>
+     <canvas class="ls-sea"></canvas>`;
   document.body.prepend(scene);
-  const chartCanvas = scene.querySelector(".ls-chart-canvas");
+  const starsCanvas = scene.querySelector(".ls-stars-canvas");
   const twinkles = scene.querySelector(".ls-twinkles");
   const contourCanvas = scene.querySelector(".ls-contours");
   const litCanvas = scene.querySelector(".ls-contours-lit");
   const ridgeCanvases = [...scene.querySelectorAll(".ls-ridge")];
+  const seaCanvas = scene.querySelector(".ls-sea");
   const orb = scene.querySelector(".ls-orb");
 
   /* ---------- noise ---------- */
@@ -192,26 +200,20 @@ you do).
     });
   }
 
-  /* ---------- star chart (Projects / Playground) ---------- */
-  function drawChart() {
-    const { context, w, h } = fit(chartCanvas);
-    const random = rng(hash("chart"));
-    const line = css("--chart-line", "121, 221, 235");
-    const star = css("--chart-star", "220, 236, 240");
+  /* ---------- night sky (behind the mountains and the sea) ---------- */
+  function drawStars() {
+    const { context, w, h } = fit(starsCanvas);
+    const random = rng(hash("stars"));
+    const line = css("--star-line", "121, 221, 235");
+    const star = css("--star", "220, 236, 240");
     const amber = css("--accent-two-rgb", "217, 163, 91");
     const gold = css("--accent-key-rgb", "255, 197, 61");
-    /* faint great-circle arcs and meridians around an off-screen pole */
+    /* a few faint celestial arcs around an off-screen pole */
     const cx = w * 0.82, cy = h * 1.55;
     context.lineWidth = 1;
     for (let r = h * 0.75; r < h * 2.4; r += Math.max(120, h * 0.16)) {
       context.beginPath(); context.arc(cx, cy, r, Math.PI, Math.PI * 2);
-      context.strokeStyle = `rgba(${line}, 0.045)`; context.stroke();
-    }
-    for (let a = 0; a < 15; a++) {
-      const angle = Math.PI + (a / 14) * Math.PI;
-      context.beginPath(); context.moveTo(cx, cy);
-      context.lineTo(cx + Math.cos(angle) * h * 2.6, cy + Math.sin(angle) * h * 2.6);
-      context.strokeStyle = `rgba(${line}, 0.028)`; context.stroke();
+      context.strokeStyle = `rgba(${line}, 0.035)`; context.stroke();
     }
     /* stars: many faint, few bright; rare amber; one or two gold with a glint */
     const count = Math.round(((w * h) / 7000) * (world()?.starScale ?? 1));
@@ -239,11 +241,73 @@ you do).
     }).join("");
   }
 
+  /* ---------- night sea (About, Résumé, Contact) ----------
+     Rows of short wave strokes in perspective: far rows are thin, dense and
+     faint; near rows longer, brighter and wider apart. Each row drifts at
+     its own speed. Under the orb, a reflection path of brighter strokes
+     shimmers in a mix of the moon's pale light and the horizon glow. Drawn
+     every frame only while the sea is visible and motion is allowed. */
+  let sea = null;
+  let seaColors = null;
+  const seaOffsets = Array.from({ length: 64 }, rng(hash("tide")));
+  function prepareSea() {
+    sea = fit(seaCanvas);
+    seaColors = {
+      top: css("--sea-top", "16, 32, 40"),
+      deep: css("--sea-deep", "5, 10, 13"),
+      line: css("--sea-line", "160, 205, 218"),
+      moon: css("--sea-moon", "228, 238, 240")
+    };
+  }
+  function drawSea(orbX, glow, time) {
+    if (!sea) prepareSea();
+    const { context: c, w, h } = sea;
+    if (!w || !h) return;
+    const col = seaColors;
+    c.clearRect(0, 0, w, h);
+    const body = c.createLinearGradient(0, 0, 0, h);
+    body.addColorStop(0, `rgb(${col.top})`);
+    body.addColorStop(1, `rgb(${col.deep})`);
+    c.fillStyle = body;
+    c.fillRect(0, 0, w, h);
+    /* the horizon picks up the glow */
+    const band = c.createLinearGradient(0, 0, 0, h * 0.3);
+    band.addColorStop(0, `rgba(${glow}, 0.16)`);
+    band.addColorStop(1, `rgba(${glow}, 0)`);
+    c.fillStyle = band;
+    c.fillRect(0, 0, w, h * 0.3);
+    c.fillStyle = `rgba(${glow}, 0.4)`;
+    c.fillRect(0, 0, w, 1);
+
+    const reflect = mixRgb(glow, col.moon, 0.5);
+    const rows = 44;
+    for (let k = 1; k <= rows; k++) {
+      const d = k / rows;                     // 0 at the horizon → 1 nearest
+      const y = Math.pow(d, 1.75) * h;
+      const len = 4 + d * 70, gap = 14 + d * 110, thick = 0.6 + d * 1.6, period = len + gap;
+      const drift = time * 0.012 * (0.25 + d);
+      const phase = (seaOffsets[k % 64] * period + drift) % period;
+      c.fillStyle = `rgba(${col.line}, ${(0.05 + d * 0.17).toFixed(3)})`;
+      for (let x = phase - period; x < w; x += period) c.fillRect(x, y, len, thick);
+
+      const half = 26 + d * 230, step = 5 + d * 14;
+      for (let x = orbX - half; x <= orbX + half; x += step) {
+        const local = 1 - Math.abs(x - orbX) / half;
+        const flicker = 0.55 + 0.45 * Math.sin(time * 0.0025 + k * 1.3 + x * 0.07);
+        const a = Math.pow(local, 1.5) * (0.22 + d * 0.62) * flicker;
+        if (a < 0.02) continue;
+        c.fillStyle = `rgba(${reflect}, ${a.toFixed(3)})`;
+        c.fillRect(x, y, step * 0.55 * (0.6 + local), thick + 0.5);
+      }
+    }
+  }
+
   function drawAll() {
     drawContours(contourCanvas, parseFloat(css("--contour-dim", "0.6")));
     if (!coarse) drawContours(litCanvas, parseFloat(css("--contour-lit", "2")));
     drawRidges();
-    drawChart();
+    drawStars();
+    prepareSea();
     kick();
   }
 
@@ -334,8 +398,9 @@ you do).
     const p = renderP;
     scene.style.setProperty("--p", p.toFixed(4));
 
-    /* ridges: gentle parallax; in the chart biome they settle down and out */
-    const away = weights.chart;
+    /* ridges: gentle parallax; outside the mountain biomes they settle down
+       and fade out */
+    const away = 1 - Math.min(1, weights.ridgeline + weights.kiln);
     const moving = !still();
     ridgeCanvases.forEach((canvas, i) => {
       const depth = [0.35, 0.65, 1][i];
@@ -351,8 +416,16 @@ you do).
     orb.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
 
     /* horizon glow follows the orb: position, and color along the arc */
+    const glow = glowAt(p);
     scene.style.setProperty("--glow-x", `${((x / vw) * 100).toFixed(2)}%`);
-    scene.style.setProperty("--glow-rgb", glowAt(p));
+    scene.style.setProperty("--glow-rgb", glow);
+
+    /* sea: rises in with its biome; waves keep moving while it's visible */
+    if (weights.tide > 0.002) {
+      drawSea(x, glow, moving ? now : 0);
+      seaCanvas.style.transform = `translate3d(0, ${moving ? ((1 - weights.tide) * vh * 0.18).toFixed(1) : 0}px, 0)`;
+      if (moving && !document.hidden) settling = true;
+    }
 
     if (settling) frame = requestAnimationFrame(render);
   }
@@ -389,10 +462,11 @@ you do).
     else if (key === "contourDetail") {
       drawContours(contourCanvas, parseFloat(css("--contour-dim", "0.6")));
       if (!coarse) drawContours(litCanvas, parseFloat(css("--contour-lit", "2")));
-    } else if (key === "stars") drawChart();
+    } else if (key === "stars") drawStars();
     else if (key === "all") drawAll();
     kick();
   });
+  document.addEventListener("visibilitychange", kick);
   window.addEventListener("terrain:seed", (event) => {
     const next = event.detail?.seed;
     if (next && next !== seedText) { seedText = next; field = makeField(seedText); drawAll(); }
