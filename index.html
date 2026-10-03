@@ -641,6 +641,10 @@ baseline-2026-10-03. Design explorations are in explorations/.
           <span class="setting-copy"><strong>Stars</strong><small>Star count in the night sky above the mountains and the sea.</small></span>
           <span class="range-control"><input id="world-stars" data-world="stars" type="range" min="0" max="250" step="10" /><output data-world-out="stars" for="world-stars"></output></span>
         </label>
+        <label class="range-setting" for="world-nebula">
+          <span class="setting-copy"><strong>Nebula</strong><small>Strength of the pink and ember clouds above the mountains.</small></span>
+          <span class="range-control"><input id="world-nebula" data-world="nebula" type="range" min="0" max="200" step="10" /><output data-world-out="nebula" for="world-nebula"></output></span>
+        </label>
       </section>
 
       <!-- LIGHT: the moon/sun, horizon glow and cursor light. -->
@@ -709,6 +713,13 @@ baseline-2026-10-03. Design explorations are in explorations/.
           <span class="setting-copy"><strong>Faded screen edges</strong><small>The page fades into the sky at the top and bottom of the window.</small></span>
           <span class="switch-control">
             <input id="world-edges" data-world="edgeFade" type="checkbox" role="switch" />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+        <label class="setting-switch" for="world-meteors">
+          <span class="setting-copy"><strong>Shooting stars</strong><small>Occasional meteors over the sea in About, Résumé and Contact.</small></span>
+          <span class="switch-control">
+            <input id="world-meteors" data-world="meteors" type="checkbox" role="switch" />
             <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
           </span>
         </label>

@@ -4,8 +4,9 @@ WORLD CONTROLS — world-settings.js
 ===============================================================================
 
 Extra parameters in the settings dialog for playing with the page:
-world seed, mountain height, contour detail, stars, time of day, cursor light,
-particle speed, biome transition speed, fog reveal and faded screen edges.
+world seed, mountain height, contour detail, stars, nebula, time of day,
+cursor light, particle speed, biome transition speed, fog reveal, faded screen
+edges and shooting stars.
 
 - Values live in window.PORTFOLIO_WORLD (read by landscape.js, terrain via
   the shared seed, and script.js for particle speed).
@@ -28,13 +29,15 @@ saved seed is in place before either draws.
     mountainHeight: 100,  // % of the designed ridge height
     contourDetail: 14,    // number of contour levels in the sky map
     stars: 100,           // % of the designed star count
+    nebula: 100,          // % nebula strength above the mountains
     followScroll: true,   // moon and glow follow page progress
     timeOfDay: 50,        // 0 dawn … 100 sunset, used when not following scroll
     cursorLight: 240,     // radius in px of the lit contour circle; 0 = off
     moteSpeed: 100,       // % particle speed
     transitionMs: 1500,   // biome transition length
     fogReveal: true,
-    edgeFade: true
+    edgeFade: true,
+    meteors: true         // shooting stars over the sea
   };
   const SEED_WORDS = ["moss", "ridge", "basalt", "fog", "kiln", "tide", "lichen", "cedar", "ember", "drift", "scree", "delta"];
 
@@ -53,6 +56,8 @@ saved seed is in place before either draws.
     get mountainScale() { return values.mountainHeight / 100; },
     get contourLevels() { return values.contourDetail; },
     get starScale() { return values.stars / 100; },
+    get nebulaScale() { return values.nebula / 100; },
+    get meteors() { return values.meteors; },
     get followScroll() { return values.followScroll; },
     get timeOfDay() { return values.timeOfDay / 100; },
     get cursorLight() { return values.cursorLight; },
@@ -74,6 +79,7 @@ saved seed is in place before either draws.
     mountainHeight: (v) => `${v}%`,
     contourDetail: (v) => `${v}`,
     stars: (v) => `${v}%`,
+    nebula: (v) => (v === 0 ? "off" : `${v}%`),
     timeOfDay: (v) => TIME_NAMES.find(([limit]) => v / 100 < limit)[1],
     cursorLight: (v) => (v === 0 ? "off" : `${v}px`),
     moteSpeed: (v) => `${v}%`,

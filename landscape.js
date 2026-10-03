@@ -59,8 +59,11 @@ only when you do).
   scene.setAttribute("aria-hidden", "true");
   scene.innerHTML =
     BIOMES.map((b) => `<div class="ls-sky ls-sky-${b}"></div>`).join("") +
-    `<div class="ls-stars"><canvas class="ls-stars-canvas"></canvas><div class="ls-twinkles"></div></div>
+    `<canvas class="ls-nebula"></canvas>
+     <div class="ls-stars"><canvas class="ls-stars-canvas"></canvas><div class="ls-twinkles"></div></div>
+     <div class="ls-meteors"></div>
      <canvas class="ls-contours"></canvas><canvas class="ls-contours-lit"></canvas>
+     <div class="ls-beacons"></div>
      <div class="ls-glow"></div>
      <div class="ls-orb"><span></span></div>
      <canvas class="ls-ridge" data-layer="0"></canvas>
@@ -68,6 +71,9 @@ only when you do).
      <canvas class="ls-ridge" data-layer="2"></canvas>
      <canvas class="ls-sea"></canvas>`;
   document.body.prepend(scene);
+  const nebulaCanvas = scene.querySelector(".ls-nebula");
+  const meteors = scene.querySelector(".ls-meteors");
+  const beacons = scene.querySelector(".ls-beacons");
   const starsCanvas = scene.querySelector(".ls-stars-canvas");
   const twinkles = scene.querySelector(".ls-twinkles");
   const contourCanvas = scene.querySelector(".ls-contours");
@@ -123,13 +129,19 @@ only when you do).
   }
 
   /* ---------- contour map (marching squares) ---------- */
-  function drawContours(canvas, alphaScale) {
+  /* `lit` draws the pointer-revealed copy entirely in the survey green; the
+     main copy uses cyan lines with green index contours (every fifth) and
+     marks the highest summits with survey triangles and their heights. */
+  function drawContours(canvas, alphaScale, lit = false) {
     const { context, w, h } = fit(canvas);
     const cell = w < 700 ? 12 : 9, levels = world()?.contourLevels ?? 14, unit = 1 / 260;
     const cols = Math.ceil(w / cell) + 1, rows = Math.ceil(h / cell) + 1;
     const grid = new Float32Array(cols * rows);
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) grid[j * cols + i] = field(i * cell * unit, j * cell * unit + 40, 3);
-    const line = css("--contour", "111, 200, 215"), index = css("--contour-index", "217, 163, 91");
+    const green = css("--survey-green", "61, 255, 157");
+    const line = lit ? green : css("--contour", "111, 200, 215");
+    const index = lit ? green : css("--contour-index", green);
+    if (!lit) drawSummits(context, grid, cols, rows, cell, w, h, green);
     for (let L = 1; L < levels; L++) {
       const iso = 0.25 + (L / levels) * 0.5;
       context.beginPath();
@@ -147,6 +159,41 @@ only when you do).
       context.lineWidth = isIndex ? 1.2 : 0.8;
       context.stroke();
     }
+  }
+
+  /* Summit markers: true local maxima of the generated field, labeled with
+     their generated height (0–999), like benchmarks on a survey map. The four
+     highest also get a slowly pulsing beacon (DOM, CSS animation). */
+  function drawSummits(context, grid, cols, rows, cell, w, h, green) {
+    const peaks = [];
+    const R = 4;
+    for (let j = R; j < rows - R; j++) for (let i = R; i < cols - R; i++) {
+      const v = grid[j * cols + i];
+      let top = true;
+      for (let dj = -R; dj <= R && top; dj++) for (let di = -R; di <= R; di++) {
+        if ((di || dj) && grid[(j + dj) * cols + i + di] > v) { top = false; break; }
+      }
+      if (top) peaks.push({ x: i * cell, y: j * cell, v });
+    }
+    peaks.sort((a, b) => b.v - a.v);
+    const chosen = [];
+    for (const p of peaks) {
+      if (p.x < 40 || p.x > w - 60 || p.y < 90 || p.y > h - 40) continue;
+      if (chosen.every((q) => Math.hypot(q.x - p.x, q.y - p.y) > 170)) chosen.push(p);
+      if (chosen.length >= 9) break;
+    }
+    context.font = `10px ${css("--font-ui", "monospace")}`;
+    chosen.forEach((p) => {
+      context.strokeStyle = `rgba(${green}, 0.55)`;
+      context.lineWidth = 1;
+      context.beginPath();
+      context.moveTo(p.x, p.y - 5); context.lineTo(p.x + 4.5, p.y + 3); context.lineTo(p.x - 4.5, p.y + 3); context.closePath();
+      context.stroke();
+      context.fillStyle = `rgba(${green}, 0.5)`;
+      context.fillText(String(Math.round(p.v * 1000)), p.x + 8, p.y + 3);
+    });
+    beacons.innerHTML = chosen.slice(0, 4).map((p, k) =>
+      `<i style="left:${p.x}px;top:${p.y}px;animation-delay:-${(k * 1.7).toFixed(1)}s"></i>`).join("");
   }
 
   /* ---------- ridges: side-on slices of the same field ---------- */
@@ -241,6 +288,53 @@ only when you do).
     }).join("");
   }
 
+  /* ---------- nebula (above the mountains) ----------
+     Two domain-warped noise fields, one pink and one orange-red, confined to
+     a soft diagonal band in the upper sky, with darker dust lanes cut through
+     them. Rendered at quarter resolution into ImageData; CSS stretches and
+     blurs it, which suits gas and keeps it cheap. Seeded from the world seed,
+     so a new seed reshapes the nebula along with the land. */
+  function drawNebula() {
+    const W = Math.max(64, Math.ceil(window.innerWidth / 4));
+    const H = Math.max(64, Math.ceil(window.innerHeight / 4));
+    nebulaCanvas.width = W;
+    nebulaCanvas.height = H;
+    const context = nebulaCanvas.getContext("2d");
+    const image = context.createImageData(W, H);
+    const gas = makeField(`${seedText}#nebula`);
+    const pink = css("--nebula-a", "255, 92, 138").split(",").map(Number);
+    const ember = css("--nebula-b", "255, 106, 61").split(",").map(Number);
+    const strength = parseFloat(css("--nebula-alpha", "0.34")) * (world()?.nebulaScale ?? 1);
+    const aspect = W / H;
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    for (let y = 0; y < H; y++) {
+      const v = y / H;
+      for (let x = 0; x < W; x++) {
+        const u = x / W;
+        /* domain warp: bend the sample position so the gas forms wisps */
+        const wx = u * 2.6 * aspect + (gas(u * 1.8, v * 1.8 + 7, 3) - 0.5) * 2.2;
+        const wy = v * 2.6 + (gas(u * 1.8 + 5, v * 1.8, 3) - 0.5) * 2.2;
+        const d1 = gas(wx, wy, 5), d2 = gas(wx * 1.25 + 11, wy * 1.25 + 3, 5);
+        const dust = gas(wx * 2.4 + 21, wy * 2.4 + 9, 3);
+        /* a soft band that rises from left to right through the upper sky */
+        const centre = 0.34 - (u - 0.5) * 0.18;
+        const band = Math.exp(-Math.pow((v - centre) / 0.16, 2));
+        const a1 = Math.pow(clamp01((d1 - 0.47) * 6), 2) * band;
+        const a2 = Math.pow(clamp01((d2 - 0.5) * 6), 2) * band;
+        const total = a1 + a2;
+        const o = (y * W + x) * 4;
+        if (total < 0.004) { image.data[o + 3] = 0; continue; }
+        const mix = a2 / total;
+        const lane = dust > 0.6 ? 0.45 : 1;
+        image.data[o] = pink[0] + (ember[0] - pink[0]) * mix;
+        image.data[o + 1] = pink[1] + (ember[1] - pink[1]) * mix;
+        image.data[o + 2] = pink[2] + (ember[2] - pink[2]) * mix;
+        image.data[o + 3] = Math.min(1, total) * lane * strength * 255;
+      }
+    }
+    context.putImageData(image, 0, 0);
+  }
+
   /* ---------- night sea (About, Résumé, Contact) ----------
      Rows of short wave strokes in perspective: far rows are thin, dense and
      faint; near rows longer, brighter and wider apart. Each row drifts at
@@ -250,16 +344,27 @@ only when you do).
   let sea = null;
   let seaColors = null;
   const seaOffsets = Array.from({ length: 64 }, rng(hash("tide")));
+  /* bioluminescent sparks: weighted toward the nearer, larger rows */
+  const seaSparks = (() => {
+    const random = rng(hash("bioluminescence"));
+    return Array.from({ length: 90 }, () => ({
+      x: random(), d: 0.25 + 0.75 * Math.sqrt(random()),
+      rate: 0.0008 + random() * 0.0016, phase: random() * Math.PI * 2
+    }));
+  })();
+  const pointer = { x: -1e4, y: -1e4, active: false };
   function prepareSea() {
     sea = fit(seaCanvas);
     seaColors = {
       top: css("--sea-top", "16, 32, 40"),
       deep: css("--sea-deep", "5, 10, 13"),
       line: css("--sea-line", "160, 205, 218"),
-      moon: css("--sea-moon", "228, 238, 240")
+      moon: css("--sea-moon", "228, 238, 240"),
+      bio: css("--biolume", "70, 170, 255"),
+      bioCore: css("--biolume-core", "190, 230, 255")
     };
   }
-  function drawSea(orbX, glow, time) {
+  function drawSea(orbX, glow, time, seaTop) {
     if (!sea) prepareSea();
     const { context: c, w, h } = sea;
     if (!w || !h) return;
@@ -300,13 +405,67 @@ only when you do).
         c.fillRect(x, y, step * 0.55 * (0.6 + local), thick + 0.5);
       }
     }
+
+    /* Bioluminescence: sparks that flash briefly as they ride the waves, and
+       a soft blue glow wherever the pointer passes over the water, which
+       also lights the sparks nearby. */
+    const px = pointer.x, py = pointer.y - seaTop;
+    const touching = pointer.active && py > -60 && py < h + 60;
+    if (touching) {
+      const g = c.createRadialGradient(px, py, 0, px, py, 170);
+      g.addColorStop(0, `rgba(${col.bio}, 0.2)`);
+      g.addColorStop(1, `rgba(${col.bio}, 0)`);
+      c.fillStyle = g;
+      c.fillRect(px - 170, py - 170, 340, 340);
+    }
+    for (const s of seaSparks) {
+      const y = Math.pow(s.d, 1.75) * h;
+      const x = (s.x * w + time * 0.012 * (0.25 + s.d)) % w;
+      let a = Math.pow(Math.max(0, Math.sin(time * s.rate + s.phase)), 6) * 0.85;
+      if (touching) {
+        const near = Math.max(0, 1 - Math.hypot(x - px, y - py) / 170);
+        a = Math.max(a, near * (0.6 + 0.4 * Math.sin(time * 0.01 + s.phase)));
+      }
+      if (a < 0.03) continue;
+      const r = 0.8 + s.d * 1.6;
+      c.fillStyle = `rgba(${col.bio}, ${(a * 0.35).toFixed(3)})`;
+      c.fillRect(x - r * 2.5, y - r * 0.8, r * 5, r * 1.6);
+      c.fillStyle = `rgba(${col.bioCore}, ${a.toFixed(3)})`;
+      c.fillRect(x - r * 0.6, y - r * 0.4, r * 1.2, r * 0.8);
+    }
   }
+
+  /* ---------- shooting stars (tide biome) ----------
+     Every few seconds while the sea is showing, a meteor streaks across the
+     upper sky (a DOM element animated by CSS, removed when done). Off for
+     reduced motion, motion-off, light theme, or in the world controls. */
+  let meteorTimer = null;
+  function scheduleMeteor() {
+    clearTimeout(meteorTimer);
+    meteorTimer = setTimeout(spawnMeteor, 3500 + Math.random() * 7000);
+  }
+  function spawnMeteor() {
+    const allowed = weights.tide > 0.6 && !still() && !document.hidden &&
+      rootEl.dataset.theme !== "light" && (world()?.meteors ?? true);
+    if (allowed) {
+      const m = document.createElement("i");
+      m.style.left = `${10 + Math.random() * 65}vw`;
+      m.style.top = `${4 + Math.random() * 28}vh`;
+      m.style.setProperty("--angle", `${18 + Math.random() * 20}deg`);
+      m.style.setProperty("--length", `${110 + Math.random() * 120}px`);
+      m.addEventListener("animationend", () => m.remove());
+      meteors.append(m);
+    }
+    scheduleMeteor();
+  }
+  scheduleMeteor();
 
   function drawAll() {
     drawContours(contourCanvas, parseFloat(css("--contour-dim", "0.6")));
-    if (!coarse) drawContours(litCanvas, parseFloat(css("--contour-lit", "2")));
+    if (!coarse) drawContours(litCanvas, parseFloat(css("--contour-lit", "2")), true);
     drawRidges();
     drawStars();
+    drawNebula();
     prepareSea();
     kick();
   }
@@ -422,8 +581,9 @@ only when you do).
 
     /* sea: rises in with its biome; waves keep moving while it's visible */
     if (weights.tide > 0.002) {
-      drawSea(x, glow, moving ? now : 0);
-      seaCanvas.style.transform = `translate3d(0, ${moving ? ((1 - weights.tide) * vh * 0.18).toFixed(1) : 0}px, 0)`;
+      const seaShift = moving ? (1 - weights.tide) * vh * 0.18 : 0;
+      drawSea(x, glow, moving ? now : 0, vh - seaCanvas.clientHeight + seaShift);
+      seaCanvas.style.transform = `translate3d(0, ${seaShift.toFixed(1)}px, 0)`;
       if (moving && !document.hidden) settling = true;
     }
 
@@ -442,8 +602,9 @@ only when you do).
       litCanvas.style.setProperty("--lit-x", `${event.clientX}px`);
       litCanvas.style.setProperty("--lit-y", `${event.clientY}px`);
       scene.classList.add("ls-lit");
+      pointer.x = event.clientX; pointer.y = event.clientY; pointer.active = true;
     }, { passive: true });
-    document.addEventListener("pointerleave", () => scene.classList.remove("ls-lit"));
+    document.addEventListener("pointerleave", () => { scene.classList.remove("ls-lit"); pointer.active = false; });
   }
 
   /* ---------- wiring ---------- */
@@ -461,8 +622,9 @@ only when you do).
     if (key === "mountainHeight") drawRidges();
     else if (key === "contourDetail") {
       drawContours(contourCanvas, parseFloat(css("--contour-dim", "0.6")));
-      if (!coarse) drawContours(litCanvas, parseFloat(css("--contour-lit", "2")));
+      if (!coarse) drawContours(litCanvas, parseFloat(css("--contour-lit", "2")), true);
     } else if (key === "stars") drawStars();
+    else if (key === "nebula") drawNebula();
     else if (key === "all") drawAll();
     kick();
   });
