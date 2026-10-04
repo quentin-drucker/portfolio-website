@@ -463,21 +463,26 @@ only when you do).
        a soft blue glow wherever the pointer passes over the water, which
        also lights the sparks nearby. */
     const px = pointer.x, py = pointer.y - seaTop;
-    const touching = pointer.active && py > -60 && py < h + 60;
+    /* The pointer's glow on the water follows the "Cursor glow" control like
+       the other cursor lights: size 0.5x-1.5x, brightness 0x-2x, off at 0.
+       The random spark flashes belong to the sea and stay on. */
+    const glowScale = world()?.cursorGlow ?? 1;
+    const reach = 170 * (0.5 + 0.5 * glowScale);
+    const touching = glowScale > 0 && pointer.active && py > -60 && py < h + 60;
     if (touching) {
-      const g = c.createRadialGradient(px, py, 0, px, py, 170);
-      g.addColorStop(0, `rgba(${col.bio}, 0.2)`);
+      const g = c.createRadialGradient(px, py, 0, px, py, reach);
+      g.addColorStop(0, `rgba(${col.bio}, ${Math.min(0.4, 0.2 * glowScale)})`);
       g.addColorStop(1, `rgba(${col.bio}, 0)`);
       c.fillStyle = g;
-      c.fillRect(px - 170, py - 170, 340, 340);
+      c.fillRect(px - reach, py - reach, reach * 2, reach * 2);
     }
     for (const s of seaSparks) {
       const y = Math.pow(s.d, 1.75) * h;
       const x = (s.x * w + time * 0.012 * (0.25 + s.d)) % w;
       let a = Math.pow(Math.max(0, Math.sin(time * s.rate + s.phase)), 6) * 0.85;
       if (touching) {
-        const near = Math.max(0, 1 - Math.hypot(x - px, y - py) / 170);
-        a = Math.max(a, near * (0.6 + 0.4 * Math.sin(time * 0.01 + s.phase)));
+        const near = Math.max(0, 1 - Math.hypot(x - px, y - py) / reach);
+        a = Math.max(a, Math.min(1, near * (0.6 + 0.4 * Math.sin(time * 0.01 + s.phase)) * glowScale));
       }
       if (a < 0.03) continue;
       const r = 0.8 + s.d * 1.6;

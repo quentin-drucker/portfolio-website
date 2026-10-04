@@ -86,9 +86,11 @@ html[data-theme="light"] {
   background: radial-gradient(circle, rgba(var(--fx), calc(0.105 * var(--cursor-glow, 1))) 0%, rgba(var(--fx), calc(0.05 * var(--cursor-glow, 1))) 24%, rgba(var(--fx-2), calc(0.026 * var(--cursor-glow, 1))) 48%, transparent 72%);
   mix-blend-mode: var(--aura-blend);
 }
-html.no-cursor-glow #cursor-aura { display: none; }
+html.no-cursor-glow #cursor-aura,
+html.no-cursor-glow .hover-light { display: none; }
 .hover-light {
-  background: radial-gradient(330px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(var(--fx), 0.1), rgba(var(--fx-2), 0.035) 35%, transparent 68%);
+  /* the in-card highlight under the pointer also follows "Cursor glow" */
+  background: radial-gradient(330px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(var(--fx), calc(0.1 * var(--cursor-glow, 1))), rgba(var(--fx-2), calc(0.035 * var(--cursor-glow, 1))) 35%, transparent 68%);
 }
 /* Entry flash band (positioned and animated by playEntryFlash in script.js).
    The original fixed left-to-right CSS animation is switched off. --flash
@@ -425,6 +427,9 @@ html:not([data-style="original"])[data-theme="light"] .glow-one { background: va
 html:not([data-style="original"])[data-theme="light"] .glow-two { background: var(--glow-two); }
 html:not([data-style="original"])[data-theme="light"] #cursor-aura {
   background: radial-gradient(circle, rgba(var(--fx), calc(0.12 * var(--cursor-glow, 1))) 0%, rgba(var(--fx-2), calc(0.05 * var(--cursor-glow, 1))) 30%, transparent 72%);
+}
+html:not([data-style="original"])[data-theme="light"] .hover-light {
+  background: radial-gradient(390px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(var(--fx), calc(0.12 * var(--cursor-glow, 1))), rgba(var(--fx-2), calc(0.04 * var(--cursor-glow, 1))) 38%, transparent 72%);
 }
 
 
