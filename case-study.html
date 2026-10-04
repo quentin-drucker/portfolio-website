@@ -321,8 +321,11 @@
     window.addEventListener("DOMContentLoaded", () => {
       const projects = window.PORTFOLIO_ENHANCEMENTS?.projectDetails || [];
       const id = new URLSearchParams(location.search).get("project");
-      /* Look the project up by its stable id (config.js), not by position. */
-      const index = Math.max(0, projects.findIndex((item) => item.id === id));
+      /* Look the project up by its stable id (config.js), not by position.
+         Without a valid id, show the first project that uses this template
+         (the senior project has its own page). */
+      let index = projects.findIndex((item) => item.id === id);
+      if (index < 0) index = Math.max(0, projects.findIndex((item) => (item.caseStudy || "").startsWith("case-study.html")));
       const project = projects[index];
       if (!project) return;
       const set = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
