@@ -27,21 +27,21 @@ saved seed is in place before either draws.
   const STORAGE_KEY = "quentin-world-settings";
   /* The single place the site's visual defaults are defined. */
   const DEFAULTS = {
-    seed: "wabi-sabi",
+    seed: "hello-world",
     mountainHeight: 100,  // % of the designed ridge height
     contourDetail: 14,    // number of contour levels in the map
-    stars: 130,           // % of the base star count in the night sky
-    nebula: 100,          // % nebula strength above the mountains (0 = off)
+    stars: 150,           // % of the base star count in the night sky
+    nebula: 120,          // % nebula strength above the mountains (0 = off)
     followScroll: true,   // moon and glow follow page progress
     timeOfDay: 50,        // 0 dawn … 100 sunset, used when not following scroll
     cursorGlow: 100,      // % size and brightness of the cursor glow (0 = off)
     flash: 100,           // % card entry-flash strength (0 = off); 100 = 0.75 of the original
-    moteSpeed: 100,       // % particle speed (0 = still)
-    transitionMs: 800,    // background transition length between sections
+    moteSpeed: 140,       // % particle speed (0 = still)
+    transitionMs: 1000,   // background transition length between sections
     fogReveal: true,
     edgeFade: true,
     meteors: true,        // shooting stars over the sea
-    backdrop: 40,         // % opacity of the panel behind the content (0 = off)
+    backdrop: 50,         // % opacity of the panel behind the content (0 = off)
     uiScale: 90           // % content size on larger screens (75–105)
   };
   /* Defaults that changed after visitors may have saved them. A saved value
