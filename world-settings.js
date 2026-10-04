@@ -5,8 +5,8 @@ WORLD CONTROLS — world-settings.js
 
 Extra parameters in the settings dialog for playing with the page:
 world seed, mountain height, contour detail, stars, nebula, time of day,
-cursor light, particle speed, biome transition speed, fog reveal, faded screen
-edges, shooting stars and interface size.
+cursor glow, card flash, particle speed, background transition speed, fog
+reveal, faded screen edges, shooting stars and interface size.
 
 - Values live in window.PORTFOLIO_WORLD (read by landscape.js, terrain via
   the shared seed, and script.js for particle speed).
@@ -24,31 +24,35 @@ saved seed is in place before either draws.
 */
 (function () {
   const STORAGE_KEY = "quentin-world-settings";
+  /* The single place the site's visual defaults are defined. */
   const DEFAULTS = {
     seed: "wabi-sabi",
     mountainHeight: 100,  // % of the designed ridge height
-    contourDetail: 14,    // number of contour levels in the sky map
-    stars: 100,           // % of the designed star count
-    nebula: 100,          // % nebula strength above the mountains
+    contourDetail: 14,    // number of contour levels in the map
+    stars: 130,           // % of the base star count in the night sky
+    nebula: 100,          // % nebula strength above the mountains (0 = off)
     followScroll: true,   // moon and glow follow page progress
     timeOfDay: 50,        // 0 dawn … 100 sunset, used when not following scroll
-    cursorLight: 240,     // radius in px of the lit contour circle; 0 = off
-    moteSpeed: 100,       // % particle speed
-    transitionMs: 800,    // biome transition length
+    cursorGlow: 100,      // % size and brightness of the cursor glow (0 = off)
+    flash: 100,           // % card entry-flash strength (0 = off); 100 = 0.75 of the original
+    moteSpeed: 100,       // % particle speed (0 = still)
+    transitionMs: 800,    // background transition length between sections
     fogReveal: true,
     edgeFade: true,
     meteors: true,        // shooting stars over the sea
-    uiScale: 85           // % content size on larger screens (70–100)
+    uiScale: 90           // % content size on larger screens (75–105)
   };
   /* Defaults that changed after visitors may have saved them. A saved value
      equal to an old default is treated as "never chosen" and dropped. */
-  const OLD_DEFAULTS = { transitionMs: [1500, 2500], uiScale: [75, 82] };
+  const OLD_DEFAULTS = { transitionMs: [1500, 2500], uiScale: [75, 82, 85], stars: [100] };
   const SEED_WORDS = ["moss", "ridge", "basalt", "fog", "kiln", "tide", "lichen", "cedar", "ember", "drift", "scree", "delta"];
 
   function load() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
       Object.entries(OLD_DEFAULTS).forEach(([key, old]) => { if (old.includes(saved[key])) delete saved[key]; });
+      /* ignore keys that are no longer settings (e.g. the old cursorLight) */
+      Object.keys(saved).forEach((key) => { if (!(key in DEFAULTS)) delete saved[key]; });
       return { ...DEFAULTS, ...saved };
     } catch (error) { return { ...DEFAULTS }; }
   }
@@ -60,7 +64,7 @@ saved seed is in place before either draws.
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(changed)); } catch (error) {}
   }
 
-  /* The public object other scripts read. moteSpeed is exposed as a factor. */
+  /* The public object other scripts read. Percentages are exposed as factors. */
   const world = {
     get seed() { return values.seed; },
     get mountainScale() { return values.mountainHeight / 100; },
@@ -71,7 +75,8 @@ saved seed is in place before either draws.
     get uiScale() { return values.uiScale / 100; },
     get followScroll() { return values.followScroll; },
     get timeOfDay() { return values.timeOfDay / 100; },
-    get cursorLight() { return values.cursorLight; },
+    get cursorGlow() { return values.cursorGlow / 100; },
+    get flash() { return values.flash / 100; },
     get moteSpeed() { return values.moteSpeed / 100; },
     get transitionMs() { return values.transitionMs; }
   };
@@ -81,20 +86,23 @@ saved seed is in place before either draws.
   function applyDocument() {
     rootEl.classList.toggle("no-fog", !values.fogReveal);
     rootEl.classList.toggle("no-edge-fade", !values.edgeFade);
-    rootEl.style.setProperty("--lit-r", `${values.cursorLight}px`);
-    rootEl.classList.toggle("no-cursor-light", values.cursorLight === 0);
+    rootEl.style.setProperty("--cursor-glow", String(values.cursorGlow / 100));
+    rootEl.classList.toggle("no-cursor-glow", values.cursorGlow === 0);
+    rootEl.style.setProperty("--flash", String(0.75 * values.flash / 100));
     rootEl.style.setProperty("--ui-scale", String(values.uiScale / 100));
   }
 
   const TIME_NAMES = [[0.1, "dawn"], [0.35, "morning"], [0.65, "night"], [0.9, "evening"], [1.01, "sunset"]];
+  const percentOrOff = (v) => (v === 0 ? "off" : `${v}%`);
   const format = {
     mountainHeight: (v) => `${v}%`,
     contourDetail: (v) => `${v}`,
-    stars: (v) => `${v}%`,
-    nebula: (v) => (v === 0 ? "off" : `${v}%`),
+    stars: percentOrOff,
+    nebula: percentOrOff,
     timeOfDay: (v) => TIME_NAMES.find(([limit]) => v / 100 < limit)[1],
-    cursorLight: (v) => (v === 0 ? "off" : `${v}px`),
-    moteSpeed: (v) => `${v}%`,
+    cursorGlow: percentOrOff,
+    flash: percentOrOff,
+    moteSpeed: (v) => (v === 0 ? "still" : `${v}%`),
     transitionMs: (v) => `${(v / 1000).toFixed(1)}s`,
     uiScale: (v) => `${v}%`
   };

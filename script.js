@@ -269,9 +269,56 @@ if (yearTarget) yearTarget.textContent = new Date().getFullYear();
    -------------------------------------------------------------------------- */
 
 /*
+  Entry flash:
+  When the pointer enters a card or button, a band of light starts at the
+  entry point and sweeps across to the opposite side, so the flash follows
+  the direction the pointer came from. The band is the .shimmer-surface span:
+  it is centered on the entry point, rotated to face the card's center, and
+  moved along that direction with the Web Animations API (transform and
+  opacity only, so it stays on the compositor). Re-entering cancels the
+  previous flash. Strength comes from the world controls ("Card flash",
+  window.PORTFOLIO_WORLD.flash, applied in CSS as --flash); 0 disables it.
+*/
+function playEntryFlash(element, band, event) {
+  const strength = window.PORTFOLIO_WORLD?.flash ?? 1;
+  if (strength <= 0 || motionIsReduced() || motionIsOff()) {
+    band.flashAnimation?.cancel();
+    return;
+  }
+
+  const bounds = element.getBoundingClientRect();
+  const width = element.offsetWidth, height = element.offsetHeight;
+  if (!width || !height) return;
+  /* getBoundingClientRect is in screen px; the band is positioned in the
+     element's own px, which differ when the content is scaled (CSS zoom). */
+  const scale = bounds.width / width || 1;
+  const entryX = (event.clientX - bounds.left) / scale;
+  const entryY = (event.clientY - bounds.top) / scale;
+  const angle = Math.atan2(height / 2 - entryY, width / 2 - entryX) * (180 / Math.PI);
+  const diagonal = Math.hypot(width, height);
+  const thickness = Math.max(80, diagonal * 0.45);
+  const length = diagonal * 2.2;
+
+  band.style.width = `${thickness}px`;
+  band.style.height = `${length}px`;
+  band.style.left = `${entryX - thickness / 2}px`;
+  band.style.top = `${entryY - length / 2}px`;
+
+  band.flashAnimation?.cancel();
+  band.flashAnimation = band.animate(
+    [
+      { transform: `rotate(${angle}deg) translateX(${-thickness * 0.5}px)`, opacity: 0 },
+      { opacity: 1, offset: 0.15 },
+      { transform: `rotate(${angle}deg) translateX(${diagonal}px)`, opacity: 0 }
+    ],
+    { duration: 900, easing: "cubic-bezier(.23, .71, .31, 1)" }
+  );
+}
+
+/*
   Shimmer/spotlight enhancement targets:
   Each matching element receives two decorative span layers:
-  - .shimmer-surface travels across the component on hover.
+  - .shimmer-surface: the entry flash band (see playEntryFlash above).
   - .hover-light is positioned from pointer coordinates stored in CSS variables.
 */
 const shimmerSelectors = [
@@ -299,6 +346,8 @@ shimmerTargets.forEach((element) => {
   hoverLight.setAttribute("aria-hidden", "true");
 
   element.append(shimmer, hoverLight);
+
+  element.addEventListener("pointerenter", (event) => playEntryFlash(element, shimmer, event));
 
   element.addEventListener("pointermove", (event) => {
     const bounds = element.getBoundingClientRect();

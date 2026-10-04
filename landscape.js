@@ -246,16 +246,18 @@ only when you do).
       context.beginPath(); context.arc(cx, cy, r, Math.PI, Math.PI * 2);
       context.strokeStyle = `rgba(${line}, 0.035)`; context.stroke();
     }
-    /* stars: many faint, few bright; rare amber; one or two gold with a glint */
+    /* stars: many faint, some bright, a few amber, and a few gold with a glint */
     const count = Math.round(((w * h) / 7000) * (world()?.starScale ?? 1));
     for (let i = 0; i < count; i++) {
       const x = random() * w, y = random() * h, roll = random();
-      const size = 0.35 + Math.pow(random(), 3) * 1.3;
-      const color = roll > 0.97 ? amber : star;
-      context.fillStyle = `rgba(${color}, ${0.12 + Math.pow(random(), 2) * 0.55})`;
+      const size = 0.35 + Math.pow(random(), 2.6) * 1.45;
+      const color = roll > 0.955 ? amber : star;
+      context.fillStyle = `rgba(${color}, ${0.12 + Math.pow(random(), 1.7) * 0.6})`;
       context.beginPath(); context.arc(x, y, size, 0, Math.PI * 2); context.fill();
     }
-    for (let i = 0; i < ((world()?.starScale ?? 1) > 0 ? 2 : 0); i++) {
+    /* gold glint stars: about one per 450px of width (3 on a laptop) */
+    const goldCount = (world()?.starScale ?? 1) > 0 ? Math.max(2, Math.round(w / 450)) : 0;
+    for (let i = 0; i < goldCount; i++) {
       const x = w * (0.18 + random() * 0.7), y = h * (0.12 + random() * 0.6);
       const glow = context.createRadialGradient(x, y, 0, x, y, 10);
       glow.addColorStop(0, `rgba(${gold}, 0.55)`); glow.addColorStop(1, `rgba(${gold}, 0)`);

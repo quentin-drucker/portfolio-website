@@ -31,7 +31,7 @@ What the redesign added:
 | `ridgeline.css` | The theme: slate/cyan palette with amber and gold tiers, Shippori Mincho + Zen Kaku Gothic type, fading panels, fog reveals, and the landscape layers |
 | `landscape.js` | Background scene: night sky with mountains (top), a contour map of the same land (Projects, Playground), a night sea with the moon's reflection (About to Contact), the moon/sun and its horizon glow, and timed biome transitions |
 | `terrain.js` | Playground: a seeded wireframe heightfield you can orbit |
-| `world-settings.js` | World controls in the settings dialog (interface size, seed, mountains, contours, stars, nebula, time of day, cursor light, particle speed, transition speed, fog reveal, screen edges, shooting stars) |
+| `world-settings.js` | World controls in the settings dialog (interface size, seed, mountains, contours, stars, nebula, time of day, cursor glow, card flash, particle speed, transition speed, fog reveal, screen edges, shooting stars). Defaults live in one `DEFAULTS` object there |
 | `site.js` | Overview-card filter jumps and the senior-project stand-in image |
 | `sip.html`, `sip.css` | Senior project page (draft) with its own page biome |
 

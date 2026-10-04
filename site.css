@@ -75,18 +75,38 @@ html[data-theme="light"] {
   background: linear-gradient(90deg, rgba(var(--fx), 0.22), rgb(var(--fx)), rgb(var(--fx-2)));
   box-shadow: 0 0 calc(16px * var(--fx-glow)) rgba(var(--fx), calc(0.64 * var(--fx-glow)));
 }
+/* Cursor glow. --cursor-glow (0–2, default 1) comes from the "Cursor glow"
+   world control: it scales the glow's size (0.5×–1.5×) and brightness
+   (0×–2×); at 0 the glow is hidden (html.no-cursor-glow). */
 #cursor-aura {
-  width: var(--aura-size);
-  height: var(--aura-size);
-  margin: calc(var(--aura-size) / -2) 0 0 calc(var(--aura-size) / -2);
-  background: radial-gradient(circle, rgba(var(--fx), 0.105) 0%, rgba(var(--fx), 0.05) 24%, rgba(var(--fx-2), 0.026) 48%, transparent 72%);
+  --aura-scaled: calc(var(--aura-size) * (0.5 + 0.5 * var(--cursor-glow, 1)));
+  width: var(--aura-scaled);
+  height: var(--aura-scaled);
+  margin: calc(var(--aura-scaled) / -2) 0 0 calc(var(--aura-scaled) / -2);
+  background: radial-gradient(circle, rgba(var(--fx), calc(0.105 * var(--cursor-glow, 1))) 0%, rgba(var(--fx), calc(0.05 * var(--cursor-glow, 1))) 24%, rgba(var(--fx-2), calc(0.026 * var(--cursor-glow, 1))) 48%, transparent 72%);
   mix-blend-mode: var(--aura-blend);
 }
+html.no-cursor-glow #cursor-aura { display: none; }
 .hover-light {
   background: radial-gradient(330px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(var(--fx), 0.1), rgba(var(--fx-2), 0.035) 35%, transparent 68%);
 }
+/* Entry flash band (positioned and animated by playEntryFlash in script.js).
+   The original fixed left-to-right CSS animation is switched off. --flash
+   is the brightness: 0.75 by default (25% below the original), set by the
+   "Card flash" world control; 0 disables it. */
+:root { --flash: 0.75; }
 .shimmer-surface {
-  background: linear-gradient(90deg, transparent 0%, rgba(var(--fx), 0.03) 24%, rgba(var(--fx), 0.16) 50%, rgba(var(--fx), 0.06) 67%, transparent 100%);
+  inset: auto;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-radius: 0;
+  opacity: 0;
+  transform: none;
+  animation: none !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--fx), calc(0.03 * var(--flash))) 24%, rgba(var(--fx), calc(0.16 * var(--flash))) 50%, rgba(var(--fx), calc(0.06 * var(--flash))) 67%, transparent 100%);
+  will-change: transform, opacity;
 }
 .mote-ripple {
   border-color: rgba(var(--fx), 0.75);
@@ -404,7 +424,7 @@ html:not([data-style="original"])[data-theme="light"] .page-glow { opacity: var(
 html:not([data-style="original"])[data-theme="light"] .glow-one { background: var(--glow-one); }
 html:not([data-style="original"])[data-theme="light"] .glow-two { background: var(--glow-two); }
 html:not([data-style="original"])[data-theme="light"] #cursor-aura {
-  background: radial-gradient(circle, rgba(var(--fx), 0.12) 0%, rgba(var(--fx-2), 0.05) 30%, transparent 72%);
+  background: radial-gradient(circle, rgba(var(--fx), calc(0.12 * var(--cursor-glow, 1))) 0%, rgba(var(--fx-2), calc(0.05 * var(--cursor-glow, 1))) 30%, transparent 72%);
 }
 
 

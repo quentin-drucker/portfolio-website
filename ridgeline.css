@@ -351,8 +351,8 @@ html[data-motion="off"] .ls-clouds { animation: none; }
 .ls-contours-lit {
   opacity: 0;
   transition: opacity 400ms ease;
-  -webkit-mask-image: radial-gradient(var(--lit-r, 240px) circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
-  mask-image: radial-gradient(var(--lit-r, 240px) circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+  -webkit-mask-image: radial-gradient(calc(240px * (0.5 + 0.5 * var(--cursor-glow, 1))) circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+  mask-image: radial-gradient(calc(240px * (0.5 + 0.5 * var(--cursor-glow, 1))) circle at var(--lit-x, -999px) var(--lit-y, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
 }
 .landscape.ls-lit .ls-contours-lit { opacity: calc(var(--w-survey) * 0.75); }
 
@@ -513,7 +513,7 @@ html[data-style="ridgeline"] .section-rail a.active:not(:hover):not(:focus-visib
 
 /* World controls: atmosphere switches and cursor light (world-settings.js). */
 html.no-edge-fade body::after { display: none; }
-html.no-cursor-light .ls-contours-lit { display: none; }
+html.no-cursor-glow .ls-contours-lit { display: none; }
 html[data-style="ridgeline"].no-fog .reveal { filter: none; transition: opacity 700ms ease; }
 
 /* Fog-clearing reveal */

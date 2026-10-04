@@ -506,7 +506,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
             <span>Tools</span>
             <div>
               <strong>Unreal Engine · Unity · Maya · Azure · Docker · Node.js · OpenCV · Git</strong>
-              <p>Adobe Creative Cloud · Linux (Ubuntu)</p>
+              <p>VS Code · Cursor · Adobe Creative Cloud · Linux (Ubuntu)</p>
             </div>
           </div>
         </div>
@@ -621,7 +621,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
         <h3 class="settings-group-title" id="settings-display">Display</h3>
         <label class="range-setting" for="world-scale">
           <span class="setting-copy"><strong>Interface size</strong><small>Size of the text, cards and visuals. The middle is the default. The header, side rail and background keep their size.</small></span>
-          <span class="range-control"><input id="world-scale" data-world="uiScale" type="range" min="70" max="100" step="1" /><output data-world-out="uiScale" for="world-scale"></output></span>
+          <span class="range-control"><input id="world-scale" data-world="uiScale" type="range" min="75" max="105" step="1" /><output data-world-out="uiScale" for="world-scale"></output></span>
         </label>
       </section>
 
@@ -647,7 +647,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
           <span class="range-control"><input id="world-contours" data-world="contourDetail" type="range" min="6" max="24" step="1" /><output data-world-out="contourDetail" for="world-contours"></output></span>
         </label>
         <label class="range-setting" for="world-stars">
-          <span class="setting-copy"><strong>Stars</strong><small>Star count in the night sky above the mountains and the sea.</small></span>
+          <span class="setting-copy"><strong>Stars</strong><small>Star count in the night sky above the mountains and the sea. 0 clears the sky.</small></span>
           <span class="range-control"><input id="world-stars" data-world="stars" type="range" min="0" max="250" step="10" /><output data-world-out="stars" for="world-stars"></output></span>
         </label>
         <label class="range-setting" for="world-nebula">
@@ -670,9 +670,13 @@ baseline-2026-10-03. Design explorations are in explorations/.
           <span class="setting-copy"><strong>Time of day</strong><small>Set the moon, glow and reflection by hand. Turn off “Time follows scroll” to use it.</small></span>
           <span class="range-control"><input id="world-time" data-world="timeOfDay" type="range" min="0" max="100" step="1" /><output data-world-out="timeOfDay" for="world-time"></output></span>
         </label>
-        <label class="range-setting" for="world-light">
-          <span class="setting-copy"><strong>Cursor light</strong><small>Size of the green glow that lights up the contour map around your pointer, behind Projects and Playground.</small></span>
-          <span class="range-control"><input id="world-light" data-world="cursorLight" type="range" min="0" max="480" step="20" /><output data-world-out="cursorLight" for="world-light"></output></span>
+        <label class="range-setting" for="world-glow">
+          <span class="setting-copy"><strong>Cursor glow</strong><small>Size and brightness of the soft light that follows your pointer, and of the green lit patch on the map behind Projects. 0 turns it off.</small></span>
+          <span class="range-control"><input id="world-glow" data-world="cursorGlow" type="range" min="0" max="200" step="10" /><output data-world-out="cursorGlow" for="world-glow"></output></span>
+        </label>
+        <label class="range-setting" for="world-flash">
+          <span class="setting-copy"><strong>Card flash</strong><small>Strength of the light that sweeps across a card or button from where your pointer enters it. 0 turns it off.</small></span>
+          <span class="range-control"><input id="world-flash" data-world="flash" type="range" min="0" max="200" step="10" /><output data-world-out="flash" for="world-flash"></output></span>
         </label>
       </section>
 
@@ -698,7 +702,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
             <span class="range-control"><input id="particle-density" type="range" min="0" max="100" step="10" value="70" /><output id="particle-density-value" for="particle-density">70%</output></span>
           </label>
           <label class="range-setting" for="world-speed">
-            <span class="setting-copy"><strong>Particle speed</strong><small>How fast the particles drift and swirl.</small></span>
+            <span class="setting-copy"><strong>Particle speed</strong><small>How fast the particles drift and swirl. 0 holds them still.</small></span>
             <span class="range-control"><input id="world-speed" data-world="moteSpeed" type="range" min="0" max="250" step="10" /><output data-world-out="moteSpeed" for="world-speed"></output></span>
           </label>
         </div>
@@ -712,7 +716,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
       <section class="settings-group" aria-labelledby="settings-atmosphere">
         <h3 class="settings-group-title" id="settings-atmosphere">Atmosphere</h3>
         <label class="setting-switch" for="world-fog">
-          <span class="setting-copy"><strong>Fog reveal</strong><small>Sections clear in like fog lifting as they scroll into view.</small></span>
+          <span class="setting-copy"><strong>Fog reveal</strong><small>Sections clear in like fog lifting as they scroll into view (applies to sections you haven’t reached yet).</small></span>
           <span class="switch-control">
             <input id="world-fog" data-world="fogReveal" type="checkbox" role="switch" />
             <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
