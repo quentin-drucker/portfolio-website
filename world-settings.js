@@ -6,7 +6,8 @@ WORLD CONTROLS — world-settings.js
 Extra parameters in the settings dialog for playing with the page:
 world seed, mountain height, contour detail, stars, nebula, time of day,
 cursor glow, card flash, particle speed, background transition speed, fog
-reveal, faded screen edges, shooting stars and interface size.
+reveal, faded screen edges, shooting stars, content backdrop and interface
+size.
 
 - Values live in window.PORTFOLIO_WORLD (read by landscape.js, terrain via
   the shared seed, and script.js for particle speed).
@@ -40,6 +41,7 @@ saved seed is in place before either draws.
     fogReveal: true,
     edgeFade: true,
     meteors: true,        // shooting stars over the sea
+    backdrop: 40,         // % opacity of the panel behind the content (0 = off)
     uiScale: 90           // % content size on larger screens (75–105)
   };
   /* Defaults that changed after visitors may have saved them. A saved value
@@ -73,6 +75,7 @@ saved seed is in place before either draws.
     get nebulaScale() { return values.nebula / 100; },
     get meteors() { return values.meteors; },
     get uiScale() { return values.uiScale / 100; },
+    get backdrop() { return values.backdrop / 100; },
     get followScroll() { return values.followScroll; },
     get timeOfDay() { return values.timeOfDay / 100; },
     get cursorGlow() { return values.cursorGlow / 100; },
@@ -90,6 +93,8 @@ saved seed is in place before either draws.
     rootEl.classList.toggle("no-cursor-glow", values.cursorGlow === 0);
     rootEl.style.setProperty("--flash", String(0.75 * values.flash / 100));
     rootEl.style.setProperty("--ui-scale", String(values.uiScale / 100));
+    rootEl.style.setProperty("--backdrop", String(values.backdrop / 100));
+    rootEl.classList.toggle("no-backdrop", values.backdrop === 0);
   }
 
   const TIME_NAMES = [[0.1, "dawn"], [0.35, "morning"], [0.65, "night"], [0.9, "evening"], [1.01, "sunset"]];
@@ -104,6 +109,7 @@ saved seed is in place before either draws.
     flash: percentOrOff,
     moteSpeed: (v) => (v === 0 ? "still" : `${v}%`),
     transitionMs: (v) => `${(v / 1000).toFixed(1)}s`,
+    backdrop: percentOrOff,
     uiScale: (v) => `${v}%`
   };
 

@@ -124,6 +124,9 @@ html[data-style="ridgeline"] {
   --font-ui: "IBM Plex Mono", monospace;
   --terrain-font: "IBM Plex Mono", monospace;
   --art-filter: saturate(0.8) brightness(0.95);
+
+  /* Content backdrop (site.css): a shade under the slate background. */
+  --backdrop-rgb: 7, 13, 17;
 }
 html[data-style="ridgeline"][data-theme="light"] {
   --bg: #edf0ea;
@@ -151,8 +154,8 @@ html[data-style="ridgeline"][data-theme="light"] {
   --contour-index: 160, 100, 30;
   --contour-dim: 0.75;
   --contour-lit: 1.6;
-  --ridge-far: 222, 228, 225;
-  --ridge-near: 182, 194, 194;
+  --ridge-far: 224, 230, 227;
+  --ridge-near: 196, 206, 205;
   --accent-two-rgb: 154, 100, 32;
   --accent-key: #c27c00;
   --accent-key-rgb: 214, 140, 0;
@@ -186,6 +189,11 @@ html[data-style="ridgeline"][data-theme="light"] {
   --sip-sky: 214, 224, 218;
   --sip-sky-2: 236, 240, 234;
   --sip-ink: 150, 165, 166;
+  /* Content backdrop: a pale paper tone, stronger than on the dark theme.
+     The art in light mode is mid-grey (ridges, clouds, contour lines), so
+     dark text needs the panel lighter, not darker, to stand out. */
+  --backdrop-rgb: 248, 250, 246;
+  --backdrop-boost: 1.25;
 }
 
 /* Page biome: kiln (the SIP page). A warm, Mist-like palette for one page. */
@@ -227,6 +235,7 @@ html[data-style="ridgeline"][data-page-biome="kiln"] {
   --glow-alpha: 0.18;
   --accent-key: #e8b84a;
   --accent-key-rgb: 232, 184, 74;
+  --backdrop-rgb: 17, 16, 14;
 }
 html[data-style="ridgeline"][data-page-biome="kiln"][data-theme="light"] {
   --bg: #e6e3db;
@@ -247,8 +256,9 @@ html[data-style="ridgeline"][data-page-biome="kiln"][data-theme="light"] {
   --fx: 120, 96, 50;
   --mote-a: 60, 56, 48;
   --contour: 120, 110, 90;
-  --ridge-far: 214, 210, 200;
-  --ridge-near: 170, 165, 154;
+  --ridge-far: 222, 218, 209;
+  --ridge-near: 192, 187, 177;
+  --backdrop-rgb: 244, 241, 235;
 }
 
 /* ---------------------------------------------------------------- scene */
@@ -337,9 +347,9 @@ html[data-motion="off"] .ls-meteors { display: none; }
 .ls-clouds-far { opacity: calc(var(--w-tide) * 0.08); animation-duration: 420s; }
 .ls-clouds-mid { opacity: calc(var(--w-tide) * 0.12); animation-duration: 300s; }
 .ls-clouds-near { opacity: calc(var(--w-tide) * 0.16); animation-duration: 200s; }
-html[data-theme="light"] .ls-clouds-far { opacity: calc(var(--w-tide) * 0.4); }
-html[data-theme="light"] .ls-clouds-mid { opacity: calc(var(--w-tide) * 0.55); }
-html[data-theme="light"] .ls-clouds-near { opacity: calc(var(--w-tide) * 0.7); }
+html[data-theme="light"] .ls-clouds-far { opacity: calc(var(--w-tide) * 0.22); }
+html[data-theme="light"] .ls-clouds-mid { opacity: calc(var(--w-tide) * 0.3); }
+html[data-theme="light"] .ls-clouds-near { opacity: calc(var(--w-tide) * 0.38); }
 @keyframes ls-cloud-drift { to { transform: translateX(-100vw); } }
 @media (prefers-reduced-motion: reduce) { .ls-clouds { animation: none; } }
 html[data-motion="off"] .ls-clouds { animation: none; }
@@ -493,6 +503,10 @@ html[data-style="ridgeline"] .button-secondary { background: transparent; border
 html[data-style="ridgeline"] .filter-button { border-radius: 4px; }
 html[data-style="ridgeline"] .filter-button[aria-pressed="true"] { background: var(--accent-two); color: #1d1406; }
 html[data-style="ridgeline"] .project-visual { background-color: rgba(4, 9, 12, 0.45); }
+
+/* The contact form's status line used the dark theme's bright cyan on every
+   theme; it follows the theme's accent. */
+html[data-style="ridgeline"] .form-status { color: var(--accent); }
 
 /* Playground controls stay amber; gold is kept for the terrain's peak marker. */
 html[data-style="ridgeline"] .terrain-range input { accent-color: var(--accent-two); }

@@ -518,3 +518,65 @@ main > .section:not(.hero):not(.sip-hero) { padding-top: 150px; padding-bottom: 
 @media (min-width: 900px) {
   .nav-shell { width: min(max(calc(var(--max) * var(--ui-zoom) / var(--chrome-zoom)), 960px), calc(100% - 8px)); }
 }
+
+/* ---------------------------------------------------------------- content backdrop
+   One continuous, see-through column behind the readable content: between the
+   decorative background and the page, never over it. It is main's own
+   ::before, so every page built on these stylesheets (index, SIP) gets it,
+   and it runs the full length of the content and scrolls with it.
+   Layering: z-index -5 sits above the landscape (-6) and below the particles
+   (-4) and cursor glow (-1), so those stay bright over it.
+   Strength: "Content backdrop" in World controls sets --backdrop (0–1) on
+   <html> (world-settings.js). Each theme sets the color (--backdrop-rgb) and
+   a multiplier (--backdrop-boost), so one setting suits light and dark.
+   Its sides and both ends fade out instead of stopping on a hard edge. */
+:root {
+  --backdrop: 0.4;
+  --backdrop-rgb: 8, 15, 19;
+  --backdrop-boost: 1;
+  --backdrop-fade: 150px;
+}
+main { position: relative; }
+main::before {
+  --a: min(1, calc(var(--backdrop) * var(--backdrop-boost)));
+  --fill: rgba(var(--backdrop-rgb), var(--a));
+  --f: var(--backdrop-fade);
+  content: "";
+  position: absolute;
+  z-index: -5;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: min(calc(var(--max) + 2 * var(--f)), 100%);
+  transform: translateX(-50%);
+  pointer-events: none;
+  /* Side fades follow a smoothstep curve (flat at both ends), so there is
+     no visible line where the fade meets the solid part. */
+  background: linear-gradient(to right,
+    transparent,
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.1)) calc(var(--f) * 0.2),
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.35)) calc(var(--f) * 0.4),
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.65)) calc(var(--f) * 0.6),
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.9)) calc(var(--f) * 0.8),
+    var(--fill) var(--f),
+    var(--fill) calc(100% - var(--f)),
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.9)) calc(100% - var(--f) * 0.8),
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.65)) calc(100% - var(--f) * 0.6),
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.35)) calc(100% - var(--f) * 0.4),
+    rgba(var(--backdrop-rgb), calc(var(--a) * 0.1)) calc(100% - var(--f) * 0.2),
+    transparent);
+  --ends: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.35) 100px, rgba(0, 0, 0, 0.8) 190px, #000 260px, #000 calc(100% - 220px), rgba(0, 0, 0, 0.8) calc(100% - 160px), rgba(0, 0, 0, 0.35) calc(100% - 90px), transparent);
+  -webkit-mask-image: var(--ends);
+  mask-image: var(--ends);
+}
+html.no-backdrop main::before { display: none; }
+@media (max-width: 760px) {
+  :root { --backdrop-fade: 12px; }
+}
+
+/* Section dividers (enhancements.css) were a fixed bright cyan, which read
+   as a stray line on the light theme; they follow the theme's effect color. */
+main > section:not(.hero)::before {
+  background: linear-gradient(90deg, transparent, rgba(var(--fx), 0.26), rgba(var(--fx), 0.16), transparent);
+  box-shadow: none;
+}
