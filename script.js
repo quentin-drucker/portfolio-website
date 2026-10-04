@@ -279,6 +279,29 @@ if (yearTarget) yearTarget.textContent = new Date().getFullYear();
   previous flash. Strength comes from the world controls ("Card flash",
   window.PORTFOLIO_WORLD.flash, applied in CSS as --flash); 0 disables it.
 */
+/*
+  Only a real entry flashes. Cards lift and tilt on hover; when the pointer
+  leaves near an edge, the card settles back and its edge can slide under a
+  pointer that never moved in, which the browser reports as a new
+  pointerenter. So the pointer's previous position (tracked below, captured
+  before the enter event) must have been outside the card. If it was already
+  inside, the card moved under the pointer, not the other way round, and
+  there is no flash. Quick genuine re-entries still flash.
+*/
+const lastPointer = { x: null, y: null };
+window.addEventListener("pointermove", (event) => {
+  /* runs after enter/leave handlers for the same movement, so during an
+     enter event this still holds the position before the move */
+  queueMicrotask(() => { lastPointer.x = event.clientX; lastPointer.y = event.clientY; });
+}, { passive: true, capture: true });
+
+function isGenuineEntry(bounds) {
+  if (lastPointer.x === null) return true;
+  const inside = lastPointer.x >= bounds.left && lastPointer.x <= bounds.right &&
+    lastPointer.y >= bounds.top && lastPointer.y <= bounds.bottom;
+  return !inside;
+}
+
 function playEntryFlash(element, band, event) {
   const strength = window.PORTFOLIO_WORLD?.flash ?? 1;
   if (strength <= 0 || motionIsReduced() || motionIsOff()) {
@@ -287,6 +310,7 @@ function playEntryFlash(element, band, event) {
   }
 
   const bounds = element.getBoundingClientRect();
+  if (!isGenuineEntry(bounds)) return;
   const width = element.offsetWidth, height = element.offsetHeight;
   if (!width || !height) return;
   /* getBoundingClientRect is in screen px; the band is positioned in the
