@@ -392,7 +392,8 @@ function openProjectDetail(index) {
 /* Command palette */
 /*
   Command definitions:
-  Each command is [label, description, icon, action]. Project commands are
+  Each command is [label, description, icon, action]. The icon is the
+  command's keyboard shortcut where it has one. Project commands are
   appended from config.js so the palette can open their detail dialogs.
 */
 const commands = [
@@ -408,11 +409,15 @@ const commands = [
     closeEnhDialog(enh.commandDialog);
     applyEnhPrefs();
     openEnhDialog(enh.settingsDialog);
+  }],
+  ["Keyboard shortcuts", "Every key you can press on this site", "?", () => {
+    closeEnhDialog(enh.commandDialog);
+    window.PORTFOLIO_SHORTCUTS?.open();
   }]
 ];
 
 ENH.projectDetails.forEach((project, index) => {
-  commands.push([project.title, project.type, "P", () => {
+  commands.push([project.title, project.type, "◇", () => {
     closeEnhDialog(enh.commandDialog);
     openProjectDetail(index);
   }]);

@@ -14,6 +14,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Computational World-Building: a wabi-sabi-inspired system in which a photograph influences a procedurally generated, explorable world. Senior Integrative Project by Quentin Drucker." />
   <meta name="theme-color" content="#191815" />
+  <!-- Link previews (LinkedIn, Slack, iMessage, email…). Platforms need
+       absolute URLs; these assume GitHub Pages at https://quentin-drucker.github.io/portfolio-website/.
+       Update them if the site moves to another address. -->
+  <link rel="canonical" href="https://quentin-drucker.github.io/portfolio-website/sip.html" />
+  <meta property="og:site_name" content="Quentin Drucker" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://quentin-drucker.github.io/portfolio-website/sip.html" />
+  <meta property="og:title" content="Computational World-Building | Quentin Drucker" />
+  <meta property="og:description" content="Senior Integrative Project: a wabi-sabi-inspired system in which a photograph influences a procedurally generated, explorable world." />
+  <meta property="og:image" content="https://quentin-drucker.github.io/portfolio-website/assets/og-image-sip.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Computational World-Building: warm stone-colored mountains under a night sky." />
+  <meta name="twitter:card" content="summary_large_image" />
   <title>Computational World-Building | Quentin Drucker</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,6 +43,7 @@
   <script src="enhancements.js" defer></script>
   <script src="world-settings.js" defer></script>
   <script src="landscape.js" defer></script>
+  <script src="shortcuts.js" defer></script>
 </head>
 <body data-page="sip">
   <div id="scroll-progress" aria-hidden="true"><span></span></div>
@@ -39,9 +54,9 @@
 
   <header class="site-header">
     <nav class="nav-shell glass" aria-label="Senior project navigation">
-      <a class="brand" href="index.html" aria-label="Quentin home">
+      <a class="brand" href="index.html" aria-label="Quentin Drucker, home">
         <span class="brand-mark" aria-hidden="true">Q</span>
-        <span>Quentin</span>
+        <span>Quentin Drucker</span>
       </a>
       <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open navigation">
         <span></span><span></span><span></span>
@@ -153,6 +168,21 @@
       <p class="sip-back"><a class="card-jump" href="index.html#projects">Back to all projects</a></p>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span>Quentin Drucker</span>
+      </a>
+      <p>Designed and built with HTML, CSS, and JavaScript.<span class="footer-updated" data-last-updated hidden></span></p>
+      <div class="footer-links">
+        <button class="footer-shortcuts" type="button" data-open-shortcuts>Keyboard shortcuts</button>
+        <a href="#main-content">Back to top</a>
+        <span>© <span id="current-year"></span> Quentin Drucker</span>
+      </div>
+    </div>
+  </footer>
 
   <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
     <svg viewBox="0 0 48 48" aria-hidden="true">

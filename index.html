@@ -19,6 +19,7 @@ Scripts (all deferred, run in this order):
 - terrain.js         Playground terrain generator
 - landscape.js       background: night sky, mountains, contour map, sea, moon, biomes
 - site.js            overview-card filter jumps, senior-project stand-in image
+- shortcuts.js       "?" shortcut list, S for World controls, one-time hint
 
 Sections carry data-biome, which landscape.js uses to change the background
 as you scroll. Section ids are stable: navigation, shortcuts and observers
@@ -34,9 +35,20 @@ baseline-2026-10-03. Design explorations are in explorations/.
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Quentin Drucker — computer science and art student building procedural systems, computer graphics and computer vision projects." />
   <meta name="theme-color" content="#0b1318" />
-  <meta property="og:title" content="Quentin Drucker | Portfolio" />
-  <meta property="og:description" content="Procedural systems, computer graphics and computer vision." />
+  <!-- Link previews (LinkedIn, Slack, iMessage, email…). Platforms need
+       absolute URLs; these assume GitHub Pages at https://quentin-drucker.github.io/portfolio-website/.
+       Update them if the site moves to another address. -->
+  <link rel="canonical" href="https://quentin-drucker.github.io/portfolio-website/" />
+  <meta property="og:site_name" content="Quentin Drucker" />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://quentin-drucker.github.io/portfolio-website/" />
+  <meta property="og:title" content="Quentin Drucker | Portfolio" />
+  <meta property="og:description" content="Computer science and art student at Connecticut College building procedural systems, computer graphics and computer vision projects." />
+  <meta property="og:image" content="https://quentin-drucker.github.io/portfolio-website/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Quentin Drucker: mountains under a night sky, the portfolio's generated landscape." />
+  <meta name="twitter:card" content="summary_large_image" />
   <title>Quentin Drucker | Portfolio</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="manifest" href="site.webmanifest" />
@@ -54,6 +66,7 @@ baseline-2026-10-03. Design explorations are in explorations/.
   <script src="terrain.js" defer></script>
   <script src="landscape.js" defer></script>
   <script src="site.js" defer></script>
+  <script src="shortcuts.js" defer></script>
 </head>
 
 <body>
@@ -79,9 +92,9 @@ baseline-2026-10-03. Design explorations are in explorations/.
 
   <header class="site-header">
     <nav class="nav-shell glass" aria-label="Primary navigation">
-      <a class="brand" href="#home" aria-label="Quentin home">
+      <a class="brand" href="#home" aria-label="Quentin Drucker, home">
         <span class="brand-mark" aria-hidden="true">Q</span>
-        <span>Quentin</span>
+        <span>Quentin Drucker</span>
       </a>
 
       <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open navigation">
@@ -755,12 +768,13 @@ baseline-2026-10-03. Design explorations are in explorations/.
     <div class="footer-inner">
       <a class="brand" href="#home">
         <span class="brand-mark" aria-hidden="true">Q</span>
-        <span>Quentin</span>
+        <span>Quentin Drucker</span>
       </a>
-      <p>Designed and built with HTML, CSS, and JavaScript.</p>
+      <p>Designed and built with HTML, CSS, and JavaScript.<span class="footer-updated" data-last-updated hidden></span></p>
       <div class="footer-links">
-        <a href="#home">Back to top</a>
-        <span>© <span id="current-year"></span> Quentin</span>
+        <button class="footer-shortcuts" type="button" data-open-shortcuts>Keyboard shortcuts</button>
+        <a href="#main-content">Back to top</a>
+        <span>© <span id="current-year"></span> Quentin Drucker</span>
       </div>
     </div>
   </footer>

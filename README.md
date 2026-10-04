@@ -34,17 +34,29 @@ What the redesign added:
 | `world-settings.js` | World controls in the settings dialog (interface size, seed, mountains, contours, stars, nebula, time of day, cursor glow, card flash, particle speed, transition speed, fog reveal, screen edges, shooting stars). Defaults live in one `DEFAULTS` object there |
 | `site.js` | Overview-card filter jumps and the senior-project stand-in image |
 | `sip.html`, `sip.css` | Senior project page (draft) with its own page biome |
+| `shortcuts.js` | Keyboard-shortcut list (`?`), `S` for World controls, and a one-time "Press ? for keyboard shortcuts" hint for mouse-and-keyboard visitors |
+| `pages.css` | Layout for the résumé page and the project page template |
+| `assets/og-image.png`, `assets/og-image-sip.png` | Link-preview images (1200×630), rendered from the landscape |
 
 Load order on every page: `styles.css → enhancements.css → site.css →
 ridgeline.css` (→ page CSS), then scripts `config.js → script.js →
-enhancements.js → world-settings.js → terrain.js → landscape.js → site.js`.
+enhancements.js → world-settings.js → terrain.js → landscape.js → site.js →
+shortcuts.js` (pages without the Playground skip `terrain.js` and `site.js`).
+
+Every page except `404.html` shares the same header, settings, command
+palette, shortcuts and footer. The footer's "Last updated" date comes from
+`lastUpdated` in `config.js`: change it there when you publish an update.
+Link previews (Open Graph tags in each page's `<head>`) use absolute URLs
+for GitHub Pages at `https://quentin-drucker.github.io/portfolio-website/`;
+update them if the site moves to another address.
 
 Homepage section order and shortcut keys: `1 #home`, `2 #expertise`
 ("What I work on"), `3 #projects`, `4 #playground`, `5 #about`, `6 #resume`,
 `7 #contact`. `R` opens the résumé; `/` or Ctrl/Cmd+K opens the command
-palette. Number keys and `R` fire only without Ctrl/Cmd/Alt, so browser
-shortcuts (Ctrl+R reload, Ctrl+1–7 tabs) still work. On `sip.html` these
-open the homepage sections.
+palette; `S` opens World controls; `?` lists every shortcut. Single-key
+shortcuts fire only without Ctrl/Cmd/Alt, so browser
+shortcuts (Ctrl+R reload, Ctrl+1–7 tabs) still work. On the other pages
+the number keys open the homepage sections.
 
 Biomes: sections declare `data-biome`: `ridgeline` (Home, What I work on:
 stars, moon, mountains), `survey` (Projects, Playground: the contour map) and
@@ -1182,41 +1194,18 @@ select
 
 # `resume.html`
 
-This is a standalone print-oriented document.
+The résumé page. It shows the PDF (`2026_0603_Resume_QD.pdf`, the
+authoritative résumé) inside the site's frame, with **Download PDF** (saved
+as `Quentin_Drucker_Resume.pdf`) and **Open in a new tab**. It uses the same
+shell as the other pages (header, settings, theme, shortcuts, footer) with
+the sea biome fixed as its background.
 
-It uses embedded page-specific CSS.
+On phones, and in browsers without a built-in PDF viewer, the PDF isn't
+embedded; the page points to the download and open buttons instead.
 
-It intentionally does not load:
-
-- `styles.css`
-- `enhancements.css`
-- `script.js`
-- `enhancements.js`
-- Particle effects
-- Dialogs
-
-This separation keeps browser printing predictable.
-
-The screen toolbar contains:
-
-- Back to portfolio
-- Print / Save as PDF
-
-The print button calls:
-
-```js
-window.print()
-```
-
-The browser creates the PDF or print output.
-
-`@media print` rules:
-
-- Hide the toolbar
-- Remove the gray page background
-- Remove the document shadow
-- Fit the résumé to US Letter
-- Hide the placeholder note
+To update the résumé, replace the PDF and change its file name in
+`resume.html` (it appears in several links there) and in `enhancements.js`
+if the page itself is renamed.
 
 ---
 
@@ -1234,42 +1223,24 @@ The `project` value is matched against each project's `id` in `config.js`
 (`visual-intelligence`, `image-to-world`, `intelligent-web-app`,
 `visualization-vfx`). The senior project's dialog links to `sip.html` instead.
 
-The page reads from `config.js` and fills:
-
-- Project type
-- Title
-- Summary
-- Role
-- Technologies
-- Result
-
-The main written sections remain placeholders:
-
-1. Problem
-2. Constraints
-3. Process
-4. Technical decisions
-5. Result
-6. Reflection
-
-I can either continue using this shared page or later create one custom page per
-project.
+The page reads from `config.js` and fills the type, title, role,
+technologies ("Built with"), outcome (`result`) and overview (`summary`). A
+16:9 frame marks where images and video will go, a "Still to come" list
+names the planned write-up sections (the problem, constraints, process,
+reflection), and a link at the bottom leads to the next project. Notes on
+what each planned section should cover are in a comment at the top of the
+page's `<main>`. The background is fixed to the contour map (`survey`).
 
 ---
 
 # `404.html`
 
-A self-contained missing-page fallback for static hosting.
-
-It includes embedded CSS so it can still display when another asset path fails.
-
-The return link points to:
-
-```text
-index.html
-```
-
-Whether the host automatically serves this file depends on the hosting platform.
+Shown by GitHub Pages for any address that doesn't exist. It is
+self-contained (inline styles and drawing) because it can be served at any
+folder depth, where the site's relative stylesheet paths would break. It
+copies the Ridgeline palette and fonts, follows the visitor's saved
+light/dark choice, and on GitHub Pages points its links at the site's root
+folder.
 
 ---
 

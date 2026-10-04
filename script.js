@@ -264,6 +264,16 @@ contactForm?.addEventListener("submit", (event) => {
 
 if (yearTarget) yearTarget.textContent = new Date().getFullYear();
 
+/* "Last updated" in the footer: one date, kept in config.js. */
+const lastUpdated = window.PORTFOLIO_ENHANCEMENTS?.lastUpdated;
+document.querySelectorAll("[data-last-updated]").forEach((target) => {
+  if (!lastUpdated) return;
+  const date = new Date(`${lastUpdated}T12:00:00`);
+  const label = date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  target.innerHTML = `Last updated <time datetime="${lastUpdated}">${label}</time>`;
+  target.hidden = false;
+});
+
 /* --------------------------------------------------------------------------
    Shimmer, local hover lighting, and restrained 3D tilt
    -------------------------------------------------------------------------- */

@@ -22,6 +22,10 @@ between properties, and matching braces/brackets.
 */
 
 window.PORTFOLIO_ENHANCEMENTS = {
+  /* Shown in every page footer as "Last updated …". Change this date
+     whenever you publish an update (YYYY-MM-DD). */
+  lastUpdated: "2026-10-04",
+
   /* Hero text rotation ("Currently exploring …"). Decorative status text. */
   interests: [
     "Visual Computing",

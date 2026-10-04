@@ -18,13 +18,13 @@ index.html  (main portfolio, one scrolling page)
 └── 7  Contact ........ email, LinkedIn, GitHub, message form
 
 sip.html     Senior Integrative Project page
-resume.html  full résumé viewer
-404.html     page-not-found
+resume.html  résumé: view or download the PDF
+404.html     page not found, with links back
 ```
 
 ## Getting around the main page
 
-The header links jump to each section, and the numbered rail on the left shows where you are. Keys **1–7** jump to the same sections, **R** opens the résumé, and **⌘K / Ctrl+K** opens a command palette. The gear icon opens **World controls**, where you can change the landscape, the motion and the readability settings. The sun/moon button switches between light and dark mode.
+The header links jump to each section, and the numbered rail on the left shows where you are. Keys **1–7** jump to the same sections, **R** opens the résumé, **⌘K / Ctrl+K** opens a command palette, and **?** lists every shortcut. The gear icon (or **S**) opens **World controls**, where you can change the landscape, the motion and the readability settings. The sun/moon button switches between light and dark mode.
 
 ## The SIP page: Computational World-Building
 

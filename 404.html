@@ -1,56 +1,142 @@
 <!DOCTYPE html>
 <!--
 ==============================================================================
-STATIC HOSTING FALLBACK — 404.html
+PAGE NOT FOUND — 404.html
 ==============================================================================
 
-A static host can serve this page when a requested path does not exist. It is
-self-contained: the small CSS block is embedded so the error page still works
-even if another asset path is broken. The return link points back to index.html.
+A static host (GitHub Pages) serves this page for any address that doesn't
+exist, at that address, so it can be shown from any folder depth. That is
+why it is self-contained: its styles and the small ridge drawing are inline
+instead of loading the site's stylesheets, whose relative paths would break
+on a deep address. It copies the Ridgeline palette and fonts by hand, and
+follows the visitor's saved light/dark choice ("quentin-portfolio-theme").
+The script at the bottom points the links at the site's root folder.
 -->
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Page Not Found | Quentin</title>
+  <meta name="robots" content="noindex" />
+  <title>Page not found | Quentin Drucker</title>
+  <script>
+    try { if (localStorage.getItem("quentin-portfolio-theme") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bg: #0b1318; --text: #e4eef0; --soft: #a8bcc2; --faint: #7d939a;
+      --line: rgba(160, 210, 220, 0.12); --line-bright: rgba(121, 221, 235, 0.36);
+      --accent: #79ddeb; --amber: #d9a35b; --btn-text: #062a31;
+      --sky: linear-gradient(to bottom, #0b1318 0%, #0d1a20 45%, #12262e 72%, #0b1318 100%);
+      --ridge-far: #283e48; --ridge-near: #050a0d; --star: rgb(220, 236, 240);
+      color-scheme: dark;
+    }
+    html[data-theme="light"] {
+      --bg: #edf0ea; --text: #13232a; --soft: #42575e; --faint: #56696f;
+      --line: rgba(20, 60, 70, 0.14); --line-bright: rgba(10, 110, 125, 0.4);
+      --accent: #0b6e7c; --amber: #9a6420; --btn-text: #ffffff;
+      --sky: linear-gradient(to bottom, #edf0ea 0%, #e6ece8 60%, #dfe8e6 100%);
+      --ridge-far: #e0e6e3; --ridge-near: #c4cecd; --star: rgb(40, 70, 80);
+      color-scheme: light;
+    }
+    * { box-sizing: border-box; }
     body {
       min-height: 100vh;
       margin: 0;
       display: grid;
       place-items: center;
-      background: #070a12;
-      color: #f7f9ff;
-      font-family: system-ui, sans-serif;
+      background: var(--sky), var(--bg);
+      color: var(--text);
+      font-family: "Zen Kaku Gothic New", "Segoe UI", system-ui, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    main {
-      width: min(520px, calc(100% - 40px));
-      padding: 42px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 24px;
-      background: rgba(18,27,49,.75);
-      text-align: center;
-      box-shadow: 0 24px 80px rgba(0,0,0,.35);
+    .scene { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+    .scene svg { position: absolute; left: 0; bottom: 0; width: 100%; height: 46vh; }
+    .stars i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: var(--star); opacity: 0.5; }
+    .stars i.gold { background: #ffc53d; opacity: 0.9; box-shadow: 0 0 6px rgba(255, 197, 61, 0.6); }
+    main { width: min(560px, calc(100% - 40px)); padding: 40px 0 18vh; }
+    .code { margin: 0; color: var(--amber); font-weight: 500; letter-spacing: 0.02em; }
+    h1 {
+      margin: 10px 0 14px;
+      font-family: "Shippori Mincho", Georgia, serif;
+      font-size: clamp(2.2rem, 7vw, 3.4rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
     }
-    h1 { margin: 0; font-size: clamp(2rem, 7vw, 4rem); }
-    p { color: #aeb9d2; }
-    a {
-      margin-top: 15px;
-      padding: 12px 18px;
-      display: inline-block;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #3d7cff, #9a6cff);
-      color: white;
-      font-weight: 700;
+    p { margin: 0; color: var(--soft); }
+    .actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .actions a {
+      min-height: 44px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line-bright);
+      border-radius: 4px;
+      color: var(--text);
+      font-weight: 500;
       text-decoration: none;
     }
+    .actions a:first-child { border-color: transparent; background: var(--accent); color: var(--btn-text); font-weight: 700; }
+    .actions a:hover { border-color: var(--accent); }
+    .actions a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   </style>
 </head>
 <body>
+  <div class="scene" aria-hidden="true">
+    <div class="stars">
+      <i style="left:8%;top:12%"></i><i style="left:19%;top:31%"></i><i style="left:27%;top:9%"></i>
+      <i style="left:38%;top:22%"></i><i class="gold" style="left:46%;top:14%"></i><i style="left:57%;top:34%"></i>
+      <i style="left:64%;top:7%"></i><i style="left:72%;top:26%"></i><i style="left:81%;top:15%"></i>
+      <i style="left:89%;top:36%"></i><i style="left:94%;top:8%"></i><i style="left:13%;top:44%"></i>
+      <i style="left:33%;top:40%"></i><i style="left:52%;top:5%"></i><i style="left:77%;top:42%"></i>
+    </div>
+    <svg viewBox="0 0 1200 400" preserveAspectRatio="none">
+      <path id="ridge-far" fill="var(--ridge-far)" d="M0 220 L1200 160 L1200 400 L0 400 Z" />
+      <path id="ridge-near" fill="var(--ridge-near)" d="M0 300 L1200 270 L1200 400 L0 400 Z" />
+    </svg>
+  </div>
+
   <main>
-    <h1>404</h1>
-    <p>This page does not exist.</p>
-    <a href="./index.html">Return to Quentin's portfolio</a>
+    <p class="code">404</p>
+    <h1>This page isn’t on the map.</h1>
+    <p>The link may be out of date, or the address may have a typo.</p>
+    <div class="actions">
+      <a href="./index.html" data-site-link="index.html">Go to the portfolio</a>
+      <a href="./index.html#projects" data-site-link="index.html#projects">See projects</a>
+      <a href="./resume.html" data-site-link="resume.html">Open the résumé</a>
+    </div>
   </main>
+
+  <script>
+    /* Two soft ridgelines from a few layered sine waves (fixed, so the
+       drawing is the same on every visit). */
+    (function () {
+      function ridge(base, amp, phase) {
+        let d = "M0 400";
+        for (let x = 0; x <= 1200; x += 8) {
+          const t = x / 1200;
+          const y = base
+            - amp * (0.55 * Math.sin(t * 7.1 + phase) + 0.3 * Math.sin(t * 17.3 + phase * 2.1)
+                   + 0.15 * Math.sin(t * 41.7 + phase * 3.7) + 0.08 * Math.sin(t * 97 + phase));
+          d += ` L${x} ${y.toFixed(1)}`;
+        }
+        return d + " L1200 400 Z";
+      }
+      document.getElementById("ridge-far").setAttribute("d", ridge(170, 70, 1.3));
+      document.getElementById("ridge-near").setAttribute("d", ridge(275, 45, 4.2));
+    })();
+
+    /* On GitHub Pages the site lives in /<repository>/, and this page can be
+       served at any depth below it, so build links from that root folder. */
+    (function () {
+      if (!location.hostname.endsWith("github.io")) return;
+      const root = "/" + (location.pathname.split("/")[1] || "") + "/";
+      document.querySelectorAll("[data-site-link]").forEach((link) => { link.href = root + link.dataset.siteLink; });
+    })();
+  </script>
 </body>
 </html>

@@ -1,94 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--
+  RÉSUMÉ PAGE — resume.html
+  Shows the résumé PDF (2026_0603_Resume_QD.pdf, the authoritative version)
+  inside the site's frame, with download and open buttons. Same shell as
+  sip.html: styles.css → enhancements.css → site.css → ridgeline.css →
+  pages.css, the same scripts, settings and shortcuts. The background is
+  fixed to the sea biome ("tide"), as on the main page's Résumé section.
+  To update the résumé, replace the PDF and change the file name here
+  (it appears in five places on this page).
+-->
+<html lang="en" data-theme="dark" data-style="ridgeline" data-page-biome="tide">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Quentin Drucker — Résumé" />
-  <title>Quentin Drucker | Résumé</title>
+  <meta name="description" content="Résumé of Quentin Drucker: Computer Science major and Art minor at Connecticut College. View or download the PDF." />
+  <meta name="theme-color" content="#0b1318" />
+  <!-- Link previews: absolute URLs assume GitHub Pages at https://quentin-drucker.github.io/portfolio-website/.
+       Update them if the site moves to another address. -->
+  <link rel="canonical" href="https://quentin-drucker.github.io/portfolio-website/resume.html" />
+  <meta property="og:site_name" content="Quentin Drucker" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://quentin-drucker.github.io/portfolio-website/resume.html" />
+  <meta property="og:title" content="Résumé | Quentin Drucker" />
+  <meta property="og:description" content="Résumé of Quentin Drucker: Computer Science major and Art minor at Connecticut College. View or download the PDF." />
+  <meta property="og:image" content="https://quentin-drucker.github.io/portfolio-website/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Quentin Drucker: mountains under a night sky, the portfolio's generated landscape." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>Résumé | Quentin Drucker</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      height: 100%;
-      font-family: "Inter", system-ui, sans-serif;
-      background: #0a0f14;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .toolbar {
-      flex-shrink: 0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: rgba(10, 15, 20, 0.9);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-    }
-
-    .button {
-      min-height: 40px;
-      padding: 0 18px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.06);
-      color: #e2e8f0;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.875rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: background 0.15s, border-color 0.15s;
-    }
-
-    .button:hover {
-      background: rgba(255, 255, 255, 0.11);
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-
-    .button.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, #00c8e0, #3a5fff);
-      color: #fff;
-    }
-
-    .button.primary:hover {
-      opacity: 0.88;
-    }
-
-    .pdf-frame {
-      flex: 1;
-      width: 100%;
-      border: none;
-      display: block;
-      min-height: 0;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="enhancements.css" />
+  <link rel="stylesheet" href="site.css" />
+  <link rel="stylesheet" href="ridgeline.css" />
+  <link rel="stylesheet" href="pages.css" />
+  <script src="config.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="enhancements.js" defer></script>
+  <script src="world-settings.js" defer></script>
+  <script src="landscape.js" defer></script>
+  <script src="shortcuts.js" defer></script>
 </head>
-<body>
-  <div class="toolbar">
-    <a class="button" href="index.html">← Back to portfolio</a>
-    <a class="button primary" href="2026_0603_Resume_QD.pdf" download>Download PDF</a>
-  </div>
-  <iframe
-    class="pdf-frame"
-    src="2026_0603_Resume_QD.pdf"
-    title="Quentin Drucker — Résumé"
-  ></iframe>
+<body data-page="resume">
+  <div id="scroll-progress" aria-hidden="true"><span></span></div>
+  <div id="cursor-aura" aria-hidden="true"></div>
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav-shell glass" aria-label="Résumé navigation">
+      <a class="brand" href="index.html" aria-label="Quentin Drucker, home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span>Quentin Drucker</span>
+      </a>
+
+      <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open navigation">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links" id="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-tool command-trigger" type="button" aria-label="Open command palette"><span>⌘K</span></button>
+        <button class="nav-tool settings-trigger" type="button" aria-label="Open world controls">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.5 1a8 8 0 0 0-1.7-1L14.4 3h-4.8l-.4 3.1a8 8 0 0 0-1.7 1l-2.5-1-2 3.4L5.1 11a7 7 0 0 0 0 2L3 14.5l2 3.4 2.5-1a8 8 0 0 0 1.7 1l.4 3.1h4.8l.4-3.1a8 8 0 0 0 1.7 1l2.5 1 2-3.4-2.1-1.5a7 7 0 0 0 .1-1Z"></path></svg>
+        </button>
+        <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path></svg>
+        </button>
+        <a class="button button-small button-primary desktop-cta" href="2026_0603_Resume_QD.pdf" download="Quentin_Drucker_Resume.pdf">Download PDF</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="section resume-page" id="viewer">
+      <div class="resume-head">
+        <div>
+          <span class="section-kicker">Résumé</span>
+          <h1 class="resume-title">Quentin Drucker</h1>
+          <p class="resume-sub">Computer Science major, Art minor · Connecticut College, Class of 2027</p>
+        </div>
+        <div class="resume-actions">
+          <a class="button button-primary" href="2026_0603_Resume_QD.pdf" download="Quentin_Drucker_Resume.pdf">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
+            Download PDF
+          </a>
+          <a class="button button-secondary" href="2026_0603_Resume_QD.pdf" target="_blank" rel="noopener">Open in a new tab</a>
+        </div>
+      </div>
+
+      <div class="resume-frame">
+        <iframe id="resume-pdf" src="2026_0603_Resume_QD.pdf#view=FitH&amp;navpanes=0" title="Quentin Drucker's résumé (PDF)"></iframe>
+        <div class="resume-fallback" id="resume-fallback" hidden>
+          <p><strong>The PDF opens best in your device’s own viewer.</strong> Use <em>Download PDF</em> or <em>Open in a new tab</em> above.</p>
+        </div>
+      </div>
+
+      <p class="resume-note">Looking for the short version? <a href="index.html#resume">See the résumé summary</a> on the main page, or <a href="index.html#contact">get in touch</a>.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span>Quentin Drucker</span>
+      </a>
+      <p>Designed and built with HTML, CSS, and JavaScript.<span class="footer-updated" data-last-updated hidden></span></p>
+      <div class="footer-links">
+        <button class="footer-shortcuts" type="button" data-open-shortcuts>Keyboard shortcuts</button>
+        <a href="#main-content">Back to top</a>
+        <span>© <span id="current-year"></span> Quentin Drucker</span>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle class="back-track" cx="24" cy="24" r="20"></circle>
+      <circle class="back-progress" cx="24" cy="24" r="20"></circle>
+      <path d="m17 27 7-7 7 7"></path>
+    </svg>
+  </button>
+
+  <dialog class="command-dialog" id="command-dialog" aria-labelledby="command-title">
+    <div class="dialog-shell command-shell">
+      <div class="command-search">
+        <span aria-hidden="true">⌕</span>
+        <label class="sr-only" for="command-input">Search commands</label>
+        <input id="command-input" type="search" placeholder="Go to a section or run a command…" />
+        <kbd>Esc</kbd>
+      </div>
+      <h2 id="command-title" class="sr-only">Command palette</h2>
+      <div id="command-results" class="command-results" role="listbox"></div>
+    </div>
+  <dialog class="settings-dialog" id="settings-dialog" aria-labelledby="settings-title">
+    <div class="dialog-shell settings-shell">
+      <header>
+        <div>
+          <span class="section-kicker">Settings</span>
+          <h2 id="settings-title">World controls</h2>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog aria-label="Close settings">×</button>
+      </header>
+      <p class="settings-intro">Everything on this page is generated in your browser. Change the parameters and watch it respond. Your choices are saved on this device only.</p>
+
+      <!-- DISPLAY: content backdrop, and interface size on larger screens
+           (the size row is hidden on phones). -->
+      <section class="settings-group" aria-labelledby="settings-display">
+        <h3 class="settings-group-title" id="settings-display">Display</h3>
+        <label class="range-setting" for="world-backdrop">
+          <span class="setting-copy"><strong>Content backdrop</strong><small>How solid the see-through panel behind the text and cards is. Higher reads more easily; lower shows more of the landscape. 0 turns it off.</small></span>
+          <span class="range-control"><input id="world-backdrop" data-world="backdrop" type="range" min="0" max="90" step="5" /><output data-world-out="backdrop" for="world-backdrop"></output></span>
+        </label>
+        <label class="range-setting ui-scale-setting" for="world-scale">
+          <span class="setting-copy"><strong>Interface size</strong><small>Size of the text, cards and visuals. The middle is the default. The header, side rail and background keep their size.</small></span>
+          <span class="range-control"><input id="world-scale" data-world="uiScale" type="range" min="75" max="105" step="1" /><output data-world-out="uiScale" for="world-scale"></output></span>
+        </label>
+      </section>
+
+      <!-- WORLD: the land behind the page. Shared seed with the Playground. -->
+      <section class="settings-group" aria-labelledby="settings-world">
+        <h3 class="settings-group-title" id="settings-world">World</h3>
+        <div class="range-setting">
+          <span class="setting-copy">
+            <label for="world-seed"><strong>World seed</strong></label>
+            <small>Generates the mountains, the contour map behind Projects and the Playground terrain. Same seed, same land.</small>
+          </span>
+          <span class="seed-control">
+            <input id="world-seed" data-world="seed" type="text" maxlength="24" autocomplete="off" spellcheck="false" />
+            <button class="button button-secondary" type="button" data-world-shuffle>Shuffle</button>
+          </span>
+        </div>
+        <label class="range-setting" for="world-mountains">
+          <span class="setting-copy"><strong>Mountain height</strong><small>How tall the mountains stand against the night sky.</small></span>
+          <span class="range-control"><input id="world-mountains" data-world="mountainHeight" type="range" min="40" max="140" step="10" /><output data-world-out="mountainHeight" for="world-mountains"></output></span>
+        </label>
+        <label class="range-setting" for="world-contours">
+          <span class="setting-copy"><strong>Contour detail</strong><small>Number of elevation lines in the contour map behind Projects and Playground.</small></span>
+          <span class="range-control"><input id="world-contours" data-world="contourDetail" type="range" min="6" max="24" step="1" /><output data-world-out="contourDetail" for="world-contours"></output></span>
+        </label>
+        <label class="range-setting" for="world-stars">
+          <span class="setting-copy"><strong>Stars</strong><small>Star count in the night sky above the mountains and the sea. 0 clears the sky.</small></span>
+          <span class="range-control"><input id="world-stars" data-world="stars" type="range" min="0" max="250" step="10" /><output data-world-out="stars" for="world-stars"></output></span>
+        </label>
+        <label class="range-setting" for="world-nebula">
+          <span class="setting-copy"><strong>Nebula</strong><small>Strength of the pink and ember clouds above the mountains.</small></span>
+          <span class="range-control"><input id="world-nebula" data-world="nebula" type="range" min="0" max="200" step="10" /><output data-world-out="nebula" for="world-nebula"></output></span>
+        </label>
+      </section>
+
+      <!-- LIGHT: the moon/sun, horizon glow and cursor light. -->
+      <section class="settings-group" aria-labelledby="settings-light">
+        <h3 class="settings-group-title" id="settings-light">Light and time</h3>
+        <label class="setting-switch" for="world-follow">
+          <span class="setting-copy"><strong>Time follows scroll</strong><small>The moon, the horizon glow and the moon’s reflection on the sea move with your place on the page.</small></span>
+          <span class="switch-control">
+            <input id="world-follow" data-world="followScroll" type="checkbox" role="switch" />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+        <label class="range-setting" for="world-time">
+          <span class="setting-copy"><strong>Time of day</strong><small>Set the moon, glow and reflection by hand. Turn off “Time follows scroll” to use it.</small></span>
+          <span class="range-control"><input id="world-time" data-world="timeOfDay" type="range" min="0" max="100" step="1" /><output data-world-out="timeOfDay" for="world-time"></output></span>
+        </label>
+        <label class="range-setting" for="world-glow">
+          <span class="setting-copy"><strong>Cursor glow</strong><small>Size and brightness of every light that follows your pointer: the soft glow, the green lit patch on the map, and the glow on the sea. 0 turns them all off.</small></span>
+          <span class="range-control"><input id="world-glow" data-world="cursorGlow" type="range" min="0" max="200" step="10" /><output data-world-out="cursorGlow" for="world-glow"></output></span>
+        </label>
+        <label class="range-setting" for="world-flash">
+          <span class="setting-copy"><strong>Card flash</strong><small>Strength of the light that sweeps across a card or button from where your pointer enters it. 0 turns it off.</small></span>
+          <span class="range-control"><input id="world-flash" data-world="flash" type="range" min="0" max="200" step="10" /><output data-world-out="flash" for="world-flash"></output></span>
+        </label>
+      </section>
+
+      <!-- MOTION: the original motion switch and density, plus speed controls.
+           ids effects-toggle, effects-status, density-group, particle-density
+           and settings-reset are used by enhancements.js. -->
+      <section class="settings-group" aria-labelledby="settings-motion">
+        <h3 class="settings-group-title" id="settings-motion">Motion</h3>
+        <label class="setting-switch" for="effects-toggle">
+          <span class="setting-copy">
+            <strong>Motion effects</strong>
+            <small>Moving particles, shimmer, card tilt, cursor glow and other decorative animation.</small>
+          </span>
+          <span class="switch-control">
+            <input id="effects-toggle" type="checkbox" role="switch" aria-describedby="effects-status" checked />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+        <p class="setting-status" id="effects-status" aria-live="polite">Motion effects are enabled.</p>
+        <div class="density-group" id="density-group">
+          <label class="range-setting" for="particle-density">
+            <span class="setting-copy"><strong>Particle density</strong><small>Number of drifting particles.</small></span>
+            <span class="range-control"><input id="particle-density" type="range" min="0" max="100" step="10" value="70" /><output id="particle-density-value" for="particle-density">70%</output></span>
+          </label>
+          <label class="range-setting" for="world-speed">
+            <span class="setting-copy"><strong>Particle speed</strong><small>How fast the particles drift and swirl. 0 holds them still.</small></span>
+            <span class="range-control"><input id="world-speed" data-world="moteSpeed" type="range" min="0" max="250" step="10" /><output data-world-out="moteSpeed" for="world-speed"></output></span>
+          </label>
+        </div>
+        <label class="range-setting" for="world-transition">
+          <span class="setting-copy"><strong>Background transition</strong><small>How long the background takes to change between sections.</small></span>
+          <span class="range-control"><input id="world-transition" data-world="transitionMs" type="range" min="400" max="4000" step="100" /><output data-world-out="transitionMs" for="world-transition"></output></span>
+        </label>
+      </section>
+
+      <!-- ATMOSPHERE: the Mist-style touches. -->
+      <section class="settings-group" aria-labelledby="settings-atmosphere">
+        <h3 class="settings-group-title" id="settings-atmosphere">Atmosphere</h3>
+        <label class="setting-switch" for="world-fog">
+          <span class="setting-copy"><strong>Fog reveal</strong><small>Sections clear in like fog lifting as they scroll into view (applies to sections you haven’t reached yet).</small></span>
+          <span class="switch-control">
+            <input id="world-fog" data-world="fogReveal" type="checkbox" role="switch" />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+        <label class="setting-switch" for="world-edges">
+          <span class="setting-copy"><strong>Faded screen edges</strong><small>The page fades into the sky at the top and bottom of the window.</small></span>
+          <span class="switch-control">
+            <input id="world-edges" data-world="edgeFade" type="checkbox" role="switch" />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+        <label class="setting-switch" for="world-meteors">
+          <span class="setting-copy"><strong>Shooting stars</strong><small>Occasional meteors over the sea in About, Résumé and Contact.</small></span>
+          <span class="switch-control">
+            <input id="world-meteors" data-world="meteors" type="checkbox" role="switch" />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          </span>
+        </label>
+      </section>
+
+      <div class="settings-actions">
+        <button class="button button-secondary settings-reset" id="settings-reset" type="button">Restore defaults</button>
+      </div>
+
+      <p class="settings-note">Light or dark is the sun/moon button in the header. Your operating system's reduced-motion preference is always respected.</p>
+    </div>
+  </dialog>
+  <!-- The PDF shows inside the page where the browser has a built-in PDF
+       viewer and the screen is wide enough to read it. Elsewhere (most
+       phones) the page offers the download and open buttons instead. -->
+  <script>
+    (function () {
+      const frame = document.getElementById("resume-pdf");
+      const fallback = document.getElementById("resume-fallback");
+      const narrow = window.matchMedia("(max-width: 760px)");
+      function choose() {
+        const inline = navigator.pdfViewerEnabled !== false && !narrow.matches;
+        if (inline && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src);
+        frame.hidden = !inline;
+        fallback.hidden = inline;
+      }
+      frame.dataset.src = frame.getAttribute("src");
+      if (navigator.pdfViewerEnabled === false || narrow.matches) frame.removeAttribute("src");
+      choose();
+      narrow.addEventListener("change", choose);
+    })();
+  </script>
 </body>
 </html>

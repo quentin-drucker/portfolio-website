@@ -1,0 +1,106 @@
+/*
+===============================================================================
+SUPPORTING PAGES — pages.css
+===============================================================================
+Layout for the résumé page and the project page template. Loads last, after
+ridgeline.css (and sip.css on the project page), so colors, type and
+surfaces all come from the theme; this file only arranges things.
+*/
+
+/* ---------------------------------------------------------------- résumé */
+.resume-page {
+  padding-top: calc(var(--header-height) + 56px);
+  padding-bottom: 96px;
+}
+main > .section.resume-page { padding-top: calc(var(--header-height) + 56px); padding-bottom: 96px; }
+.resume-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 32px;
+  margin-bottom: 28px;
+}
+.resume-title {
+  margin: 10px 0 6px;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.resume-sub { margin: 0; color: var(--text-soft); }
+.resume-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.resume-actions .button svg { width: 17px; height: 17px; }
+
+/* The PDF sits in a quiet frame, sized to fill most of the window. */
+.resume-frame {
+  border-top: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-strong);
+  overflow: hidden;
+}
+.resume-frame iframe {
+  display: block;
+  width: 100%;
+  height: max(640px, calc(100vh / var(--ui-zoom, 1) - 260px));
+  border: 0;
+  background: var(--surface-strong);
+}
+.resume-frame [hidden] { display: none !important; }
+.resume-fallback { padding: clamp(24px, 5vw, 40px); }
+.resume-fallback p { margin: 0; color: var(--text-soft); max-width: 52ch; }
+.resume-fallback strong { color: var(--text); }
+.resume-note { margin: 22px 0 0; color: var(--text-soft); font-size: 0.92rem; }
+.resume-note a,
+.case-summary a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--line-bright);
+  text-underline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------- project page */
+.case-hero { min-height: calc(78vh / var(--ui-zoom, 1)); }
+.case-hero .hero-title { max-width: 18ch; }
+.case-facts {
+  max-width: 880px;
+  margin-top: 34px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.case-facts dd { font-size: 1.05rem; line-height: 1.45; }
+.case-outcome { grid-column: 1 / -1; }
+
+/* Where screenshots and video will go: a 16:9 frame, marked as planned. */
+.case-media {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line-bright);
+  border-radius: var(--radius-lg);
+  background: rgba(var(--backdrop-rgb), 0.35);
+}
+.case-summary { max-width: 68ch; margin: 0; color: var(--text-soft); font-size: 1.05rem; line-height: 1.75; }
+
+.case-pager {
+  margin-top: 64px;
+  padding-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid var(--line);
+}
+.case-pager .card-jump { margin: 0; padding: 0; }
+.case-next { display: grid; justify-items: end; gap: 2px; text-align: right; }
+.case-next small { color: var(--text-faint); font-size: 0.8rem; }
+.case-next strong { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--text); }
+.case-next strong::after { content: " →"; color: var(--accent); }
+.case-next:hover strong { color: var(--accent); }
+
+@media (max-width: 760px) {
+  .case-facts { grid-template-columns: 1fr; }
+  .case-hero { min-height: auto; }
+  .case-next { justify-items: start; text-align: left; }
+}

@@ -580,3 +580,78 @@ main > section:not(.hero)::before {
   background: linear-gradient(90deg, transparent, rgba(var(--fx), 0.26), rgba(var(--fx), 0.16), transparent);
   box-shadow: none;
 }
+
+/* ---------------------------------------------------------------- keyboard shortcuts (shortcuts.js) */
+.shortcuts-dialog { width: min(560px, calc(100% - 28px)); max-height: calc(100vh - 28px); }
+.shortcuts-shell { padding: clamp(22px, 4vw, 36px); }
+.shortcuts-shell header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.shortcuts-shell h2 { margin: 0; font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; }
+.shortcut-list { margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.shortcut-list > div {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.shortcut-list dt { display: flex; align-items: center; gap: 4px; color: var(--text-faint); }
+.shortcut-list dd { margin: 0; color: var(--text-soft); font-size: 0.92rem; line-height: 1.5; }
+.shortcut-list kbd,
+.shortcut-hint kbd {
+  min-width: 1.7em;
+  padding: 2px 6px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(var(--fx-2), 0.55);
+  border-radius: 4px;
+  color: var(--accent-two);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+/* The one-time hint: lower-left corner, clear of the back-to-top button. */
+.shortcut-hint {
+  position: fixed;
+  z-index: 90;
+  left: 24px;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  color: var(--text-soft);
+  font-size: 0.86rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 350ms ease, transform 350ms ease;
+}
+.shortcut-hint.is-shown { opacity: 1; transform: none; }
+.shortcut-hint button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.shortcut-hint-open { display: inline-flex; align-items: center; gap: 6px; padding: 4px 2px; }
+.shortcut-hint-open:hover { color: var(--text); }
+.shortcut-hint-close { width: 28px; height: 28px; border-radius: 6px; font-size: 1.1rem; color: var(--text-faint); }
+.shortcut-hint-close:hover { background: var(--surface-soft); color: var(--text); }
+@media (prefers-reduced-motion: reduce) { .shortcut-hint { transition: none; transform: none; } }
+
+/* ---------------------------------------------------------------- footer additions */
+.footer-inner p { display: grid; gap: 2px; }
+.footer-updated { color: var(--text-faint); }
+.footer-shortcuts {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--line-bright);
+  text-underline-offset: 3px;
+}
+.footer-shortcuts:hover { color: var(--text); }
+/* Touch-only devices have no keyboard shortcuts to show. */
+@media (hover: none) { .footer-shortcuts { display: none; } }
