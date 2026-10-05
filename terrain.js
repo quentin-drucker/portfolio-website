@@ -65,6 +65,12 @@ motion, when site motion is off, and while the canvas is off screen.
   const G = 64;
   const heights = new Float32Array(G * G);
   let palette = null;
+  let peak = 0;
+  /* Projected screen position and depth of every grid point, filled once per
+     frame (each point is shared by a row line and a column line). */
+  const projX = new Float32Array(G * G), projY = new Float32Array(G * G), projZ = new Float32Array(G * G);
+  /* Canvas size, measured when it changes rather than on every frame. */
+  let size = { w: canvas.clientWidth, h: canvas.clientHeight };
 
   function readPalette() {
     const style = getComputedStyle(rootEl);
@@ -104,6 +110,9 @@ motion, when site motion is off, and while the canvas is off screen.
         heights[j * G + i] = Math.pow(value, 1.6) * (0.4 + falloff * 0.9);
       }
     }
+    /* the highest point, for the "peak" marker (fixed until the next rebuild) */
+    peak = 0;
+    for (let k = 1; k < heights.length; k++) if (heights[k] > heights[peak]) peak = k;
     if (hud) hud.textContent = `${G}×${G} grid · seed “${text}”`;
     window.dispatchEvent(new CustomEvent("terrain:seed", { detail: { seed: text } }));
     draw();
@@ -142,7 +151,7 @@ motion, when site motion is off, and while the canvas is off screen.
   function draw() {
     if (!palette) readPalette();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const { w, h } = size;
     if (!w || !h) return;
     if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
       canvas.width = Math.round(w * dpr);
@@ -155,31 +164,38 @@ motion, when site motion is off, and while the canvas is off screen.
     const scale = Math.min(w, h * 1.5) * 0.92;
     const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
     const ox = w * 0.5, oy = h * 0.66;
-    const project = (i, j) => {
-      const x = i / (G - 1) - 0.5, z = j / (G - 1) - 0.5, y = heights[j * G + i] * 0.95 * hs;
-      const rx = x * cy - z * sy, rz = x * sy + z * cy;
-      const py = y * cp - rz * sp, pz = y * sp + rz * cp;
-      const persp = 1.6 / (1.9 - pz);
-      return [ox + rx * scale * persp, oy - py * scale * persp, pz];
-    };
+    for (let j = 0; j < G; j++) {
+      for (let i = 0; i < G; i++) {
+        const k = j * G + i;
+        const x = i / (G - 1) - 0.5, z = j / (G - 1) - 0.5, y = heights[k] * 0.95 * hs;
+        const rx = x * cy - z * sy, rz = x * sy + z * cy;
+        const py = y * cp - rz * sp, pz = y * sp + rz * cp;
+        const persp = 1.6 / (1.9 - pz);
+        projX[k] = ox + rx * scale * persp;
+        projY[k] = oy - py * scale * persp;
+        projZ[k] = pz;
+      }
+    }
 
+    /* pass 0 draws the lines of constant j (point (b, a)); pass 1 the lines
+       of constant i (point (a, b)); each line's shade comes from the depth
+       of its middle point */
     context.lineWidth = 1;
+    const mid = G >> 1;
     for (let pass = 0; pass < 2; pass++) {
       for (let a = 0; a < G; a++) {
         context.beginPath();
         for (let b = 0; b < G; b++) {
-          const [px, py] = pass ? project(a, b) : project(b, a);
-          if (b) context.lineTo(px, py); else context.moveTo(px, py);
+          const k = pass ? b * G + a : a * G + b;
+          if (b) context.lineTo(projX[k], projY[k]); else context.moveTo(projX[k], projY[k]);
         }
-        const depth = (pass ? project(a, G >> 1) : project(G >> 1, a))[2];
+        const depth = projZ[pass ? mid * G + a : a * G + mid];
         context.strokeStyle = `rgba(${palette.line}, ${0.1 + Math.max(0, depth + 0.5) * 0.34})`;
         context.stroke();
       }
     }
 
-    let peak = 0;
-    for (let k = 1; k < heights.length; k++) if (heights[k] > heights[peak]) peak = k;
-    const [mx, my] = project(peak % G, (peak / G) | 0);
+    const mx = projX[peak], my = projY[peak];
     context.strokeStyle = palette.accent;
     context.lineWidth = 1.5;
     context.strokeRect(mx - 7, my - 7, 14, 14);
@@ -187,14 +203,28 @@ motion, when site motion is off, and while the canvas is off screen.
     context.font = `11px ${palette.font}`;
     context.fillText("peak", mx + 11, my + 4);
 
-    if (gizmo) {
-      const axis = (x, y, z, color, label) => {
-        const rx = x * cy - z * sy, rz = x * sy + z * cy, py = y * cp - rz * sp;
-        return `<line x1="30" y1="30" x2="${30 + rx * 20}" y2="${30 - py * 20}" stroke="${color}" stroke-width="2"/>` +
-          `<text x="${30 + rx * 25 - 3}" y="${30 - py * 25 + 4}" fill="${color}" font-size="9" font-family="monospace">${label}</text>`;
-      };
-      gizmo.innerHTML = axis(1, 0, 0, palette.x, "X") + axis(0, 0, 1, palette.y, "Y") + axis(0, 1, 0, palette.z, "Z");
+    if (gizmo) drawGizmo(cy, sy, cp, sp);
+  }
+
+  /* Axis gizmo: built once, then only its coordinates are updated (instead
+     of replacing its markup on every animation frame). */
+  let gizmoParts = null;
+  function drawGizmo(cy, sy, cp, sp) {
+    const axes = [[1, 0, 0, palette.x, "X"], [0, 0, 1, palette.y, "Y"], [0, 1, 0, palette.z, "Z"]];
+    if (!gizmoParts || gizmoParts.palette !== palette) {
+      gizmo.innerHTML = axes.map(([, , , color, label]) =>
+        `<line x1="30" y1="30" stroke="${color}" stroke-width="2"/>` +
+        `<text fill="${color}" font-size="9" font-family="monospace">${label}</text>`).join("");
+      gizmoParts = { palette, lines: gizmo.querySelectorAll("line"), texts: gizmo.querySelectorAll("text") };
     }
+    axes.forEach(([x, y, z], n) => {
+      const rx = x * cy - z * sy, rz = x * sy + z * cy, py = y * cp - rz * sp;
+      const line = gizmoParts.lines[n], text = gizmoParts.texts[n];
+      line.setAttribute("x2", `${30 + rx * 20}`);
+      line.setAttribute("y2", `${30 - py * 20}`);
+      text.setAttribute("x", `${30 + rx * 25 - 3}`);
+      text.setAttribute("y", `${30 - py * 25 + 4}`);
+    });
   }
 
   /* Animation: slow auto-orbit until the visitor drags, only while visible. */
@@ -216,7 +246,11 @@ motion, when site motion is off, and while the canvas is off screen.
   document.addEventListener("visibilitychange", kick);
   window.addEventListener("portfolio:preferences-changed", () => { draw(); kick(); });
   window.addEventListener("portfolio:theme-changed", () => { readPalette(); draw(); });
-  window.addEventListener("resize", draw, { passive: true });
+  /* Re-measure (and redraw) only when the canvas's size actually changes. */
+  new ResizeObserver(([entry]) => {
+    size = { w: canvas.clientWidth, h: canvas.clientHeight };
+    draw();
+  }).observe(canvas);
 
   [ui.rough, ui.height, ui.irr].forEach((input) => input.addEventListener("input", rebuild));
   /* enhancements.js also listens for this submit and calls its (now inert) drawSeed. */

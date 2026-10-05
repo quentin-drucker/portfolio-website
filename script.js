@@ -170,25 +170,71 @@ window.addEventListener("resize", () => {
   - updates the thin reading-progress line
   - shifts large background glow layers at a reduced speed for depth
 */
+/*
+  Page height, shared with enhancements.js and landscape.js. It is measured
+  when the page changes size (ResizeObserver) instead of in every scroll
+  handler and animation frame: measuring right after another script has
+  changed a style forces the browser to lay the whole page out again.
+*/
+window.PORTFOLIO_PAGE = (() => {
+  let height = document.documentElement.scrollHeight;
+  const refresh = () => { height = document.documentElement.scrollHeight; };
+  if ("ResizeObserver" in window) new ResizeObserver(refresh).observe(document.body);
+  window.addEventListener("resize", refresh, { passive: true });
+  window.addEventListener("load", refresh);
+  return {
+    get height() { return height; },
+    /* how far the page can scroll */
+    get scrollable() { return Math.max(height - window.innerHeight, 1); },
+    /* scroll position from the latest scroll event (updated below) */
+    scrollY: window.scrollY
+  };
+})();
+
 let previousScrollY = window.scrollY;
 let scrollWake = 0;
+/* Latest scroll position, kept for the particle field so it doesn't have to
+   ask the browser (which can force a layout) about 90 times per frame. */
+let currentScrollY = window.scrollY;
+
+/* The two large glow layers only exist in the original style; the Ridgeline
+   theme hides them, so there is nothing to move. */
+const glowOne = document.querySelector(".glow-one");
+const glowTwo = document.querySelector(".glow-two");
+const glowsShown = Boolean(glowOne && getComputedStyle(glowOne).display !== "none");
+
+/* Performance: scroll handlers only read here; the style writes happen once,
+   just before the next frame is drawn (same frame, so nothing looks later).
+   Reading after writing would force the browser to lay the page out again
+   in the middle of every scroll event. */
+let scrollEffectsFrame = null;
+let pendingScroll = { scrollTop: 0, progress: 0 };
+
+function writeScrollEffects() {
+  scrollEffectsFrame = null;
+  const { scrollTop, progress } = pendingScroll;
+  header?.classList.toggle("scrolled", scrollTop > 20);
+  if (progressBar) progressBar.style.width = `${progress}%`;
+
+  if (glowsShown && !motionIsReduced() && !motionIsOff()) {
+    const drift = Math.min(scrollTop * 0.035, 48);
+    glowOne?.style.setProperty("margin-top", `${-drift * 0.4}px`);
+    glowTwo?.style.setProperty("margin-top", `${drift * 0.55}px`);
+  }
+}
 
 function updateScrollEffects() {
   const scrollTop = window.scrollY;
-  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const scrollable = window.PORTFOLIO_PAGE.scrollable;
   const progress = Math.min(100, Math.max(0, (scrollTop / scrollable) * 100));
 
   scrollWake = scrollTop - previousScrollY;
   previousScrollY = scrollTop;
+  currentScrollY = scrollTop;
+  window.PORTFOLIO_PAGE.scrollY = scrollTop;
 
-  header?.classList.toggle("scrolled", scrollTop > 20);
-  if (progressBar) progressBar.style.width = `${progress}%`;
-
-  if (!motionIsReduced() && !motionIsOff()) {
-    const drift = Math.min(scrollTop * 0.035, 48);
-    document.querySelector(".glow-one")?.style.setProperty("margin-top", `${-drift * 0.4}px`);
-    document.querySelector(".glow-two")?.style.setProperty("margin-top", `${drift * 0.55}px`);
-  }
+  pendingScroll = { scrollTop, progress };
+  if (!scrollEffectsFrame) scrollEffectsFrame = requestAnimationFrame(writeScrollEffects);
 }
 
 updateScrollEffects();
@@ -448,16 +494,29 @@ window.addEventListener("pointermove", (event) => {
   pointer.y = event.clientY;
   pointer.active = true;
   pointer.lastMoveAt = performance.now();
-  body.classList.add("pointer-active");
+  if (!body.classList.contains("pointer-active")) body.classList.add("pointer-active");
+  wakeCursorAura();
 
-  if (visualShell) {
-    const bounds = visualShell.getBoundingClientRect();
-    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
-    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
-    visualShell.style.setProperty("--visual-x", `${x}%`);
-    visualShell.style.setProperty("--visual-y", `${y}%`);
-  }
+  /* The hero visual's light only matters while it's on screen; it catches
+     up with the pointer as soon as it scrolls back into view. */
+  if (visualShellOnScreen) updateVisualLight();
 }, { passive: true });
+
+let visualShellOnScreen = Boolean(visualShell);
+function updateVisualLight() {
+  if (!visualShell || !pointer.active) return;
+  const bounds = visualShell.getBoundingClientRect();
+  const x = ((pointer.x - bounds.left) / bounds.width) * 100;
+  const y = ((pointer.y - bounds.top) / bounds.height) * 100;
+  visualShell.style.setProperty("--visual-x", `${x}%`);
+  visualShell.style.setProperty("--visual-y", `${y}%`);
+}
+if (visualShell) {
+  new IntersectionObserver((entries) => {
+    visualShellOnScreen = entries.some((entry) => entry.isIntersecting);
+    if (visualShellOnScreen) updateVisualLight();
+  }).observe(visualShell);
+}
 
 document.addEventListener("pointerdown", (event) => {
   if (
@@ -486,7 +545,12 @@ document.addEventListener("mouseleave", () => {
   The cursor-aura loop uses interpolation rather than CSS transition updates.
   requestAnimationFrame aligns visual changes with the browser's paint cycle.
 */
+/* Performance: the loop sleeps once the glow has caught up with a resting
+   pointer (closer than a twentieth of a pixel, too small to see) and wakes
+   on the next pointer move or motion-setting change. */
+let cursorAuraFrame = null;
 function animateCursorAura() {
+  cursorAuraFrame = null;
   if (
     cursorAura &&
     !motionIsReduced() &&
@@ -496,11 +560,16 @@ function animateCursorAura() {
     pointer.renderX += (pointer.x - pointer.renderX) * 0.075;
     pointer.renderY += (pointer.y - pointer.renderY) * 0.075;
     cursorAura.style.transform = `translate3d(${pointer.renderX}px, ${pointer.renderY}px, 0)`;
+    if (Math.abs(pointer.x - pointer.renderX) > 0.05 || Math.abs(pointer.y - pointer.renderY) > 0.05) {
+      cursorAuraFrame = requestAnimationFrame(animateCursorAura);
+    }
   }
-  requestAnimationFrame(animateCursorAura);
+}
+function wakeCursorAura() {
+  if (!cursorAuraFrame) cursorAuraFrame = requestAnimationFrame(animateCursorAura);
 }
 
-animateCursorAura();
+wakeCursorAura();
 
 /* --------------------------------------------------------------------------
    Organic clustered mote field
@@ -561,7 +630,7 @@ function makeClusters() {
   frequencies prevent a visibly repetitive circular path.
 */
 function currentClusterPosition(cluster, time) {
-  const scrollOffset = window.scrollY * 0.022;
+  const scrollOffset = currentScrollY * 0.022;
   return {
     x:
       cluster.baseX +
@@ -985,6 +1054,7 @@ function restartMotionState() {
 
   reduceMotion = reducedMotionQuery.matches || mode !== "full";
   pointerIsCoarse = coarsePointerQuery.matches;
+  wakeCursorAura();
 
   if (animationFrame) {
     cancelAnimationFrame(animationFrame);

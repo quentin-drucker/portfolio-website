@@ -414,6 +414,17 @@ html[data-motion="off"] .ls-clouds { animation: none; }
   will-change: transform;
 }
 
+/* Performance: when a biome's weight is zero, its layers are already fully
+   transparent. landscape.js adds these classes at that moment so the browser
+   can skip drawing and compositing them, and their looping animations pause
+   (they pick up where they were when the biome returns). Nothing visible
+   changes. Shooting stars are left alone so one never freezes mid-streak. */
+.landscape.ls-no-tide :is(.ls-clouds, .ls-sea) { visibility: hidden; animation-play-state: paused; }
+.landscape.ls-no-survey :is(.ls-contours, .ls-contours-lit) { visibility: hidden; }
+.landscape.ls-no-mountains :is(.ls-ridge, .ls-nebula) { visibility: hidden; }
+.landscape.ls-no-sky .ls-stars { visibility: hidden; }
+.landscape.ls-no-sky .ls-twinkles i { animation-play-state: paused; }
+
 @media (max-width: 760px) {
   .ls-ridge { height: 46vh; }
   .ls-sea { height: 30vh; }

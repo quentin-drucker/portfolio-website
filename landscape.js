@@ -87,6 +87,7 @@ only when you do).
   const seaCanvas = scene.querySelector(".ls-sea");
   const cloudCanvases = [...scene.querySelectorAll(".ls-clouds")];
   const orb = scene.querySelector(".ls-orb");
+  const glowLayer = scene.querySelector(".ls-glow");
 
   /* ---------- noise ---------- */
   function hash(text) {
@@ -406,6 +407,10 @@ only when you do).
     }));
   })();
   const pointer = { x: -1e4, y: -1e4, active: false };
+  /* Performance: everything about the sea that doesn't change from frame to
+     frame (its size, the water gradient, each wave row's color) is worked out
+     here once, not 60 times a second. */
+  const SEA_ROWS = 44;
   function prepareSea() {
     sea = fit(seaCanvas);
     seaColors = {
@@ -416,6 +421,12 @@ only when you do).
       bio: css("--biolume", "70, 170, 255"),
       bioCore: css("--biolume-core", "190, 230, 255")
     };
+    const body = sea.context.createLinearGradient(0, 0, 0, sea.h);
+    body.addColorStop(0, `rgb(${seaColors.top})`);
+    body.addColorStop(1, `rgb(${seaColors.deep})`);
+    seaColors.body = body;
+    seaColors.rowStyles = Array.from({ length: SEA_ROWS + 1 }, (_, k) =>
+      `rgba(${seaColors.line}, ${(0.05 + (k / SEA_ROWS) * 0.17).toFixed(3)})`);
   }
   function drawSea(orbX, glow, time, seaTop) {
     if (!sea) prepareSea();
@@ -423,10 +434,7 @@ only when you do).
     if (!w || !h) return;
     const col = seaColors;
     c.clearRect(0, 0, w, h);
-    const body = c.createLinearGradient(0, 0, 0, h);
-    body.addColorStop(0, `rgb(${col.top})`);
-    body.addColorStop(1, `rgb(${col.deep})`);
-    c.fillStyle = body;
+    c.fillStyle = col.body;
     c.fillRect(0, 0, w, h);
     /* the horizon picks up the glow */
     const band = c.createLinearGradient(0, 0, 0, h * 0.3);
@@ -438,14 +446,14 @@ only when you do).
     c.fillRect(0, 0, w, 1);
 
     const reflect = mixRgb(glow, col.moon, 0.5);
-    const rows = 44;
+    const rows = SEA_ROWS;
     for (let k = 1; k <= rows; k++) {
       const d = k / rows;                     // 0 at the horizon → 1 nearest
       const y = Math.pow(d, 1.75) * h;
       const len = 4 + d * 70, gap = 14 + d * 110, thick = 0.6 + d * 1.6, period = len + gap;
       const drift = time * 0.012 * (0.25 + d);
       const phase = (seaOffsets[k % 64] * period + drift) % period;
-      c.fillStyle = `rgba(${col.line}, ${(0.05 + d * 0.17).toFixed(3)})`;
+      c.fillStyle = col.rowStyles[k];
       for (let x = phase - period; x < w; x += period) c.fillRect(x, y, len, thick);
 
       const half = 26 + d * 230, step = 5 + d * 14;
@@ -585,15 +593,45 @@ only when you do).
 
   /* ---------- frame loop: runs only while something is settling ---------- */
   let renderP = null, frame = null, lastTime = 0;
+
+  /* Performance: a style is written only when its value actually changes.
+     While the sea is animating, the loop runs every frame, but the biome
+     weights, the glow color and most transforms are usually already in
+     place; rewriting them would make the browser restyle the scene anyway. */
+  const lastWrite = new WeakMap();
+  function write(el, prop, value) {
+    let seen = lastWrite.get(el);
+    if (!seen) lastWrite.set(el, (seen = {}));
+    if (seen[prop] === value) return;
+    seen[prop] = value;
+    if (prop === "transform") el.style.transform = value;
+    else el.style.setProperty(prop, value);
+  }
+  function toggleClass(name, on) {
+    if (scene.classList.contains(name) !== on) scene.classList.toggle(name, on);
+  }
+
+  /* Pointer position for the lit contour patch. The CSS variables are only
+     updated while the map can be seen (they'd move an invisible mask). */
+  const lit = { x: null, y: null };
+  function writeLit() {
+    if (lit.x === null || weights.survey <= 0.001) return;
+    write(litCanvas, "--lit-x", `${lit.x}px`);
+    write(litCanvas, "--lit-y", `${lit.y}px`);
+  }
   function progressTarget() {
-    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    return Math.min(1, Math.max(0, window.scrollY / max));
+    /* page height from script.js's cached measurement (no forced layout) */
+    const max = window.PORTFOLIO_PAGE?.scrollable ?? Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const y = window.PORTFOLIO_PAGE?.scrollY ?? window.scrollY;
+    return Math.min(1, Math.max(0, y / max));
   }
   function render(now) {
     frame = null;
     const dt = Math.min(64, now - (lastTime || now));
     lastTime = now;
     const vh = window.innerHeight, vw = window.innerWidth;
+    /* read the page before writing any styles this frame */
+    const scrollP = progressTarget();
 
     /* biome weights */
     let settling = false;
@@ -603,18 +641,26 @@ only when you do).
       BIOMES.forEach((b) => { weights[b] = tween.from[b] + ((b === target ? 1 : 0) - tween.from[b]) * k; });
       if (t >= 1) tween = null; else settling = true;
     }
-    BIOMES.forEach((b) => scene.style.setProperty(`--w-${b}`, weights[b].toFixed(3)));
+    BIOMES.forEach((b) => write(scene, `--w-${b}`, weights[b].toFixed(3)));
+
+    /* Layers whose biome weight is zero are fully transparent at that
+       moment; these classes let the browser skip drawing them and pause
+       their CSS animations (ridgeline.css). */
+    toggleClass("ls-no-tide", weights.tide < 0.001);
+    toggleClass("ls-no-survey", weights.survey < 0.001);
+    toggleClass("ls-no-mountains", weights.ridgeline + weights.kiln < 0.001);
+    toggleClass("ls-no-sky", weights.ridgeline + weights.tide + weights.kiln < 0.001);
+    writeLit();
 
     /* smoothed scroll progress */
     /* time of day: page progress, or a fixed value from the world controls */
-    const pTarget = world() && !world().followScroll ? world().timeOfDay : progressTarget();
+    const pTarget = world() && !world().followScroll ? world().timeOfDay : scrollP;
     if (renderP === null || still()) renderP = pTarget;
     else {
       renderP += (pTarget - renderP) * (1 - Math.exp(-dt / 140));
       if (Math.abs(pTarget - renderP) > 0.0004) settling = true; else renderP = pTarget;
     }
     const p = renderP;
-    scene.style.setProperty("--p", p.toFixed(4));
 
     /* ridges: gentle parallax; outside the mountain biomes they settle down
        and fade out */
@@ -624,25 +670,29 @@ only when you do).
       const depth = [0.35, 0.65, 1][i];
       const parallax = moving ? -p * 40 * depth : 0;
       const drop = moving ? away * vh * (0.06 + depth * 0.1) : 0;
-      canvas.style.transform = `translate3d(0, ${(parallax + drop).toFixed(1)}px, 0)`;
+      write(canvas, "transform", `translate3d(0, ${(parallax + drop).toFixed(1)}px, 0)`);
     });
 
     /* orb arc: rises at the left, peaks mid-page, sets at the right */
     const x = vw * (0.06 + p * 0.88);
     const horizon = vh * 0.56, arc = vh * 0.4;
     const y = horizon - (0.12 + 0.88 * Math.sin(Math.PI * p)) * arc;
-    orb.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+    write(orb, "transform", `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`);
 
     /* horizon glow follows the orb: position, and color along the arc */
     const glow = glowAt(p);
-    scene.style.setProperty("--glow-x", `${((x / vw) * 100).toFixed(2)}%`);
-    scene.style.setProperty("--glow-rgb", glow);
+    /* Written on the glow layer itself (its only user), not on the scene:
+       a variable on the scene would restyle every layer and every twinkling
+       star on each scrolled frame. */
+    write(glowLayer, "--glow-x", `${((x / vw) * 100).toFixed(2)}%`);
+    write(glowLayer, "--glow-rgb", glow);
 
     /* sea: rises in with its biome; waves keep moving while it's visible */
     if (weights.tide > 0.002) {
       const seaShift = moving ? (1 - weights.tide) * vh * 0.18 : 0;
-      drawSea(x, glow, moving ? now : 0, vh - seaCanvas.clientHeight + seaShift);
-      seaCanvas.style.transform = `translate3d(0, ${seaShift.toFixed(1)}px, 0)`;
+      if (!sea) prepareSea();
+      drawSea(x, glow, moving ? now : 0, vh - sea.h + seaShift);
+      write(seaCanvas, "transform", `translate3d(0, ${seaShift.toFixed(1)}px, 0)`);
       if (moving && !document.hidden) settling = true;
     }
 
@@ -658,12 +708,12 @@ only when you do).
   /* ---------- pointer-lit contours ---------- */
   if (!coarse) {
     window.addEventListener("pointermove", (event) => {
-      litCanvas.style.setProperty("--lit-x", `${event.clientX}px`);
-      litCanvas.style.setProperty("--lit-y", `${event.clientY}px`);
-      scene.classList.add("ls-lit");
+      lit.x = event.clientX; lit.y = event.clientY;
+      writeLit();
+      toggleClass("ls-lit", true);
       pointer.x = event.clientX; pointer.y = event.clientY; pointer.active = true;
     }, { passive: true });
-    document.addEventListener("pointerleave", () => { scene.classList.remove("ls-lit"); pointer.active = false; });
+    document.addEventListener("pointerleave", () => { toggleClass("ls-lit", false); pointer.active = false; });
   }
 
   /* ---------- wiring ---------- */

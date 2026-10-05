@@ -50,6 +50,20 @@ Link previews (Open Graph tags in each page's `<head>`) use absolute URLs
 for GitHub Pages at `https://quentin-drucker.github.io/portfolio-website/`;
 update them if the site moves to another address.
 
+Performance rules the scripts follow (keep them when editing):
+- Read the page (scroll position, sizes) before writing styles in the same
+  frame; scroll handlers only read, and write in `requestAnimationFrame`.
+- Page height and scroll position come from `window.PORTFOLIO_PAGE`
+  (script.js), refreshed by a `ResizeObserver` and the scroll event, so
+  animation loops never measure the page themselves.
+- landscape.js writes a style only when its value changes, and puts a
+  variable on the element that uses it (the glow's variables live on
+  `.ls-glow`): a variable on `.landscape` restyles every layer and twinkle.
+- Layers of a biome at weight 0 get `ls-no-*` classes (hidden, animations
+  paused); the cursor glow loop sleeps once it has caught up.
+- Canvas drawing keeps `rgba()` color strings: switching to `globalAlpha`
+  changes pixels on GPU-backed canvases.
+
 Homepage section order and shortcut keys: `1 #home`, `2 #expertise`
 ("What I work on"), `3 #projects`, `4 #playground`, `5 #about`, `6 #resume`,
 `7 #contact`. `R` opens the résumé; `/` or Ctrl/Cmd+K opens the command

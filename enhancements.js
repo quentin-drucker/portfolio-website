@@ -584,11 +584,24 @@ document.querySelectorAll("main section[id]").forEach((section) => railObserver.
   The SVG circle circumference is 125.66. Adjusting stroke-dashoffset maps page
   progress onto the circular outline.
 */
+/* Performance: read during the scroll event, write once just before the next
+   frame, so this handler never forces a layout after another one has written. */
+let backToTopFrame = null;
+let backToTopState = { visible: false, offset: "125.66" };
 function updateBackToTop() {
-  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const scrollable = window.PORTFOLIO_PAGE?.scrollable ?? Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
   const progress = Math.min(1, window.scrollY / scrollable);
-  enh.backToTop?.classList.toggle("visible", window.scrollY > window.innerHeight * 0.7);
-  if (enh.backProgress) enh.backProgress.style.strokeDashoffset = String(125.66 * (1 - progress));
+  backToTopState = {
+    visible: window.scrollY > window.innerHeight * 0.7,
+    offset: String(125.66 * (1 - progress))
+  };
+  if (!backToTopFrame) {
+    backToTopFrame = requestAnimationFrame(() => {
+      backToTopFrame = null;
+      enh.backToTop?.classList.toggle("visible", backToTopState.visible);
+      if (enh.backProgress) enh.backProgress.style.strokeDashoffset = backToTopState.offset;
+    });
+  }
 }
 window.addEventListener("scroll", updateBackToTop, { passive: true });
 updateBackToTop();
